@@ -53,12 +53,12 @@ namespace glif
 
     struct Parameters_
     {
-      double C_m; // Membrane capactiance
-      double I_e; // DC current,
-      double G; // membrance conductance
-      double E_l; // resting potential
-      double V_r; // reset potential
-      double V_th; // threshold
+      double C_m_; // Membrane capactiance
+      double I_e_; // DC current,
+      double G_; // membrance conductance
+      double El_; // resting potential
+      double V_rest_; // reset potential
+      double V_th_; // threshold
 
       Parameters_();
 
