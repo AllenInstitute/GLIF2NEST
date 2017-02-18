@@ -24,16 +24,16 @@ glif::glif_lif::Parameters_::Parameters_()
 
 } 
 
-glif::glif_lif::State_::State_(const Parameters_ &p)
-	: V_m(p.El_) {
+glif::glif_lif::State_::State_(const glif::glif_lif::Parameters_ &p)
+	: V_m_(p.El_) {
 
 }
 
 void glif::glif_lif::Parameters_::get(DictionaryDatum &d) const {
 	def<double>(d, names::C_m, C_m_);
 	def<double>(d, names::I_e, I_e_);
-	def<double>(d, names::G, G_);
-	def<double>(d, names::El, C_m_);
+	def<double>(d, "G", G_);
+	def<double>(d, "El", El_);
 	def<double>(d, names::V_reset, V_reset_);
 	def<double>(d, names::V_th, V_th_);
 }
@@ -41,10 +41,10 @@ void glif::glif_lif::Parameters_::get(DictionaryDatum &d) const {
 void glif::glif_lif::Parameters_::set(const DictionaryDatum& d) {
   updateValue< double >( d, names::C_m, C_m_);
   updateValue< double >( d, names::I_e, I_e_);
-  updateValue< double >( d, names::G, G_);
+  updateValue< double >( d, "G", G_);
   updateValue< double >( d, names::V_th, V_th_);
   updateValue< double >( d, names::V_reset, V_reset_);
-  updateValue< double >( d, names::El, El_);
+  updateValue< double >( d, "El", El_);
 }
 
 void glif::glif_lif::State_::get(DictionaryDatum &d) const {
@@ -69,7 +69,7 @@ glif::glif_lif::Buffers_::Buffers_(const Buffers_ &b, glif::glif_lif &n)
 glif::glif_lif::glif_lif() 
 	: Archiving_Node()
 	, P_()
-	, S_()
+	, S_(P_)
 	, B_(*this) {
 	recordablesMap_.create();
 }
@@ -94,3 +94,27 @@ void glif::glif_lif::init_buffers_() {
 	Archiving_Node::clear_history();
 }
 
+void glif::glif_lif::calibrate() {
+	B_.logger_.init();
+
+	// TODO: implement actual calibration	
+}
+
+void glif::glif_lif::update(Time const& origin, const long from, const long to) {
+
+	const double dt = Time::get_resolution().get_ms();
+
+	for(long lag = from; lag < to; ++lag) {
+		S_.V_m_ += dt*(1/P_.C_m_)*(P_.I_e_ - P_.G_*(S_.V_m_ - P_.El_));
+
+		if(S_.V_m_ > P_.V_th_) {
+			S_.V_m_ = P_.V_reset_;
+
+
+		}
+
+
+
+		B_.logger_.record_data(origin.get_steps() + lag);
+	}
+}

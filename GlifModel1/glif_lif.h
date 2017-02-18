@@ -57,7 +57,7 @@ namespace glif
       double I_e_; // DC current,
       double G_; // membrance conductance
       double El_; // resting potential
-      double V_rest_; // reset potential
+      double V_reset_; // reset potential
       double V_th_; // threshold
 
       Parameters_();
@@ -68,7 +68,7 @@ namespace glif
 
     struct State_
     {
-      double V_m;
+      double V_m_;
 
       State_(const Parameters_&);
 
@@ -81,6 +81,9 @@ namespace glif
       Buffers_(glif_lif&);
       Buffers_(const Buffers_&, glif_lif&);
       nest::UniversalDataLogger<glif_lif> logger_;
+
+      nest::RingBuffer spikes_;
+      nest::RingBuffer currents_;
     };
 
     struct Variables_
@@ -93,7 +96,7 @@ namespace glif
     Buffers_ B_;
 
     double get_V_m_() const {
-      return S_.V_m;
+      return S_.V_m_;
     }
 
     static nest::RecordablesMap<glif_lif> recordablesMap_;
