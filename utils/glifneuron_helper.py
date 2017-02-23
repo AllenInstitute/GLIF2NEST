@@ -94,6 +94,12 @@ def run_sweep(cell_id, model_type, sweep_number, base_dir='../models'):
 def reset(voltage_t0, threshold_t0, AScurrents_t0):
     #AScurrents_t1 = self.AScurrent_reset_method(self, AScurrents_t0)
     AScurrents_t1 = np.zeros(len(AScurrents_t0))
+    # r = [1.0, 1.0]   
+    # new_currents=neuron.asc_amp_array * neuron.coeffs['asc_amp_array'] #neuron.asc_amp_array are amplitudes initiating after the spike is cut
+    # left_over_currents=AScurrents_t0 * r * np.exp(-(neuron.k * neuron.dt * neuron.spike_cut_length)) #advancing cut currents though the spike    
+
+    return new_currents+left_over_currents
+
 
     #voltage_t1 = self.voltage_reset_method(self, voltage_t0)
     voltage_t1 = 0.0
@@ -243,6 +249,9 @@ def run_lif(cell_id, sweep_number, model_id=None, base_dir='../models'):
         inj = stimulus[time_step]
 
         AScurrents_t1 = np.zeros(len(AScurrents_t0))
+        # exp()
+        ## return AScurrents_t0*np.exp(-neuron.k*neuron.dt) 
+
         voltage_t1 = voltage_t0 + (inj + np.sum(AScurrents_t0) - G * coeffs_G * (voltage_t0 - El)) * dt / (C * coeff_C)
         threshold_t1 = coeff_th_inf * th_inf
 

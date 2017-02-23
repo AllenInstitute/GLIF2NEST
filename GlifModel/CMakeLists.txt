@@ -6,7 +6,8 @@ set( MODULE_NAME ${SHORT_NAME}module )
 # 2) Add all your sources here
 set( MODULE_SOURCES
     glifmodule.h glifmodule.cpp
-    glif_lif.cpp glif_lif.h
+    glif_lif.h glif_lif.cpp
+    glif_lif_asc.h glif_lif_asc.cpp
     )
 
 # 3) We require a header name like this:

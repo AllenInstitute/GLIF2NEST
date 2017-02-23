@@ -12,7 +12,7 @@ from plot_helper import plot_vt, step_generator_trace, get_step_trace
 import allensdk_helper as asdk
 
 #nest.Install('/home/kael/apps/nest-simulator/lib/nest/glifmodule')
-nest.Install('glifmodule')
+nest.Install('glifmodule.so')
 
 
 def run_lif_allensdk(cell_id, model_type, I, dt_ms, base_dir='../models'):
