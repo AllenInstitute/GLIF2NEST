@@ -63,3 +63,43 @@ def plot_vt(ts, voltages, I, show=True):
     plt.plot(ts, I)
     if show:
         plt.show()
+
+
+def plt_comparison(I, allen_ms, allen_v, allen_spikes_ms, nest_ms, nest_v, nest_spikes_ms, show=False):
+    def ylim(vm, margins=.1):
+        bt = (1 - (1 - margins))/float(1 - margins)
+        margin = bt*(max(vm) - min(vm))
+        return (min(vm) - margin, max(vm) + margin)
+
+    gs = gridspec.GridSpec(3, 1, height_ratios=[1, 6, 1])
+
+    # Plot the spike trains
+    ax1 = plt.subplot(gs[0])
+    ax1.axes.get_xaxis().set_visible(False)
+    ax1.axes.get_yaxis().set_visible(False)
+    plt.plot(allen_spikes_ms, [0.8] * len(allen_spikes_ms), '.b')
+    plt.plot(nest_spikes_ms, [0.2] * len(nest_spikes_ms), '.r')
+    plt.xlim(allen_ms[0], allen_ms[-1])
+    plt.ylim(0, 1)
+
+    # Plot the voltage traces
+    ax2 = plt.subplot(gs[1])
+    ax2.axes.get_xaxis().set_visible(False)
+    ax2.set_ylabel('V', fontsize=14)
+    plt.xlim(allen_ms[0], allen_ms[-1])
+    plt.ylim(*ylim(allen_v, margins=.05))
+    l1, = plt.plot(allen_ms, allen_v, 'b', label='allen')
+    l2, = plt.plot(nest_ms, nest_v, '--r', label='nest')
+    leg = plt.legend(handles=[l1, l2], loc=2)
+    plt.gca().add_artist(leg)
+
+    # Plot the currents
+    ax3 = plt.subplot(gs[2])
+    ax3.set_xlabel('t (ms)', fontsize=14)
+    ax3.set_ylabel('I', fontsize=14)
+    plt.plot(allen_ms, I)
+    plt.xlim(allen_ms[0], allen_ms[-1])
+    plt.ylim(*ylim(I, margins=.2))
+
+    if show:
+        plt.show()

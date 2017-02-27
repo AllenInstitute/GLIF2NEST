@@ -82,6 +82,8 @@ private:
   {
     double V_m_;  // membrane potential
     std::vector<double> ASCurrents_; // after-spike currents
+    double ASCurrents_sum_;
+
     double I_; // external current
 
     State_( const Parameters_& );
@@ -112,6 +114,11 @@ private:
   double get_V_m_() const
   {
     return S_.V_m_;
+  }
+
+  double get_AScurrents_sum_() const
+  {
+    return S_.ASCurrents_[0];
   }
 
   Parameters_ P_; 

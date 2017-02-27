@@ -134,8 +134,8 @@ plt.figure(2)
 plot_vt(times_a, voltages_a, I_a, show=False)
 plt.show()
 
-#print spike_times*1.0e-04
-#print spike_times_a
+print spike_times*1.0e-04
+print spike_times_a
 
 #nest.ResetKernel()
 #nest.SetKernelStatus({'resolution': 0.05})

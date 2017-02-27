@@ -31,12 +31,12 @@ namespace nest
 {
 // Override the create() method with one call to RecordablesMap::insert_()
 // for each quantity to be recorded.
-template <>
+template<>
 void
 RecordablesMap< allen::glif_lif_asc >::create()
 {
-  // use standard names whereever you can for consistency!
   insert_( names::V_m, &allen::glif_lif_asc::get_V_m_ );
+  insert_( Name("AScurrents_sum"), &allen::glif_lif_asc::get_AScurrents_sum_ ); 
 }
 }
 
@@ -103,18 +103,15 @@ void
 allen::glif_lif_asc::State_::get( DictionaryDatum& d ) const
 {
   def< double >(d, names::V_m, V_m_ );
-
-  //( *d )[ names::V_m ] = V_m;
+  def< std::vector<double> >(d, Name("ASCurrents"), ASCurrents_ );
 }
 
 void
 allen::glif_lif_asc::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
-  // Only the membrane potential can be set; one could also make other state
-  // variables
-  // settable.
   updateValue< double >( d, names::V_m, V_m_ );
+  updateValue< std::vector<double> >(d, Name("ASCurrents"), ASCurrents_ );
 }
 
 allen::glif_lif_asc::Buffers_::Buffers_( glif_lif_asc& n )
@@ -188,8 +185,7 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
   const double dt = Time::get_resolution().get_ms() * 1.0e-04;
 
   double v_old = S_.V_m_;
-  double ASCurrent_old_sum = 0.0;
-
+  //double ASCurrent_old_sum = 0.0;
 
   for ( long lag = from; lag < to; ++lag )
   {
@@ -199,27 +195,17 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       // While neuron is in refractory period count-down in time steps (since dt
       // may change while in refractory) while holding the voltage at last peak.
       V_.t_ref_remaining_ -= dt;
-      if( V_.t_ref_remaining_ < 0.0)
+      if( V_.t_ref_remaining_ <= 0.0)
       {
-		// Reset methods
-      	// Reset ASC_currents
-      	std::cout << "------------" << std::endl; 
-      	std::cout << "threshold = " << P_.V_th_ << std::endl;
-      	std::cout << "old_ASCurrent = [" << S_.ASCurrents_[0] << ", " << S_.ASCurrents_[1] << "]" << std::endl;
-      	//std::cout << "r = [" << P_.r_[0] << ", " << P_.r_[1] << "]" << std::endl;
-      	//std::cout << "dt * cut_length = " << V_.t_ref_total_ << std::endl;
-      	std::cout << "resetting ASCurrents to [";
+        // Neuron has left refractory period, reset voltage and after-spike current
+	      // Reset ASC_currents
       	for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       	{
       		S_.ASCurrents_[a] = P_.asc_amps_[a] + 
-      						   S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
-      		std::cout << S_.ASCurrents_[a] << ",";
+      				    S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
       	}
-      	std::cout << "]" << std::endl;
 
-      	std::cout << "V_m = " << S_.V_m_ << std::endl;
-
-      	// Voltage should be reset to 
+      	// Reset voltage 
         S_.V_m_ = P_.V_reset_;
       }
       else
@@ -232,20 +218,23 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       // Integrate voltage and currents
 
       // Calculate new ASCurrents value using expoential methods
-      ASCurrent_old_sum = 0.0;
+      S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {
-      	ASCurrent_old_sum += S_.ASCurrents_[a];
-      	S_.ASCurrents_[a] = S_.ASCurrents_[a]*std::exp(-P_.k_[a] * dt);
+      	S_.ASCurrents_sum_ += S_.ASCurrents_[a];
+      	S_.ASCurrents_[a] = S_.ASCurrents_[a] * std::exp(-P_.k_[a] * dt);
       }
        
       // Explicit Euler forward (RK1) to find next V_m value
-      S_.V_m_ = v_old + dt*(S_.I_ + ASCurrent_old_sum - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
-      
+      S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
+
+      // Check if their is an action potential
       if( S_.V_m_ > P_.V_th_ ) 
       {
+	      // Marks that the neuron is in a refractory period
         V_.t_ref_remaining_ = V_.t_ref_total_;
-        
+
+	      // Find the exact time during this step that the neuron crossed the threshold and record it
         double spike_offset = (1 - (P_.V_th_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
@@ -253,8 +242,10 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       }
     }
 
+    // Update any external currents
     S_.I_ = B_.currents_.get_value( lag );
 
+    // Save voltage
     B_.logger_.record_data( origin.get_steps() + lag);
 
     v_old = S_.V_m_;
