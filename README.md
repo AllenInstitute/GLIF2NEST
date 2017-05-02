@@ -4,7 +4,7 @@
 ```bash
 $ mkdir build
 $ cd build
-$ cmake --Dwith-nest=nest-config ../GlifModule
+$ cmake --Dwith-nest=nest-config -Dwith-ltdl=ON [-Dwith-mpi=ON] ../GlifModule
 $ make
 $ make install
 ```
@@ -21,7 +21,7 @@ neuron = nest.Create('glif_lif') # or glif_lif_r, glif_lif_asc, glif_lif_r_asc
 ```
 #### Issues 
 * If you get a 'File not found' message when trying to install the module:
-  * Try using ```nest.Install('glimodule.so')``` instead (On CentOS 6 lt_dlopenext() isn't working properly).
+  * Try using ```nest.Install('glifmodule.so')``` instead (On CentOS 6 lt_dlopenext() isn't working properly).
   * Check LD_LIBRARY_PATH, if needed set ```export LD_LIBRARY_PATH="/full/path/to/nest/module:$LD_LIBRARY_PATH```
 
 ## Running and Testing

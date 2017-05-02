@@ -4,6 +4,10 @@ import re
 import requests
 import json
 import pandas as pd
+from optparse import OptionParser
+
+import warnings
+warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 from allensdk.api.queries.cell_types_api import CellTypesApi
 from allensdk.api.queries.glif_api import GlifApi
@@ -219,18 +223,25 @@ def get_model_params(cell_id=None, model_type=None, model_id=None, base_dir='../
 
 
 if __name__ == '__main__':
-    # list provide by Corinne, http://biorxiv.org/content/early/2017/01/31/104703
-    cell_ids = [314822529, # Rorb
-                510106222, # Ctgf
-                509604672, # Vip
-                527464013, # Ndnf
-                490376252, # Cux2
-                519220630, # Chat
-                485938494, # Ntsr1
-                490205998, # Scnn1a-Tg2
-                323834998, # Scnn1a-Tg3
-                469704261, # Nr5a1
-                477975366, # Htr3a
-                313862134, # Sst
-                490944352] # Rbp4
+    parser = OptionParser()
+    options, args = parser.parse_args()
+
+    if not args:
+        # list provide by Corinne, http://biorxiv.org/content/early/2017/01/31/104703
+        cell_ids = [314822529, # Rorb
+                    510106222, # Ctgf
+                    509604672, # Vip
+                    527464013, # Ndnf
+                    490376252, # Cux2
+                    519220630, # Chat
+                    485938494, # Ntsr1
+                    490205998, # Scnn1a-Tg2
+                    323834998, # Scnn1a-Tg3
+                    469704261, # Nr5a1
+                    477975366, # Htr3a
+                    313862134, # Sst
+                    490944352] # Rbp4
+    else:
+        cell_ids = args
+
     download_glif_models(cell_ids, '../models/')

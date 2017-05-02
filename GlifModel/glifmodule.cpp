@@ -4,6 +4,7 @@
 #include "config.h"
 
 #include "glif_lif.h"
+#include "glif_lif_r.h"
 #include "glif_lif_asc.h"
 
 
@@ -49,6 +50,7 @@ allen::GlifModules::commandstring() const {
 }
 
 void allen::GlifModules::init(SLIInterpreter *i) {
-  nest::kernel().model_manager.register_node_model<glif_lif>("glif_lif");  
+  nest::kernel().model_manager.register_node_model<glif_lif>("glif_lif");
+  nest::kernel().model_manager.register_node_model<glif_lif_r>("glif_lif_r");
   nest::kernel().model_manager.register_node_model<glif_lif_asc>("glif_lif_asc");
 }

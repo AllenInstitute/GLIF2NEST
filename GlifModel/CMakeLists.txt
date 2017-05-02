@@ -7,6 +7,7 @@ set( MODULE_NAME ${SHORT_NAME}module )
 set( MODULE_SOURCES
     glifmodule.h glifmodule.cpp
     glif_lif.h glif_lif.cpp
+    glif_lif_r.h glif_lif_r.cpp
     glif_lif_asc.h glif_lif_asc.cpp
     )
 
