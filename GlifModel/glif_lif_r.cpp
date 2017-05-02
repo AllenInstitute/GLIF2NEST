@@ -85,6 +85,11 @@ allen::glif_lif_r::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
   def<double>(d, names::V_reset, V_reset_);
+  def<double>(d, "a_spike", a_spike_); 
+  def<double>(d, "b_spike", b_spike_);
+  def<double>(d, "a_reset", voltage_reset_a_);
+  def<double>(d, "b_reset", voltage_reset_b_);
+
   //def<double>(d, names:v_init, v_init_);
 
   //( *d )[ names::C_m ] = C_m;
@@ -104,6 +109,10 @@ allen::glif_lif_r::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
   updateValue< double >(d, names::V_reset, V_reset_ );
+  updateValue< double >(d, "a_spike", a_spike_ );
+  updateValue< double >(d, "b_spike", b_spike_ );
+  updateValue< double >(d, "a_reset", voltage_reset_a_ );
+  updateValue< double >(d, "b_reset", voltage_reset_b_ );
 
 
   //updateValue< double >( d, names::C_m, C_m );

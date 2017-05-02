@@ -89,6 +89,23 @@ def create_lif_asc(config_file, dt_ms):
                                            np.array(coeffs['asc_amp_array'])})
 
 
+def create_lif_r(config_file, dt_ms):
+    config = json_utilities.read(config_file)
+    coeffs = config['coeffs']
+    threshold_params = config['threshold_dynamics_method']['params']
+    reset_params = config['voltage_reset_method']['params']
+    return nest.Create('glif_lif_r',
+                       params={'V_th': coeffs['th_inf'] * config['th_inf'],
+                               'g': coeffs['G'] / config['R_input'],
+                               'E_L': config['El'],
+                               'C_m': coeffs['C'] * config['C'],
+                               't_ref': config['spike_cut_length'] * dt_ms,
+                               'a_spike': threshold_params['a_spike'],
+                               'b_spike': threshold_params['b_spike'],
+                               'a_reset': reset_params['a'], 
+                               'b_reset': reset_params['b']})  
+
+
 def runNestModel(cell_id, model_type, amp_times, amp_vals, dt_ms, simulation_time_ms, base_dir='../models'):
     """Creates and runs a NEST glif object and returns the voltages and spike-times"""
     # Get the model
@@ -114,6 +131,8 @@ def runNestModel(cell_id, model_type, amp_times, amp_vals, dt_ms, simulation_tim
         neuron = create_lif_asc(model['model-config-file'], dt_ms)
         multimeter = nest.Create("multimeter", params={'record_from': ['AScurrents_sum'], 'withgid': True, 'withtime': True})
         nest.Connect(multimeter, neuron)
+    elif model_type == asdk.LIF_R:
+        neuron = create_lif_r(model['model-config-file'], dt_ms)
 
     # Create voltmeter and spike reader
     voltmeter = nest.Create("voltmeter", params= {"withgid": True, "withtime": True})
