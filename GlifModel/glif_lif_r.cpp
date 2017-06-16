@@ -195,7 +195,7 @@ allen::glif_lif_r::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-04;
+  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
 
   V_.last_spike_ = 0.0;
 }
@@ -208,19 +208,23 @@ void
 allen::glif_lif_r::update( Time const& origin, const long from, const long to )
 {
   
-  const double dt = Time::get_resolution().get_ms() * 1.0e-04;
+  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
   double v_old = S_.V_m_;
   double spike_component = 0.0;
 
   for ( long lag = from; lag < to; ++lag )
   {
+     // update threshold via exact solution of dynamics of spike component of threshold
+     spike_component = V_.last_spike_ * std::exp(-P_.b_spike_ * dt);
+     S_.threshold_ = spike_component + P_.th_inf_;
+     V_.last_spike_ = spike_component;
 
     if( V_.t_ref_remaining_ > 0.0)
     {
       // While neuron is in refractory period count-down in time steps (since dt
       // may change while in refractory) while holding the voltage at last peak.
       V_.t_ref_remaining_ -= dt;
-      if( V_.t_ref_remaining_ < 0.0)
+      if( V_.t_ref_remaining_ <= 0.0)
       {
         S_.V_m_ = P_.voltage_reset_a_ * S_.V_m_ + P_.voltage_reset_b_;
 
@@ -237,10 +241,6 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
     {
       // Linear Euler forward (RK1) to find next V_m value
       S_.V_m_ = v_old + dt*(S_.I_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
-      
-      spike_component = V_.last_spike_ * std::exp(-P_.b_spike_ * dt);
-      S_.threshold_ = spike_component + P_.th_inf_;
-      V_.last_spike_ = spike_component;
 
       if( S_.V_m_ > S_.threshold_ ) 
       {
