@@ -51,24 +51,13 @@ allen::glif_lif_r::Parameters_::Parameters_()
   , C_m_(9.9182e-11)
   , t_ref_(1.0)
   , V_reset_(0.0)
-  //, v_init_(0.0)
-  //: C_m( 250.0 )     // pF
-  //, I_e( 0.0 )       // nA
-  //, tau_syn( 2.0 )   // ms
-  //, V_th( -55.0 )    // mV
-  //, V_reset( -70.0 ) // mV
-  //, t_ref( 2.0 )     // ms
+
 {
 }
 
 allen::glif_lif_r::State_::State_( const Parameters_& p )
   : V_m_(0.0)
   , I_(0.0)
-  //: V_m( p.V_reset )
-  //, dI_syn( 0.0 )
-  //, I_syn( 0.0 )
-  //, I_ext( 0.0 )
-  //, refr_count( 0 )
 {
 }
 
@@ -90,14 +79,6 @@ allen::glif_lif_r::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, "a_reset", voltage_reset_a_);
   def<double>(d, "b_reset", voltage_reset_b_);
 
-  //def<double>(d, names:v_init, v_init_);
-
-  //( *d )[ names::C_m ] = C_m;
-  //( *d )[ names::I_e ] = I_e;
-  //( *d )[ names::tau_syn ] = tau_syn;
-  //( *d )[ names::V_th ] = V_th;
-  //( *d )[ names::V_reset ] = V_reset;
-  //( *d )[ names::t_ref ] = t_ref;
 }
 
 void
@@ -113,14 +94,6 @@ allen::glif_lif_r::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, "b_spike", b_spike_ );
   updateValue< double >(d, "a_reset", voltage_reset_a_ );
   updateValue< double >(d, "b_reset", voltage_reset_b_ );
-
-
-  //updateValue< double >( d, names::C_m, C_m );
-  //updateValue< double >( d, names::I_e, I_e );
-  //updateValue< double >( d, names::tau_syn, tau_syn );
-  //updateValue< double >( d, names::V_th, th_inf_ );
-  //updateValue< double >( d, names::V_reset, V_reset );
-  //updateValue< double >( d, names::t_ref, t_ref );
 
 }
 
@@ -211,6 +184,7 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
   const double dt = Time::get_resolution().get_ms() * 1.0e-03;
   double v_old = S_.V_m_;
   double spike_component = 0.0;
+  double th_old=spike_component+P_.th_inf_;
 
   for ( long lag = from; lag < to; ++lag )
   {
@@ -247,7 +221,7 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
         V_.t_ref_remaining_ = V_.t_ref_total_;
         
         // Determine 
-        double spike_offset = (1 - (P_.th_inf_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
+        double spike_offset = (1 - (th_old - v_old)/(( S_.threshold_- th_old)-(S_.V_m_ - v_old))) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
         kernel().event_delivery_manager.send( *this, se, lag );
@@ -259,6 +233,8 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
     B_.logger_.record_data( origin.get_steps() + lag);
 
     v_old = S_.V_m_;
+
+    th_old = S_.threshold_;
   }
 }
 

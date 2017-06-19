@@ -1,5 +1,5 @@
-#ifndef PIF_LIF_R_H
-#define PIF_LIF_R_H
+#ifndef GLIF_LIF_R_H
+#define GLIF_LIF_R_H
 
 #include "archiving_node.h"
 #include "connection.h"
@@ -117,7 +117,7 @@ private:
     return S_.V_m_;
   }
   /**
-   * @defgroup pif_members Member variables of neuron model.
+   * @defgroup glif_members Member variables of neuron model.
    * Each model neuron should have precisely the following four data members,
    * which are one instance each of the parameters, state, buffers and variables
    * structures. Experience indicates that the state and variables member should
