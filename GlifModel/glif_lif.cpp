@@ -105,14 +105,6 @@ allen::glif_lif::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::t_ref, t_ref_ );
   updateValue< double >(d, names::V_reset, V_reset_ );
 
-
-  //updateValue< double >( d, names::C_m, C_m );
-  //updateValue< double >( d, names::I_e, I_e );
-  //updateValue< double >( d, names::tau_syn, tau_syn );
-  //updateValue< double >( d, names::V_th, th_inf_ );
-  //updateValue< double >( d, names::V_reset, V_reset );
-  //updateValue< double >( d, names::t_ref, t_ref );
-
 }
 
 void
@@ -120,7 +112,6 @@ allen::glif_lif::State_::get( DictionaryDatum& d ) const
 {
   def< double >(d, names::V_m, V_m_ );
 
-  //( *d )[ names::V_m ] = V_m;
 }
 
 void
@@ -190,28 +181,8 @@ allen::glif_lif::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-04;
+  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
 
-  //const double h = Time::get_resolution().get_ms();
-  //const double eh = std::exp( -h / P_.tau_syn );
-  //const double tc = P_.tau_syn / P_.C_m;
-
-  // compute matrix elements, all other elements 0
-  //V_.P11 = eh;
-  //V_.P22 = eh;
-  //V_.P21 = h * eh;
-  //V_.P30 = h / P_.C_m;
-  //V_.P31 = tc * ( P_.tau_syn - ( h + P_.tau_syn ) * eh );
-  //V_.P32 = tc * ( 1 - eh );
-  // P33_ is 1
-
-  // initial value ensure normalization to max amplitude 1.0
-  //V_.pscInitialValue = 1.0 * numerics::e / P_.tau_syn;
-
-  // refractory time in steps
-  //V_.t_ref_steps = Time( Time::ms( P_.t_ref ) ).get_steps();
-  //assert(
-  //  V_.t_ref_steps >= 0 ); // since t_ref_ >= 0, this can only fail in error
 }
 
 /* ----------------------------------------------------------------
@@ -222,7 +193,7 @@ void
 allen::glif_lif::update( Time const& origin, const long from, const long to )
 {
   
-  const double dt = Time::get_resolution().get_ms() * 1.0e-04;
+  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
   //dt = dt*e-06;
   double v_old = S_.V_m_;
 
@@ -234,7 +205,7 @@ allen::glif_lif::update( Time const& origin, const long from, const long to )
       // While neuron is in refractory period count-down in time steps (since dt
       // may change while in refractory) while holding the voltage at last peak.
       V_.t_ref_remaining_ -= dt;
-      if( V_.t_ref_remaining_ < 0.0)
+      if( V_.t_ref_remaining_ <=0.0)
       {
         S_.V_m_ = P_.V_reset_;
       }
@@ -250,14 +221,7 @@ allen::glif_lif::update( Time const& origin, const long from, const long to )
       
       if( S_.V_m_ > P_.th_inf_ ) 
       {
-                //std::cout << spike_offset << std::endl;
-        //Time t = Time::step( origin.get_steps() + lag + 1 );
-        //std::cout << t.get_ms() << std::endl;
-        //Time t_last = Time::step( origin.get_steps() + lag );
-        //std::cout << t_last.get_ms() << std::endl;
 
-        //std::cout << dt << std::endl;
-        //std::cout << S_.V_m_ << std::endl;  
         V_.t_ref_remaining_ = V_.t_ref_total_;
         
         // Determine 

@@ -171,7 +171,7 @@ allen::glif_lif_asc::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-04;
+  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
 
 }
 
@@ -182,7 +182,7 @@ allen::glif_lif_asc::calibrate()
 void
 allen::glif_lif_asc::update( Time const& origin, const long from, const long to )
 { 
-  const double dt = Time::get_resolution().get_ms() * 1.0e-04;
+  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
 
   double v_old = S_.V_m_;
   //double ASCurrent_old_sum = 0.0;
@@ -201,8 +201,7 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
 	      // Reset ASC_currents
       	for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       	{
-      		S_.ASCurrents_[a] = P_.asc_amps_[a] + 
-      				    S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
+      		S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
       	}
 
       	// Reset voltage 

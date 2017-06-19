@@ -1,5 +1,5 @@
-#ifndef PIF_LIF_H
-#define PIF_LIF_H
+#ifndef GLIF_LIF_H
+#define GLIF_LIF_H
 
 #include "archiving_node.h"
 #include "connection.h"
@@ -66,17 +66,6 @@ private:
     double t_ref_; // refractory time (ms)
     double V_reset_; // Membrane voltage following spike
 
-
-
-    //double v_init_; // initial membrane potential
-
-    //double C_m;     //!< Membrane capacitance, in pF.
-    //double I_e;     //!< Intrinsic DC current, in nA.
-    //double tau_syn; //!< Synaptic time constant, in ms.
-    //double V_th;    //!< Spike threshold, in mV.
-    //double V_reset; //!< Reset potential of the membrane, in mV.
-    //double t_ref;   //!< Duration of refractory period, in ms.
-
     Parameters_();
 
     void get( DictionaryDatum& ) const;
@@ -88,10 +77,6 @@ private:
   {
     double V_m_;  // membrane potential
     double I_; // external current
-    //double dI_syn;   //!< Derivative of synaptic current, in nA/ms.
-    //double I_syn;    //!< Synaptic current, in nA.
-    //double I_ext;    //!< External current, in nA.
-    //long refr_count; //!< Number of steps neuron is still refractory for
 
     State_( const Parameters_& );
 
@@ -123,7 +108,7 @@ private:
     return S_.V_m_;
   }
   /**
-   * @defgroup pif_members Member variables of neuron model.
+   * @defgroup glif_members Member variables of neuron model.
    * Each model neuron should have precisely the following four data members,
    * which are one instance each of the parameters, state, buffers and variables
    * structures. Experience indicates that the state and variables member should
