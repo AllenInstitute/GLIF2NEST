@@ -178,7 +178,7 @@ def runNestModel(cell_id, model_type, neuron_config, amp_times, amp_vals, dt_ms,
     nest.Connect(scg, neuron,syn_spec={'delay': dt_ms})
 
     # Simulate, grab run values and return
-    nest.Simulate(simulation_time_ms+2*dt_ms)
+    nest.Simulate(simulation_time_ms)
     voltages = nest.GetStatus(voltmeter)[0]['events']['V_m']
     
     times = nest.GetStatus(voltmeter)[0]['events']['times']
@@ -373,7 +373,6 @@ stimulus = {
     'triple-short-square-noise-3': create_stim_fn(run_short_squares_noise, pulses=[(200.0, 40.0, 8.0e-10), (500.0, 40.0, 8.0e-10), (800.0, 40.0, 8.0e-10)], total_time=1000.0),
     'triple-short-square-noise-4': create_stim_fn(run_short_squares_noise, pulses=[(200.0, 20.0, 10.0e-10), (500.0, 20.0, 10.0e-10), (800.0, 20.0, 10.0e-10)], total_time=1000.0), # 2 spikes
     'triple-short-square-noise-5': create_stim_fn(run_short_squares_noise, pulses=[(200.0, 20.0, 20.0e-10), (500.0, 20.0, 20.0e-10), (800.0, 20.0, 20.0e-10)], total_time=1000.0), # 2 spikes
-
 
     # Ramp
     'ramp-1': create_stim_fn(run_ramp, max_amp=1.0e-10),
