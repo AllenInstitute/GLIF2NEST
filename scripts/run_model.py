@@ -28,7 +28,7 @@ import allensdk.core.json_utilities as json_utilities
 from allensdk.core.cell_types_cache import CellTypesCache
 from allensdk.api.queries.glif_api import GlifApi
 import allensdk_helper as asdk
-import plot_helper_v2 as plotter
+import plot_helper as plotter
 
 nest.Install('glifmodule.so')
 
