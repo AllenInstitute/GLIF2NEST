@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import random
 
 
 def get_step_trace(step_times, step_currs, dt_ms, sim_time_ms, default_curr=0.0):
@@ -27,6 +28,39 @@ def get_step_trace(step_times, step_currs, dt_ms, sim_time_ms, default_curr=0.0)
     period_len = len(I) - period_begin
     I[period_begin:] = [step_currs[-1]]*period_len
     return I
+
+def get_step_trace_noise(step_times, step_currs, dt_ms, sim_time_ms, default_curr=0.0):
+#def step_generator_trace(step_times, step_currs, sim_times, default_curr=0.0):
+    assert(len(step_times) == len(step_currs))
+    #assert(len(sim_times) > 1)
+    
+    #n_times = len(sim_times)
+    #dt = sim_times[1] - sim_times[0] # Assume dt is constant over simulation
+    noise_level=0.2
+    n_times = int(sim_time_ms/float(dt_ms))
+
+    I = [default_curr for _ in xrange(n_times)]
+
+    #convert step_times[i] to correct I, and set I[step_times[i]:step_times[i+1]] = step_currs[i]
+    for i in xrange(len(step_times) - 1):
+        period_begin = int(step_times[i]/float(dt_ms)) # get the current window frame array location
+        period_end = int(step_times[i+1]/float(dt_ms))
+        period_len = period_end - period_begin
+        if step_currs[i]==0.0:
+            I[period_begin:period_end] = [step_currs[i]]*period_len
+        else:
+            I[period_begin:period_end] = [step_currs[i]+random.uniform(-step_currs[i]*noise_level,step_currs[i]*noise_level) for _ in xrange(period_len)]
+
+    # last current windows
+    period_begin = int(step_times[-1]/float(dt_ms))
+    period_len = len(I) - period_begin
+    if step_currs[-1]==0.0:
+        I[period_begin:] = [step_currs[-1]]*period_len
+    else:
+        I[period_begin:] = [step_currs[i]+random.uniform(-step_currs[i]*noise_level,step_currs[i]*noise_level) for _ in xrange(period_len)]
+    
+    return I
+
 
 def step_generator_trace(step_times, step_currs, sim_times, default_curr=0.0):
     assert(len(sim_times) > 1)
