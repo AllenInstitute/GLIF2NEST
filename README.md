@@ -45,9 +45,9 @@ First determine the type in injection schemes are available
 ```bash
 $ python run_model.py --list-stimuli
 ```
-The following will run both NEST and AllenSDK implementation of a model and plot voltage-traces and spike-trains
+The following will run both NEST and AllenSDK implementation of a model and plot voltage-traces and spike-trains. Model download is not required.
 ```bash
-$ python run_model.py --cells cell-id[,cell_id,...] --model LIF[_R|_ASC|_R_ASC] --stimulus ramp-1[,long-square-1,ramp-2,...]
+$ python run_model.py --cells cell-id[,cell_id,...] --model LIF[-R|-ASC|-R-ASC|-R-ASC-A] --stimulus ramp-1[,long-square-1,ramp-2,...]
 ```
 
 ## Notes
