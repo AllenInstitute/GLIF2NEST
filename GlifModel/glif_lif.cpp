@@ -51,24 +51,15 @@ allen::glif_lif::Parameters_::Parameters_()
   , C_m_(9.9182e-11)
   , t_ref_(1.0)
   , V_reset_(0.0)
-  //, v_init_(0.0)
-  //: C_m( 250.0 )     // pF
-  //, I_e( 0.0 )       // nA
-  //, tau_syn( 2.0 )   // ms
-  //, V_th( -55.0 )    // mV
-  //, V_reset( -70.0 ) // mV
-  //, t_ref( 2.0 )     // ms
+  , V_dynamics_method_("linear_forward_euler")
+
 {
 }
 
 allen::glif_lif::State_::State_( const Parameters_& p )
   : V_m_(0.0)
   , I_(0.0)
-  //: V_m( p.V_reset )
-  //, dI_syn( 0.0 )
-  //, I_syn( 0.0 )
-  //, I_ext( 0.0 )
-  //, refr_count( 0 )
+
 {
 }
 
@@ -85,14 +76,8 @@ allen::glif_lif::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
   def<double>(d, names::V_reset, V_reset_);
-  //def<double>(d, names:v_init, v_init_);
+  def<std::string>(d, "V_dynamics_method", V_dynamics_method_);
 
-  //( *d )[ names::C_m ] = C_m;
-  //( *d )[ names::I_e ] = I_e;
-  //( *d )[ names::tau_syn ] = tau_syn;
-  //( *d )[ names::V_th ] = V_th;
-  //( *d )[ names::V_reset ] = V_reset;
-  //( *d )[ names::t_ref ] = t_ref;
 }
 
 void
@@ -104,6 +89,7 @@ allen::glif_lif::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
   updateValue< double >(d, names::V_reset, V_reset_ );
+  updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
 
 }
 
@@ -194,7 +180,6 @@ allen::glif_lif::update( Time const& origin, const long from, const long to )
 {
   
   const double dt = Time::get_resolution().get_ms() * 1.0e-03;
-  //dt = dt*e-06;
   double v_old = S_.V_m_;
 
   for ( long lag = from; lag < to; ++lag )
@@ -216,18 +201,27 @@ allen::glif_lif::update( Time const& origin, const long from, const long to )
     }
     else
     {
-      // Linear Euler forward (RK1) to find next V_m value
-      S_.V_m_ = v_old + dt*(S_.I_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
-      
+      // voltage dynamic
+      if(P_.V_dynamics_method_=="linear_forward_euler"){
+        // Linear Euler forward (RK1) to find next V_m value
+        S_.V_m_ = v_old + dt*(S_.I_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
+      }
+      else if (P_.V_dynamics_method_=="linear_exact"){
+        // Linear Exact to find next V_m value
+        double tau = P_.G_ / P_.C_m_;
+        S_.V_m_ = v_old * std::exp(-dt * tau) + ((S_.I_+ P_.G_ * P_.E_l_) / P_.C_m_) * (1 - std::exp(-tau * dt)) / tau;
+      }
+
       if( S_.V_m_ > P_.th_inf_ ) 
       {
 
         V_.t_ref_remaining_ = V_.t_ref_total_;
         
-        // Determine 
+        // Determine spike offset and send spike event
         double spike_offset = (1 - (P_.th_inf_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
+        se.set_offset(spike_offset);
         kernel().event_delivery_manager.send( *this, se, lag );
       }
     }

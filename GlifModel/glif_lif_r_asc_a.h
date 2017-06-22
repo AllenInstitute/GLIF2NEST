@@ -34,6 +34,11 @@ public:
   nest::port handles_test_event( nest::CurrentEvent&, nest::port );
   nest::port handles_test_event( nest::DataLoggingRequest&, nest::port );
 
+  bool is_off_grid() const  // uses off_grid events
+  {
+    return true;
+  }
+
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
@@ -68,8 +73,8 @@ private:
     double t_ref_; // refractory time (ms)
     double V_reset_; // Membrane voltage following spike
 
-    double b_spike_; //spike induced threshold
     double a_spike_; // threshold additive constant following reset
+    double b_spike_; //spike induced threshold
     double voltage_reset_a_; //voltage fraction following reset
     double voltage_reset_b_; // voltage additive constant following reset
     double a_voltage_; // a 'leak-conductance' for the voltage-dependent component of the threshold
@@ -79,6 +84,7 @@ private:
     std::vector<double> k_; // predefined time scale
     std::vector<double> asc_amps_;
     std::vector<double> r_;
+    std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
 

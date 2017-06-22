@@ -51,10 +51,15 @@ allen::glif_lif_r_asc::Parameters_::Parameters_()
   , C_m_(9.9182e-11)
   , t_ref_(1.0)
   , V_reset_(0.0)
+  , a_spike_(0.0)
+  , b_spike_(0.0)
+  , voltage_reset_a_(0.0)
+  , voltage_reset_b_(0.0)
   , asc_init_(std::vector<double>(2, 0.0))
   , k_(std::vector<double>(2, 0.0))
   , asc_amps_(std::vector<double>(2, 0.0))
   , r_(std::vector<double>(2, 1.0))
+  , V_dynamics_method_("linear_forward_euler")
 {
 }
 
@@ -88,6 +93,7 @@ allen::glif_lif_r_asc::Parameters_::get( DictionaryDatum& d ) const
   def< std::vector<double> >(d, Name("k"), k_ );
   def< std::vector<double> >(d, Name("asc_amps"), asc_amps_);
   def< std::vector<double> >(d, Name("r"), r_);
+  def<std::string>(d, "V_dynamics_method", V_dynamics_method_);
 }
 
 void
@@ -109,6 +115,7 @@ allen::glif_lif_r_asc::Parameters_::set( const DictionaryDatum& d )
   updateValue< std::vector<double> >(d, Name("k"), k_ );
   updateValue< std::vector<double> >(d, Name("asc_amps"), asc_amps_);
   updateValue< std::vector<double> >(d, Name("r"), r_);
+  updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
 }
 
 void
@@ -200,7 +207,7 @@ allen::glif_lif_r_asc::update( Time const& origin, const long from, const long t
   double v_old = S_.V_m_;
   //double ASCurrent_old_sum = 0.0;
   double spike_component = 0.0;
-  double th_old=spike_component+P_.th_inf_;
+  double th_old=S_.threshold_;
 
   for ( long lag = from; lag < to; ++lag )
   {
@@ -249,9 +256,16 @@ allen::glif_lif_r_asc::update( Time const& origin, const long from, const long t
       	S_.ASCurrents_sum_ += S_.ASCurrents_[a];
       	S_.ASCurrents_[a] = S_.ASCurrents_[a] * std::exp(-P_.k_[a] * dt);
       }
-       
-      // Explicit Euler forward (RK1) to find next V_m value
-      S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
+      // voltage dynamic
+      if(P_.V_dynamics_method_=="linear_forward_euler"){
+        // Explicit Euler forward (RK1) to find next V_m value
+        S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
+      }
+      else if (P_.V_dynamics_method_=="linear_exact"){
+        // Linear Exact to find next V_m value
+        double tau = P_.G_ / P_.C_m_;
+        S_.V_m_ = v_old * std::exp(-dt * tau) + ((S_.I_+ S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.C_m_) * (1 - std::exp(-tau * dt)) / tau;
+      }
 
       // Check if their is an action potential
       if( S_.V_m_ >  S_.threshold_ )
@@ -260,10 +274,10 @@ allen::glif_lif_r_asc::update( Time const& origin, const long from, const long t
         V_.t_ref_remaining_ = V_.t_ref_total_;
 
 	    // Find the exact time during this step that the neuron crossed the threshold and record it
-        // TODO: not functioning through NEST? Check NEST to output precision exact spike time
-        double spike_offset = (1 - (th_old - v_old)/(( S_.threshold_- th_old)-(S_.V_m_ - v_old))) * Time::get_resolution().get_ms();
+        double spike_offset = (1 - (v_old - th_old)/(( S_.threshold_- th_old)-(S_.V_m_ - v_old))) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
+        se.set_offset(spike_offset);
         kernel().event_delivery_manager.send( *this, se, lag );
       }
     }

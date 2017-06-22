@@ -34,6 +34,11 @@ public:
   nest::port handles_test_event( nest::CurrentEvent&, nest::port );
   nest::port handles_test_event( nest::DataLoggingRequest&, nest::port );
 
+  bool is_off_grid() const  // uses off_grid events
+  {
+    return true;
+  }
+
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
@@ -59,18 +64,19 @@ private:
 
   struct Parameters_
   {
-  	double thr_init_; //
+  	double thr_init_; // initial threshold
     double th_inf_;  // A threshold
     double G_; // membrane conductance
     double E_l_; // resting potential
     double C_m_; // capacitance
     double t_ref_; // refractory time (ms)
     double V_reset_; // Membrane voltage following spike
-    double b_spike_;
-    double a_spike_;
+    double a_spike_; // threshold additive constant following reset
+    double b_spike_; //spike induced threshold
 
     double voltage_reset_a_;
     double voltage_reset_b_;
+    std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
 

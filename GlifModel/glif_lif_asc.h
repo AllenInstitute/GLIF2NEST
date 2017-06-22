@@ -34,6 +34,11 @@ public:
   nest::port handles_test_event( nest::CurrentEvent&, nest::port );
   nest::port handles_test_event( nest::DataLoggingRequest&, nest::port );
 
+  bool is_off_grid() const  // uses off_grid events
+  {
+    return true;
+  }
+
   void get_status( DictionaryDatum& ) const;
   void set_status( const DictionaryDatum& );
 
@@ -70,6 +75,7 @@ private:
     std::vector<double> k_; // predefined time scale
     std::vector<double> asc_amps_;
     std::vector<double> r_;
+    std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
 
@@ -198,7 +204,5 @@ glif_lif_asc::set_status( const DictionaryDatum& d )
 }
 
 } // namespace nest
-
-
 
 #endif

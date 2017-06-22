@@ -51,7 +51,11 @@ allen::glif_lif_r::Parameters_::Parameters_()
   , C_m_(9.9182e-11)
   , t_ref_(1.0)
   , V_reset_(0.0)
-
+  , a_spike_(0.0)
+  , b_spike_(0.0)
+  , voltage_reset_a_(0.0)
+  , voltage_reset_b_(0.0)
+  , V_dynamics_method_("linear_forward_euler")
 {
 }
 
@@ -78,7 +82,7 @@ allen::glif_lif_r::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, "b_spike", b_spike_);
   def<double>(d, "a_reset", voltage_reset_a_);
   def<double>(d, "b_reset", voltage_reset_b_);
-
+  def<std::string>(d, "V_dynamics_method", V_dynamics_method_);
 }
 
 void
@@ -94,6 +98,7 @@ allen::glif_lif_r::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, "b_spike", b_spike_ );
   updateValue< double >(d, "a_reset", voltage_reset_a_ );
   updateValue< double >(d, "b_reset", voltage_reset_b_ );
+  updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
 
 }
 
@@ -184,7 +189,7 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
   const double dt = Time::get_resolution().get_ms() * 1.0e-03;
   double v_old = S_.V_m_;
   double spike_component = 0.0;
-  double th_old=spike_component+P_.th_inf_;
+  double th_old=S_.threshold_;
 
   for ( long lag = from; lag < to; ++lag )
   {
@@ -213,17 +218,27 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
     }
     else
     {
-      // Linear Euler forward (RK1) to find next V_m value
-      S_.V_m_ = v_old + dt*(S_.I_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
+
+      // voltage dynamic
+      if(P_.V_dynamics_method_=="linear_forward_euler"){
+        // Linear Euler forward (RK1) to find next V_m value
+        S_.V_m_ = v_old + dt*(S_.I_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
+      }
+      else if (P_.V_dynamics_method_=="linear_exact"){
+        // Linear Exact to find next V_m value
+        double tau = P_.G_ / P_.C_m_;
+        S_.V_m_ = v_old * std::exp(-dt * tau) + ((S_.I_+ P_.G_ * P_.E_l_) / P_.C_m_) * (1 - std::exp(-tau * dt)) / tau;
+      }
 
       if( S_.V_m_ > S_.threshold_ ) 
       {
         V_.t_ref_remaining_ = V_.t_ref_total_;
         
         // Determine 
-        double spike_offset = (1 - (th_old - v_old)/(( S_.threshold_- th_old)-(S_.V_m_ - v_old))) * Time::get_resolution().get_ms();
+        double spike_offset = (1 - ((v_old - th_old)/((S_.threshold_- th_old)-(S_.V_m_ - v_old)))) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
+        se.set_offset(spike_offset);
         kernel().event_delivery_manager.send( *this, se, lag );
       }
     }
