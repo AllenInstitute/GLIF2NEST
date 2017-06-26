@@ -129,6 +129,7 @@ private:
 
     double last_spike_; // threshold spike component
     double last_voltage_; // threshold voltage component
+    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
   };
 
   double get_V_m_() const

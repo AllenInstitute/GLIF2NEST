@@ -204,6 +204,10 @@ allen::glif_lif_r_asc_a::calibrate()
   V_.last_spike_ = 0.0;
   V_.last_voltage_ = 0.0;
 
+  V_.method_ = 0; // default using linear forward euler for voltage dynamics
+  if(P_.V_dynamics_method_=="linear_exact")
+     V_.method_ = 1;
+
 }
 
 /* ----------------------------------------------------------------
@@ -220,14 +224,15 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
   double spike_component = 0.0;
   double voltage_component = 0.0;
   double th_old = S_.threshold_;
-
+  double tau = P_.G_ / P_.C_m_;
+  double exp_tau = std::exp(-tau * dt);
 
   for ( long lag = from; lag < to; ++lag )
   {
 
 	// update threshold via exact solution of dynamics of spike component of threshold
 	spike_component = V_.last_spike_ * std::exp(-P_.b_spike_ * dt);
-	S_.threshold_ = spike_component + voltage_component + P_.th_inf_;
+	//S_.threshold_ = spike_component + V_.last_voltage_ + P_.th_inf_;
 	V_.last_spike_ = spike_component;
 
     if( V_.t_ref_remaining_ > 0.0)
@@ -274,24 +279,25 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
       }
 
       // voltage dynamic
-      if(P_.V_dynamics_method_=="linear_forward_euler"){
-        // Explicit Euler forward (RK1) to find next V_m value
-        S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
-      }
-      else if (P_.V_dynamics_method_=="linear_exact"){
+      switch(V_.method_){
+        // Linear Euler forward (RK1) to find next V_m value
+        case 0: //S_.V_m_ = v_old + dt * (S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_))/P_.C_m_;
+        	  	S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
+        	  	//voltage_t0 + (inj + np.sum(AScurrents_t0) - neuron.G * neuron.coeffs['G'] * (voltage_t0 - neuron.El)) * neuron.dt / (neuron.C * neuron.coeffs['C'])
+                break;
         // Linear Exact to find next V_m value
-        double tau = P_.G_ / P_.C_m_;
-        S_.V_m_ = v_old * std::exp(-dt * tau) + ((S_.I_+ S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.C_m_) * (1 - std::exp(-tau * dt)) / tau;
+        case 1: S_.V_m_ = v_old * exp_tau + ((S_.I_+ S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.C_m_) * (1 - exp_tau) / tau;
+        		break;
       }
 
       // Calculate exact voltage component of the threshold
-      double beta = (S_.I_ + ASCurrents_old_sum + P_.G_ * P_.E_l_) / P_.G_;
+      double beta = (S_.I_ + S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.G_;
       double phi = P_.a_voltage_ / (P_.b_voltage_ - P_.G_ / P_.C_m_);
 	  voltage_component = phi * (v_old - beta) * std::exp(-P_.G_ * dt / P_.C_m_) + 1 / (std::exp(P_.b_voltage_ * dt))\
 			  * (V_.last_voltage_ - phi * (v_old - beta) - (P_.a_voltage_ / P_.b_voltage_) * (beta - P_.E_l_) - 0.0)\
 			  + (P_.a_voltage_ / P_.b_voltage_) * (beta - P_.E_l_) + 0.0;
 
-	  S_.threshold_ = spike_component + voltage_component + P_.th_inf_;
+	  S_.threshold_ = V_.last_spike_ + voltage_component + P_.th_inf_;
       V_.last_voltage_ = voltage_component;
 
       // Check if their is an action potential
