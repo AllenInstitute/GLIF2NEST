@@ -127,6 +127,7 @@ private:
     double t_ref_total_; // total time of refractory period, seconds
 
     double last_spike_; // threshold spike component
+    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
   };
 
   double get_V_m_() const

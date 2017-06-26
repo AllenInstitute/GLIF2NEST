@@ -176,6 +176,10 @@ allen::glif_lif_r::calibrate()
   V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
 
   V_.last_spike_ = 0.0;
+
+  V_.method_ = 0; // default using linear forward euler for voltage dynamics
+  if(P_.V_dynamics_method_=="linear_exact")
+     V_.method_ = 1;
 }
 
 /* ----------------------------------------------------------------
@@ -190,6 +194,8 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
   double v_old = S_.V_m_;
   double spike_component = 0.0;
   double th_old=S_.threshold_;
+  double tau = P_.G_ / P_.C_m_;
+  double exp_tau = std::exp(-dt * tau);
 
   for ( long lag = from; lag < to; ++lag )
   {
@@ -220,14 +226,13 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
     {
 
       // voltage dynamic
-      if(P_.V_dynamics_method_=="linear_forward_euler"){
+      switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
-        S_.V_m_ = v_old + dt*(S_.I_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
-      }
-      else if (P_.V_dynamics_method_=="linear_exact"){
+        case 0: S_.V_m_ = v_old + dt * (S_.I_ - P_.G_* (v_old - P_.E_l_))/P_.C_m_;
+        		break;
         // Linear Exact to find next V_m value
-        double tau = P_.G_ / P_.C_m_;
-        S_.V_m_ = v_old * std::exp(-dt * tau) + ((S_.I_+ P_.G_ * P_.E_l_) / P_.C_m_) * (1 - std::exp(-tau * dt)) / tau;
+        case 1: S_.V_m_ = v_old * exp_tau + ((S_.I_+ P_.G_ * P_.E_l_) / P_.C_m_) * (1 - exp_tau) / tau;
+        		break;
       }
 
       if( S_.V_m_ > S_.threshold_ ) 
