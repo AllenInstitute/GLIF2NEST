@@ -50,5 +50,20 @@ The following will run both NEST and AllenSDK implementation of a model and plot
 $ python run_model.py --cells cell-id[,cell_id,...] --model LIF[-R|-ASC|-R-ASC|-R-ASC-A] --stimulus ramp-1[,long-square-1,ramp-2,...]
 ```
 
+### Run NEST implementation of Glif models with synaptic ports 
+First determine the type in injection schemes are available
+```bash
+$ python run_model_synapse.py --list-stimuli
+```
+The following will run NEST implementation of a 4 neurons network as described below and plot voltage-traces and spike-trains. Model download is not required.
+    * One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is 2.0ms and one port is 1.0ms);
+    * The first neuron is connected the first port of the second neuron;
+    * The first neuron is connected the second port of the third neuron;
+    * The first neuron is also connected both ports of the fourth neuron;
+    * The weights between first neuron and other neurons are all 1000.0.
+```bash
+$ python run_model_synapse.py --cells cell-id[,cell_id,...] --model LIF[-R|-ASC|-R-ASC|-R-ASC-A] --stimulus ramp-1[,long-square-1,ramp-2,...]
+```
+
 ## Notes
 * Has only been tested with python 2.7
