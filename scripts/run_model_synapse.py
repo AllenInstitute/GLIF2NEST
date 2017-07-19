@@ -1,16 +1,16 @@
 """
-A helper for running AllenSDK and NEST Glif models, including setting up various types of input
-currents. Plots a voltage and spike train comparsion of
+A helper for running NEST Glif models with/without synaptic ports, 
+including setting up various types of input currents. 
+Plots a voltage and spike train comparsion of neurons
 ex:
 Run a long-square current on the LIF model for cell 52746013
-    $ python run_model.py -c 52746013 -m LIF -s long-square-2
+    $ python run_model_synapse.py -c 52746013 -m LIF -s long-square-2
 
 Run a short-square injection on three LIF-ASC models
-    $ python run_model.py -c 52746013,490205998, -m LIF-ASC -s short-square-3
+    $ python run_model_synapse.py -c 52746013,490205998, -m LIF-ASC -s short-square-3
 
 Run 4 different ramp injections of a LIF model
-    $ python run_model.py -c 52746013 -m LIF-R -s ramp-1,ramp-2,ramp-3,ramp-4
-
+    $ python run_model_synapse.py -c 52746013 -m LIF-R -s ramp-1,ramp-2,ramp-3,ramp-4
 """
 
 from functools import partial
@@ -20,31 +20,12 @@ import matplotlib.pyplot as plt
 
 import nest
 
-from allensdk.model.glif.glif_neuron import GlifNeuron
 from allensdk.core.cell_types_cache import CellTypesCache
 from allensdk.api.queries.glif_api import GlifApi
 import allensdk_helper as asdk
 import plot_helper as plotter
 
 nest.Install('glifmodule.so')
-
-
-def runGlifNeuron(neuron_config, I, dt_ms):
-    """Run a allensdk GlifNeuron and return voltages and spike-times"""
-    # Get the neuron configuration
-    neuron = GlifNeuron.from_dict(neuron_config)
-    neuron.dt = dt_ms * 1.0e-03 # convert from miliseconds to seconds
-
-    # Run the simulation
-    output = neuron.run(I)
-
-    # Return run-time, voltage trace and spike times
-    voltages = output['voltage'] * 1.0e03 # convert to mV
-    times = [t*dt_ms for t in xrange(len(I))]
-    spike_times = output['interpolated_spike_times'] * 1.0e03 # return interpolated spike-times in miliseconds
-    #spike_times = output['grid_spike_times'] * 1.0e03 # return grid spike-times in miliseconds
-    return times, voltages, spike_times
-
 
 def create_lif(config, dt_ms):
     """Creates a nest glif_lif object"""
@@ -55,8 +36,8 @@ def create_lif(config, dt_ms):
                                'E_L': config['El']  * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
                                't_ref': config['spike_cut_length'] * dt_ms,
-                               'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
-                               #'V_dynamics_method': 'linear_exact'}) #'linear_forward_euler' or 'linear_exact'
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'}) #'linear_forward_euler' or 'linear_exact'
 
 def create_lif_asc(config, dt_ms):
     """Creates a nest glif_lif_asc object"""
@@ -71,8 +52,8 @@ def create_lif_asc(config, dt_ms):
                                'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
                                'asc_amps': np.array(config['asc_amp_array']) *
                                            np.array(coeffs['asc_amp_array']) * 1.0e12,
-                               'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
-                               #'V_dynamics_method': 'linear_exact'})
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})
     
 def create_lif_r(config, dt_ms):
     """Creates a nest glif_lif_r object"""
@@ -89,8 +70,8 @@ def create_lif_r(config, dt_ms):
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_reset': reset_params['a'], 
                                'b_reset': reset_params['b'] * 1.0e03,
-                               'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
-                               #'V_dynamics_method': 'linear_exact'})  
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})  
     
 def create_lif_r_asc(config, dt_ms):
     """Creates a nest glif_lif_r_asc object"""
@@ -111,8 +92,8 @@ def create_lif_r_asc(config, dt_ms):
                                'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
                                'asc_amps': np.array(config['asc_amp_array']) *
                                            np.array(coeffs['asc_amp_array']) * 1.0e12,
-                               'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
-                               #'V_dynamics_method': 'linear_exact'})
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})
 
 def create_lif_r_asc_a(config, dt_ms):
     """Creates a nest glif_lif_r_asc_a object"""
@@ -136,61 +117,180 @@ def create_lif_r_asc_a(config, dt_ms):
                                'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
                                'asc_amps': np.array(config['asc_amp_array']) *
                                            np.array(coeffs['asc_amp_array']) * 1.0e12,
-                               'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
-                               #'V_dynamics_method': 'linear_exact'})
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})
+
+## Create model with synaptic ports
+def create_lif_psc(config, syn_tau, dt_ms):
+    """Creates a nest glif_lif_psc object"""
+    coeffs = config['coeffs']
+    return nest.Create('glif_lif_psc', 
+                       params={'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03,
+                               'g': coeffs['G'] / config['R_input'] * 1.0e09,
+                               'E_L': config['El']  * 1.0e03,
+                               'C_m': coeffs['C'] * config['C'] * 1.0e12,
+                               't_ref': config['spike_cut_length'] * dt_ms, # in ms
+                               'tau_syn': syn_tau, # in ms
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'}) #'linear_forward_euler' or 'linear_exact'
+
+def create_lif_r_psc(config, syn_tau, dt_ms):
+    """Creates a nest glif_lif_r_psc object"""
+    coeffs = config['coeffs']
+    threshold_params = config['threshold_dynamics_method']['params']
+    reset_params = config['voltage_reset_method']['params']
+    return nest.Create('glif_lif_r_psc',
+                       params={'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03,
+                               'g': coeffs['G'] / config['R_input'] * 1.0e09,
+                               'E_L': config['El'] * 1.0e03,
+                               'C_m': coeffs['C'] * config['C'] * 1.0e12,
+                               't_ref': config['spike_cut_length'] * dt_ms,
+                               'a_spike': threshold_params['a_spike'] * 1.0e03,
+                               'b_spike': threshold_params['b_spike'] * 1.0e-03,
+                               'a_reset': reset_params['a'], 
+                               'b_reset': reset_params['b'] * 1.0e03,
+                               'tau_syn': syn_tau, # in ms
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})  
+
+def create_lif_asc_psc(config, syn_tau, dt_ms):
+    """Creates a nest glif_lif_asc_psc object"""
+    coeffs = config['coeffs']
+    return nest.Create('glif_lif_asc_psc',
+                       params={'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03,
+                               'g': coeffs['G'] / config['R_input'] * 1.0e09,
+                               'E_L': config['El'] * 1.0e03,
+                               'C_m': coeffs['C'] * config['C'] * 1.0e12,
+                               't_ref': config['spike_cut_length'] * dt_ms,
+                               'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
+                               'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+                               'asc_amps': np.array(config['asc_amp_array']) *
+                                           np.array(coeffs['asc_amp_array']) * 1.0e12,
+                               'tau_syn': syn_tau, # in ms
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})
+
+def create_lif_r_asc_psc(config, syn_tau, dt_ms):
+    """Creates a nest glif_lif_r_asc_psc object"""
+    coeffs = config['coeffs']
+    threshold_params = config['threshold_dynamics_method']['params']
+    reset_params = config['voltage_reset_method']['params']
+    return nest.Create('glif_lif_r_asc_psc',
+                       params={'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03,
+                               'g': coeffs['G'] / config['R_input'] * 1.0e09,
+                               'E_L': config['El'] * 1.0e03,
+                               'C_m': coeffs['C'] * config['C'] * 1.0e12,
+                               't_ref': config['spike_cut_length'] * dt_ms,
+                               'a_spike': threshold_params['a_spike'] * 1.0e03,
+                               'b_spike': threshold_params['b_spike'] * 1.0e-03,
+                               'a_reset': reset_params['a'], 
+                               'b_reset': reset_params['b'] * 1.0e03,
+                               'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
+                               'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+                               'asc_amps': np.array(config['asc_amp_array']) *
+                                           np.array(coeffs['asc_amp_array']) * 1.0e12,
+                               'tau_syn': syn_tau, # in ms
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})
+
+def create_lif_r_asc_a_psc(config, syn_tau, dt_ms):
+    """Creates a nest glif_lif_r_asc_a_psc object"""
+    coeffs = config['coeffs']
+    threshold_params = config['threshold_dynamics_method']['params']
+    reset_params = config['voltage_reset_method']['params']
+    return nest.Create('glif_lif_r_asc_a_psc',
+                       params={'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03,
+                               'g': coeffs['G'] / config['R_input'] * 1.0e09,
+                               'E_L': config['El'] * 1.0e03,
+                                #'E_L': (config['El_reference']+config['El']) * 1.0e03,
+                               'C_m': coeffs['C'] * config['C'] * 1.0e12,
+                               't_ref': config['spike_cut_length'] * dt_ms,
+                               'a_spike': threshold_params['a_spike'] * 1.0e03,
+                               'b_spike': threshold_params['b_spike'] * 1.0e-03,
+                               'a_voltage': threshold_params['a_voltage'] * coeffs['a'] * 1.0e-03,
+                               'b_voltage': threshold_params['b_voltage'] * coeffs['b'] * 1.0e-03,
+                               'a_reset': reset_params['a'], 
+                               'b_reset': reset_params['b'] * 1.0e03,
+                               'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
+                               'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+                               'asc_amps': np.array(config['asc_amp_array']) *
+                                           np.array(coeffs['asc_amp_array']) * 1.0e12,
+                               'tau_syn': syn_tau, # in ms
+                               #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
+                               'V_dynamics_method': 'linear_exact'})
 
 def runNestModel(model_type, neuron_config, amp_times, amp_vals, dt_ms, simulation_time_ms):
-    """Creates and runs a NEST glif object and returns the voltages and spike-times"""
+    """
+    Creates and runs four NEST glif neurons and returns the voltages and spike-times
+    One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is 2.0ms and one port is 1.0ms)
+    The first neuron is connected the first port of the second neuron
+    The first neuron is connected the second port of the third neuron
+    The first neuron is also connected both ports of the fourth neuron
+    The weights between first neuron and other neurons are all 1000.0
+    """
 
-    # By default NEST has a 0.1 ms resolution which is the which can causes integration issues due to glif_lif_asc
-    # using explicit euler method
+    # By default NEST has a 0.1 ms resolution 
     nest.ResetKernel()
     nest.SetKernelStatus({'resolution': dt_ms})
-
-    if model_type == asdk.LIF:
-        neuron = create_lif(neuron_config, dt_ms)
-    elif model_type == asdk.LIF_ASC:
-        neuron = create_lif_asc(neuron_config, dt_ms)
-        multimeter = nest.Create("multimeter", params={'record_from': ['AScurrents_sum'], 'withgid': True, 'withtime': True})
-        nest.Connect(multimeter, neuron)
-    elif model_type == asdk.LIF_R:
-        neuron = create_lif_r(neuron_config, dt_ms)
-    elif model_type == asdk.LIF_R_ASC:
-        neuron = create_lif_r_asc(neuron_config, dt_ms)
-        multimeter = nest.Create("multimeter", params={'record_from': ['AScurrents_sum'], 'withgid': True, 'withtime': True})
-        nest.Connect(multimeter, neuron)
-    elif model_type == asdk.LIF_R_ASC_A:
-        neuron = create_lif_r_asc_a(neuron_config, dt_ms)
-        multimeter = nest.Create("multimeter", params={'record_from': ['AScurrents_sum'], 'withgid': True, 'withtime': True})
-        nest.Connect(multimeter, neuron)
-        
-    # Create voltmeter and spike reader
-    voltmeter = nest.Create("voltmeter", params= {"withgid": True, "withtime": True,'interval': dt_ms})
     
-    # nest glif model output precision spike time by default 
-    spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True}) 
-    # output grid spike time
-    #spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True,  "precise_times": False})
-    # output spike time steps together spike offset
-    #spikedetector = nest.Create("spike_detector", params={"withgid": True, "withtime": True, "time_in_steps": True})
+    n=4
+    w=1000.0
+    syn_tau=[2.0,1.0]
+    neurons=[]
+    if model_type == asdk.LIF:
+        neurons.append( create_lif(neuron_config, dt_ms))
+        for i in range(n-1):
+            neurons.append( create_lif_psc(neuron_config, syn_tau, dt_ms))
+    elif model_type == asdk.LIF_ASC:
+        neurons.append( create_lif_asc(neuron_config, dt_ms))
+        for i in range(n-1):
+            neurons.append( create_lif_asc_psc(neuron_config, syn_tau, dt_ms))
+    elif model_type == asdk.LIF_R:
+        neurons.append( create_lif_r(neuron_config, dt_ms))
+        for i in range(n-1):
+            neurons.append( create_lif_r_psc(neuron_config, syn_tau, dt_ms))
+    elif model_type == asdk.LIF_R_ASC:
+        neurons.append( create_lif_r_asc(neuron_config, dt_ms))
+        for i in range(n-1):
+            neurons.append( create_lif_r_asc_psc(neuron_config, syn_tau, dt_ms))
+    elif model_type == asdk.LIF_R_ASC_A:
+        neurons.append( create_lif_r_asc_a(neuron_config, dt_ms))
+        for i in range(n-1):
+            neurons.append( create_lif_r_asc_a_psc(neuron_config, syn_tau, dt_ms))
 
-    nest.Connect(voltmeter, neuron)
-    nest.Connect(neuron, spikedetector)
+    # Create voltmeter and spike reader
+    voltmeters=[]
+    spikedetectors=[]
+    for i in range(n):
+        voltmeters.append(nest.Create("voltmeter", params= {"withgid": True, "withtime": True,'interval': dt_ms}))
+        spikedetectors.append(nest.Create("spike_detector", params={"withgid": True, "withtime": True,  "precise_times": False}))
+        nest.Connect(voltmeters[i], neurons[i])
+        if i!=0 and i<n-1:
+            nest.Connect(neurons[0], neurons[i], syn_spec={'delay': dt_ms, 'weight': w, 'receptor_type': i})
+        elif i==n-1:
+            nest.Connect(neurons[0], neurons[i], syn_spec={'delay': dt_ms, 'weight': w, 'receptor_type': i-2})
+            nest.Connect(neurons[0], neurons[i], syn_spec={'delay': dt_ms, 'weight': w, 'receptor_type': i-1})
+    
+        nest.Connect(neurons[i], spikedetectors[i])
 
-    # Step current
-    scg = nest.Create("step_current_generator", params={'amplitude_times': amp_times, 'amplitude_values': np.array(amp_vals) * 1.0e12}) # convert current to pA from A
-    #nest.Connect(scg, neuron)
-    nest.Connect(scg, neuron,syn_spec={'delay': dt_ms})
+    # Step current for first neuron
+    scg = nest.Create("step_current_generator", params={'amplitude_times': amp_times, 'amplitude_values': np.array(amp_vals) * 1.0e12}) # convert to pF
+    nest.Connect(scg, neurons[0],syn_spec={'delay': dt_ms})
 
     # Simulate, grab run values and return
     nest.Simulate(simulation_time_ms)
-    voltages = nest.GetStatus(voltmeter)[0]['events']['V_m']
     
-    times = nest.GetStatus(voltmeter)[0]['events']['times']
-    spike_times = nest.GetStatus(spikedetector)[0]['events']['times']
+    # output
+    voltages=[]
+    times=[]
+    spike_times=[]
     
-    return times, voltages, spike_times
+    for i in range(n):
+        voltages.append(nest.GetStatus(voltmeters[i])[0]['events']['V_m'])    
+        times.append(nest.GetStatus(voltmeters[i])[0]['events']['times'])
+        spike_times.append(nest.GetStatus(spikedetectors[i])[0]['events']['times'])
 
+    return times, voltages, spike_times
 
 def run_long_square(cell_id, model_type, neuron_config, pulse_time, amplitude, total_time=1000.0, dt=0.005):
     """Generates a single long constant injection current
@@ -207,14 +307,15 @@ def run_long_square(cell_id, model_type, neuron_config, pulse_time, amplitude, t
     amp_times = [0.0, pulse_time[0], pulse_time[1]]
     amp_values = [0.0, amplitude, 0.0]
     output = runNestModel(model_type, neuron_config, amp_times, amp_values, dt, total_time)
-    ret['nest'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
+    
+    ret['times'] = output[0]
+    ret['voltages'] = output[1]
+    ret['spike_times'] = output[2]
 
-    I = plotter.get_step_trace(amp_times, amp_values, dt, total_time)
-    output = runGlifNeuron(neuron_config, I, dt)
-    ret['allen'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
+    I = plotter.get_step_trace(amp_times, amp_values, dt, total_time)  
     ret['I'] = I
     ret['dt']=dt
-
+    
     return ret
 
 
@@ -236,14 +337,15 @@ def run_short_squares(cell_id, model_type, neuron_config, pulses, total_time=100
         amp_values += [p[2], 0.0]
 
     output = runNestModel(model_type, neuron_config, amp_times, amp_values, dt, total_time)
-    ret['nest'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
+    
+    ret['times'] = output[0]
+    ret['voltages'] = output[1]
+    ret['spike_times'] = output[2]
 
     I = plotter.get_step_trace(amp_times, amp_values, dt, total_time)
-    output = runGlifNeuron(neuron_config, I, dt)
-    ret['allen'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
     ret['I'] = I
     ret['dt']=dt
-
+    
     return ret
 
 
@@ -267,13 +369,14 @@ def run_short_squares_noise(cell_id, model_type, neuron_config, pulses, total_ti
     I = plotter.get_step_trace_noise(amp_times, amp_values, dt, total_time)
     It=[t*dt for t in xrange(len(I))]
     output = runNestModel(model_type, neuron_config, It, I, dt, total_time)
-    ret['nest'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
-
-    output = runGlifNeuron(neuron_config, I, dt)
-    ret['allen'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
+    
+    ret['times'] = output[0]
+    ret['voltages'] = output[1]
+    ret['spike_times'] = output[2]
+    
     ret['I'] = I
     ret['dt']=dt
-
+    
     return ret
 
 def run_ramp(cell_id, model_type, neuron_config, max_amp, total_time=1000.0, dt=0.005):
@@ -292,13 +395,14 @@ def run_ramp(cell_id, model_type, neuron_config, max_amp, total_time=1000.0, dt=
     amp_times = [t*dt for t in xrange(n_steps)]
     amp_values = [t*dI_dt for t in amp_times]
     output = runNestModel(model_type, neuron_config, amp_times, amp_values, dt, total_time)
-    ret['nest'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
-
-    output = runGlifNeuron(neuron_config, amp_values, dt)
-    ret['allen'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
+    
+    ret['times'] = output[0]
+    ret['voltages'] = output[1]
+    ret['spike_times'] = output[2]
+    
     ret['I'] = amp_values
     ret['dt']=dt
-
+    
     return ret
 
 def run_nwb(cell_id, model_type, neuron_config, stim_type='Ramp'):
@@ -314,8 +418,7 @@ def run_nwb(cell_id, model_type, neuron_config, stim_type='Ramp'):
     # get sweep/stimulus data
     ctc = CellTypesCache()
     ephys_sweeps=ctc.get_ephys_sweeps(cell_id)
-    ds=ctc.get_ephys_data(cell_id)
-    #ephys_sweep = next( s for s in ephys_sweeps if s['stimulus_name'] == stim_type )   
+    ds=ctc.get_ephys_data(cell_id)   
     ephys_sweep_stim = [s for s in ephys_sweeps if s['stimulus_name'] == stim_type ]   
     ephys_sweep=ephys_sweep_stim[0]
                      
@@ -330,13 +433,13 @@ def run_nwb(cell_id, model_type, neuron_config, stim_type='Ramp'):
     total_time=n_steps*dt
     
     output = runNestModel(model_type, neuron_config, amp_times, amp_values, dt, total_time)
-    ret['nest'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
+    ret['times'] = output[0]
+    ret['voltages'] = output[1]
+    ret['spike_times'] = output[2]
 
-    output = runGlifNeuron(neuron_config, amp_values, dt)
-    ret['allen'] = {'times': output[0], 'voltages': output[1], 'spike_times': output[2]}
     ret['I'] = amp_values
     ret['dt']=dt
-
+    
     return ret
 
 
@@ -400,7 +503,6 @@ stimulus = {
     
 }
 
-
 if __name__ == '__main__':
     parser = OptionParser()
     parser.add_option("-c", "--cells", dest="cells", default="", help="comma separated list of cells to run.")
@@ -437,7 +539,5 @@ if __name__ == '__main__':
                 simulate = stimulus[stim]
                 output = simulate(cell_id, options.model,neuron_config)
                 plt.figure('Cell '+str(cell_id)+' '+options.model+' '+stim)
-                plotter.plt_comparison(output['I'],
-                                   output['allen']['times'], output['allen']['voltages'], output['allen']['spike_times'],
-                                   output['nest']['times'], output['nest']['voltages'], output['nest']['spike_times'], show=False)
+                plotter.plt_comparison_neurons(np.array(output['I']) * 1.0e12,output['times'], output['voltages'], output['spike_times'], show=False)
     plt.show()
