@@ -1,5 +1,5 @@
-#ifndef GLIFMODULE1_H
-#define GLIFMODULE1_H
+#ifndef GLIFMODULE_H
+#define GLIFMODULE_H
 
 #include "namedatum.h"
 

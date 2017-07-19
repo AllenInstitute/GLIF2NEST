@@ -8,7 +8,11 @@
 #include "glif_lif_asc.h"
 #include "glif_lif_r_asc.h"
 #include "glif_lif_r_asc_a.h"
-
+#include "glif_lif_psc.h"
+#include "glif_lif_r_psc.h"
+#include "glif_lif_asc_psc.h"
+#include "glif_lif_r_asc_psc.h"
+#include "glif_lif_r_asc_a_psc.h"
 
 // Includes from nestkernel:
 #include "connection_manager_impl.h"
@@ -57,4 +61,9 @@ void allen::GlifModules::init(SLIInterpreter *i) {
   nest::kernel().model_manager.register_node_model<glif_lif_asc>("glif_lif_asc");
   nest::kernel().model_manager.register_node_model<glif_lif_r_asc>("glif_lif_r_asc");
   nest::kernel().model_manager.register_node_model<glif_lif_r_asc_a>("glif_lif_r_asc_a");
+  nest::kernel().model_manager.register_node_model<glif_lif_psc>("glif_lif_psc");
+  nest::kernel().model_manager.register_node_model<glif_lif_r_psc>("glif_lif_r_psc");
+  nest::kernel().model_manager.register_node_model<glif_lif_asc_psc>("glif_lif_asc_psc");
+  nest::kernel().model_manager.register_node_model<glif_lif_r_asc_psc>("glif_lif_r_asc_psc");
+  nest::kernel().model_manager.register_node_model<glif_lif_r_asc_a_psc>("glif_lif_r_asc_a_psc");
 }

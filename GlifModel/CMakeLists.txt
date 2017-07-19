@@ -11,6 +11,11 @@ set( MODULE_SOURCES
     glif_lif_asc.h glif_lif_asc.cpp
     glif_lif_r_asc.h glif_lif_r_asc.cpp
     glif_lif_r_asc_a.h glif_lif_r_asc_a.cpp
+    glif_lif_psc.h glif_lif_psc.cpp
+    glif_lif_r_psc.h glif_lif_r_psc.cpp
+    glif_lif_asc_psc.h glif_lif_asc_psc.cpp
+    glif_lif_r_asc_psc.h glif_lif_r_asc_psc.cpp
+    glif_lif_r_asc_a_psc.h glif_lif_r_asc_a_psc.cpp
     )
 
 # 3) We require a header name like this:
