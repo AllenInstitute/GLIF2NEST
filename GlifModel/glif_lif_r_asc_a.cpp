@@ -45,30 +45,30 @@ RecordablesMap< allen::glif_lif_r_asc_a >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_r_asc_a::Parameters_::Parameters_()
-  : th_inf_(0.0265)
-  , G_(4.6951e-09)
-  , E_l_(-0.0774)
-  , C_m_(9.9182e-11)
-  , t_ref_(1.0)
-  , V_reset_(0.0)
-  , a_spike_(0.0)
-  , b_spike_(0.0)
-  , voltage_reset_a_(0.0)
-  , voltage_reset_b_(0.0)
-  , a_voltage_(0.0)
-  , b_voltage_(0.0)
-  , asc_init_(std::vector<double>(2, 0.0))
-  , k_(std::vector<double>(2, 0.0))
-  , asc_amps_(std::vector<double>(2, 0.0))
-  , r_(std::vector<double>(2, 1.0))
+  : th_inf_(0.0265*1.0e03) 	// in mV
+  , G_(4.6951)				// in nS
+  , E_l_(-0.0774*1.0e03) 	// in mv
+  , C_m_(99.182)			// in pF
+  , t_ref_(0.5)				// in ms
+  , V_reset_(0.0)			// in mV
+  , a_spike_(0.0)			// in mV
+  , b_spike_(0.0)			// in 1/ms
+  , voltage_reset_a_(0.0)	// coefficient
+  , voltage_reset_b_(0.0)	// in mV
+  , a_voltage_(0.0)			// in 1/ms
+  , b_voltage_(0.0)			// in 1/ms
+  , asc_init_(std::vector<double>(2, 0.0))	// in pA
+  , k_(std::vector<double>(2, 0.0))			// in 1/ms
+  , asc_amps_(std::vector<double>(2, 0.0))	// in pA
+  , r_(std::vector<double>(2, 1.0))			// coefficient
   , V_dynamics_method_("linear_forward_euler")
 {
 }
 
 allen::glif_lif_r_asc_a::State_::State_( const Parameters_& p )
-  : V_m_(0.0)
-  , ASCurrents_(std::vector<double>(2, 0.0))
-  , I_(0.0)
+  : V_m_(0.0)	// in mV
+  , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
+  , I_(0.0)		// in pA
 {
 }
 
@@ -200,7 +200,7 @@ allen::glif_lif_r_asc_a::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
+  V_.t_ref_total_ = P_.t_ref_;
   V_.last_spike_ = 0.0;
   V_.last_voltage_ = 0.0;
 
@@ -217,7 +217,7 @@ allen::glif_lif_r_asc_a::calibrate()
 void
 allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long to )
 { 
-  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
+  const double dt = Time::get_resolution().get_ms();
 
   double v_old = S_.V_m_;
   double ASCurrents_old_sum = 0.0;
@@ -251,13 +251,18 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
       	}
 
       	// Reset voltage
-        S_.V_m_ = P_.voltage_reset_a_ * S_.V_m_ + P_.voltage_reset_b_;
+        S_.V_m_ = P_.E_l_ + P_.voltage_reset_a_ * ( S_.V_m_ - P_.E_l_ ) + P_.voltage_reset_b_;
 
         // reset spike component of threshold
         V_.last_spike_ = V_.last_spike_ + P_.a_spike_;
 
         // rest the global threshold (voltage component of threshold: stay the same)
         S_.threshold_ = V_.last_spike_ + V_.last_voltage_ + P_.th_inf_;
+
+        // Check if bad reset
+        // TODO: Better way to handle?
+        if(S_.V_m_ > S_.threshold_) printf("Simulation Terminated: Voltage (%f) reset above threshold (%f)!!\n", S_.V_m_, S_.threshold_);
+        assert( S_.V_m_ <= S_.threshold_ );
 
       }
       else
@@ -308,6 +313,7 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
 
 	    // Find the exact time during this step that the neuron crossed the threshold and record it
         double spike_offset = (1 - (v_old - th_old)/(( S_.threshold_- th_old)-(S_.V_m_ - v_old))) * Time::get_resolution().get_ms();
+        //printf("%f, %.10f, %.10f, %.10f, %.10f, %.10f\n",dt,spike_offset, v_old, S_.V_m_,th_old, S_.threshold_);
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
         se.set_offset(spike_offset);

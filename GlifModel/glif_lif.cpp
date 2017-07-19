@@ -45,20 +45,20 @@ RecordablesMap< allen::glif_lif >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif::Parameters_::Parameters_()
-  : th_inf_(0.0265) 
-  , G_(4.6951e-09)
-  , E_l_(-0.0774)
-  , C_m_(9.9182e-11)
-  , t_ref_(1.0)
-  , V_reset_(0.0)
+  : th_inf_(0.0265*1.0e03) 	// mV
+  , G_(4.6951)				// nS (1/Gohm)
+  , E_l_(-0.0774*1.0e03)	// mV
+  , C_m_(99.182)			// pF
+  , t_ref_(0.5)				// ms
+  , V_reset_(0.0)			// mV
   , V_dynamics_method_("linear_forward_euler")
 
 {
 }
 
 allen::glif_lif::State_::State_( const Parameters_& p )
-  : V_m_(0.0)
-  , I_(0.0)
+  : V_m_(0.0)	// mV
+  , I_(0.0)		// pA
 
 {
 }
@@ -167,7 +167,7 @@ allen::glif_lif::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
+  V_.t_ref_total_ = P_.t_ref_;
 
   V_.method_ = 0; // default using linear forward euler for voltage dynamics
   if(P_.V_dynamics_method_=="linear_exact")
@@ -183,7 +183,7 @@ void
 allen::glif_lif::update( Time const& origin, const long from, const long to )
 {
   
-  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
+  const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
   double tau = P_.G_ / P_.C_m_;
   double exp_tau = std::exp(-dt * tau);

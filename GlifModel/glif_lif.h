@@ -64,12 +64,12 @@ private:
 
   struct Parameters_
   {
-    double th_inf_;  // A constant spiking threshold
-    double G_; // membrane conductance
-    double E_l_; // resting potential
-    double C_m_; // capacitance
-    double t_ref_; // refractory time (ms)
-    double V_reset_; // Membrane voltage following spike
+    double th_inf_; 	// A constant spiking threshold in mV
+    double G_; 			// membrane conductance in nS
+    double E_l_; 		// resting potential in mV
+    double C_m_; 		// capacitance in pF
+    double t_ref_; 		// refractory time in ms
+    double V_reset_; 	// Membrane voltage following spike in mV
     std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
@@ -81,8 +81,8 @@ private:
 
   struct State_
   {
-    double V_m_;  // membrane potential
-    double I_; // external current
+    double V_m_;  	// membrane potential in mV
+    double I_; 		// external current in pA
 
     State_( const Parameters_& );
 

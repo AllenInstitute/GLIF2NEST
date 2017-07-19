@@ -64,18 +64,18 @@ private:
 
   struct Parameters_
   {
-  	double thr_init_; // initial threshold
-    double th_inf_;  // A threshold
-    double G_; // membrane conductance
-    double E_l_; // resting potential
-    double C_m_; // capacitance
-    double t_ref_; // refractory time (ms)
-    double V_reset_; // Membrane voltage following spike
-    double a_spike_; // threshold additive constant following reset
-    double b_spike_; //spike induced threshold
+  	double thr_init_; 	// initial threshold in mV
+    double th_inf_;  	// A threshold in mV
+    double G_; 			// membrane conductance in nS
+    double E_l_; 		// resting potential in mV
+    double C_m_; 		// capacitance in pF
+    double t_ref_; 		// refractory time in ms
+    double V_reset_; 	// Membrane voltage following spike inmV
+    double a_spike_; 	// threshold additive constant following reset in mV
+    double b_spike_; 	// spike induced threshold in 1/ms
 
-    double voltage_reset_a_;
-    double voltage_reset_b_;
+    double voltage_reset_a_;	// in 1/ms
+    double voltage_reset_b_;	// in 1/ms
     std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();

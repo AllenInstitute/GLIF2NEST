@@ -64,25 +64,25 @@ private:
 
   struct Parameters_
   {
-	double thr_init_; // initial threshold
-	double th_inf_;  // infinity threshold
-    //double V_th_;  // A constant spiking threshold
-    double G_; // membrane conductance
-    double E_l_; // resting potential
-    double C_m_; // capacitance
-    double t_ref_; // refractory time (ms)
-    double V_reset_; // Membrane voltage following spike
+	//double thr_init_; 		// initial threshold in mV
+	double th_inf_;  			// infinity threshold in mV
+    //double V_th_;  			// A constant spiking threshold in mV
+    double G_; 					// membrane conductance in nS
+    double E_l_; 				// resting potential in mV
+    double C_m_; 				// capacitance in pF
+    double t_ref_; 				// refractory time in ms
+    double V_reset_; 			// Membrane voltage following spike in mV
 
-    double a_spike_; // threshold additive constant following reset
-    double b_spike_; //spike induced threshold
-    double voltage_reset_a_; //voltage fraction following reset
-    double voltage_reset_b_; // voltage additive constant following reset
+    double a_spike_; 			// threshold additive constant following reset in mV
+    double b_spike_; 			//spike induced threshold in 1/ms
+    double voltage_reset_a_; 	//voltage fraction following reset coefficient
+    double voltage_reset_b_; 	// voltage additive constant following reset in mV
 
 
-    std::vector<double> asc_init_; // initial values of ASCurrents_
-    std::vector<double> k_; // predefined time scale
-    std::vector<double> asc_amps_;
-    std::vector<double> r_;
+    std::vector<double> asc_init_; 	// initial values of ASCurrents_ in pA
+    std::vector<double> k_; 		// predefined time scale in 1/ms
+    std::vector<double> asc_amps_;	// in pA
+    std::vector<double> r_;			// coefficient
     std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
@@ -95,12 +95,12 @@ private:
   struct State_
   {
     double V_m_;  // membrane potential
-    std::vector<double> ASCurrents_; // after-spike currents
-    double ASCurrents_sum_;
+    std::vector<double> ASCurrents_; // after-spike currents in pA
+    double ASCurrents_sum_;			 // in pA
 
-    double threshold_; // voltage threshold
+    double threshold_; 				 // voltage threshold in mV
 
-    double I_; // external current
+    double I_; 						 // external current in pA
 
     State_( const Parameters_& );
 

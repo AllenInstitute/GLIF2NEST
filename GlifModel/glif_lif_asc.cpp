@@ -45,24 +45,24 @@ RecordablesMap< allen::glif_lif_asc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_asc::Parameters_::Parameters_()
-  : V_th_(0.0265) 
-  , G_(4.6951e-09)
-  , E_l_(-0.0774)
-  , C_m_(9.9182e-11)
-  , t_ref_(1.0)
-  , V_reset_(0.0)
-  , asc_init_(std::vector<double>(2, 0.0))
-  , k_(std::vector<double>(2, 0.0))
-  , asc_amps_(std::vector<double>(2, 0.0))
-  , r_(std::vector<double>(2, 1.0))
+  : V_th_(0.0265*1.0e03)	// in mV
+  , G_(4.6951)				// in nS
+  , E_l_(-0.0774*1.0e03)	// in mV
+  , C_m_(99.182)			// in pF
+  , t_ref_(0.5)				// in mS
+  , V_reset_(0.0)			// in mV
+  , asc_init_(std::vector<double>(2, 0.0)) 	// in pA
+  , k_(std::vector<double>(2, 0.0))			// in 1/ms
+  , asc_amps_(std::vector<double>(2, 0.0))	// in pA
+  , r_(std::vector<double>(2, 1.0))			//coefficient
   , V_dynamics_method_("linear_forward_euler")
 {
 }
 
 allen::glif_lif_asc::State_::State_( const Parameters_& p )
-  : V_m_(0.0)
-  , ASCurrents_(std::vector<double>(2, 0.0))
-  , I_(0.0)
+  : V_m_(0.0) // in mV
+  , ASCurrents_(std::vector<double>(2, 0.0))	//in pA
+  , I_(0.0)		// in pA
 {
 }
 
@@ -174,7 +174,7 @@ allen::glif_lif_asc::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
+  V_.t_ref_total_ = P_.t_ref_;
 
   V_.method_ = 0; // default using linear forward euler for voltage dynamics
   if(P_.V_dynamics_method_=="linear_exact")
@@ -189,10 +189,8 @@ allen::glif_lif_asc::calibrate()
 void
 allen::glif_lif_asc::update( Time const& origin, const long from, const long to )
 { 
-  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
-
+  const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
-  //double ASCurrent_old_sum = 0.0;
   double tau = P_.G_ / P_.C_m_;
   double exp_tau = std::exp(-dt * tau);
 
@@ -225,7 +223,7 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
     {
       // Integrate voltage and currents
 
-      // Calculate new ASCurrents value using expoential methods
+      // Calculate new ASCurrents value using expoenatial methods
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {

@@ -45,23 +45,23 @@ RecordablesMap< allen::glif_lif_r >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_r::Parameters_::Parameters_()
-  : th_inf_(0.0265) 
-  , G_(4.6951e-09)
-  , E_l_(-0.0774)
-  , C_m_(9.9182e-11)
-  , t_ref_(1.0)
-  , V_reset_(0.0)
-  , a_spike_(0.0)
-  , b_spike_(0.0)
-  , voltage_reset_a_(0.0)
-  , voltage_reset_b_(0.0)
+  : th_inf_(0.0265*1.0e03)	// in mV
+  , G_(4.6951)				// in nS
+  , E_l_(-0.0774*1.0e03)	// in mV
+  , C_m_(99.182)			// in pF
+  , t_ref_(0.5)				// in ms
+  , V_reset_(0.0)			// in mV
+  , a_spike_(0.0)			// in mV
+  , b_spike_(0.0)			// in 1/ms
+  , voltage_reset_a_(0.0)	// in 1/ms
+  , voltage_reset_b_(0.0)	// in 1/ms
   , V_dynamics_method_("linear_forward_euler")
 {
 }
 
 allen::glif_lif_r::State_::State_( const Parameters_& p )
-  : V_m_(0.0)
-  , I_(0.0)
+  : V_m_(0.0)	// in mV
+  , I_(0.0)		// in pF
 {
 }
 
@@ -173,7 +173,7 @@ allen::glif_lif_r::calibrate()
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
-  V_.t_ref_total_ = P_.t_ref_ * 1.0e-03;
+  V_.t_ref_total_ = P_.t_ref_;
 
   V_.last_spike_ = 0.0;
 
@@ -190,7 +190,7 @@ void
 allen::glif_lif_r::update( Time const& origin, const long from, const long to )
 {
   
-  const double dt = Time::get_resolution().get_ms() * 1.0e-03;
+  const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
   double spike_component = 0.0;
   double th_old=S_.threshold_;
@@ -211,10 +211,15 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
       V_.t_ref_remaining_ -= dt;
       if( V_.t_ref_remaining_ <= 0.0)
       {
-        S_.V_m_ = P_.voltage_reset_a_ * S_.V_m_ + P_.voltage_reset_b_;
+        S_.V_m_ = P_.E_l_ + P_.voltage_reset_a_ * ( S_.V_m_ - P_.E_l_ ) + P_.voltage_reset_b_;
 
         V_.last_spike_ = V_.last_spike_ + P_.a_spike_;
         S_.threshold_ = V_.last_spike_ + P_.th_inf_;
+
+        // Check if bad reset
+        // TODO: Better way to handle?
+        if(S_.V_m_ > S_.threshold_) printf("Simulation Terminated: Voltage (%f) reset above threshold (%f)!!\n", S_.V_m_, S_.threshold_);
+        assert( S_.V_m_ <= S_.threshold_ );
 
       }
       else

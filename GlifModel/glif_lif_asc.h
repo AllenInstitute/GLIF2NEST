@@ -64,17 +64,17 @@ private:
 
   struct Parameters_
   {
-    double V_th_;  // A constant spiking threshold
-    double G_; // membrane conductance
-    double E_l_; // resting potential
-    double C_m_; // capacitance
-    double t_ref_; // refractory time (ms)
-    double V_reset_; // Membrane voltage following spike
+    double V_th_;  		// A constant spiking threshold in mV
+    double G_; 			// membrane conductance in nS
+    double E_l_; 		// resting potential in mV
+    double C_m_; 		// capacitance in pF
+    double t_ref_; 		// refractory time in ms
+    double V_reset_; 	// Membrane voltage following spike in mV
 
-    std::vector<double> asc_init_; // initial values of ASCurrents_
-    std::vector<double> k_; // predefined time scale
-    std::vector<double> asc_amps_;
-    std::vector<double> r_;
+    std::vector<double> asc_init_; 	// initial values of ASCurrents_ in pA
+    std::vector<double> k_;  		// predefined time scale in 1/ms
+    std::vector<double> asc_amps_;	// in pA
+    std::vector<double> r_;			// coefficient
     std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
@@ -86,11 +86,11 @@ private:
 
   struct State_
   {
-    double V_m_;  // membrane potential
-    std::vector<double> ASCurrents_; // after-spike currents
-    double ASCurrents_sum_;
+    double V_m_;  // membrane potential in mV
+    std::vector<double> ASCurrents_; // after-spike currents in pA
+    double ASCurrents_sum_;	// in sum of after-spike currents in pA
 
-    double I_; // external current
+    double I_; // external current in pA
 
     State_( const Parameters_& );
 
@@ -113,8 +113,8 @@ private:
 
   struct Variables_
   {
-    double t_ref_remaining_; // counter during refractory period, seconds
-    double t_ref_total_; // total time of refractory period, seconds
+    double t_ref_remaining_; // counter during refractory period in ms
+    double t_ref_total_; // total time of refractory period in ms
     int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
   };
 
