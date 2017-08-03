@@ -64,14 +64,11 @@ private:
 
   struct Parameters_
   {
-	//double thr_init_; 	// initial threshold in mV
 	double th_inf_;  	// infinity threshold in mV
-    //double V_th_;  	// A constant spiking threshold in mV
     double G_; 			// membrane conductance in nS
     double E_l_; 		// resting potential in mV
     double C_m_; 		// capacitance in pF
     double t_ref_; 		// refractory time in ms
-    double V_reset_; 	// Membrane voltage following spike in mV
 
     double a_spike_; 	// threshold additive constant following reset in mV
     double b_spike_; 	//spike induced threshold in 1/ms
@@ -92,7 +89,6 @@ private:
 
     size_t n_receptors_() const; //!< Returns the size of tau_syn_
 
-
     Parameters_();
 
     void get( DictionaryDatum& ) const;
@@ -102,11 +98,10 @@ private:
 
   struct State_
   {
-    double V_m_;  // membrane potential in mV
-    std::vector<double> ASCurrents_; // after-spike currents in pA
-    double ASCurrents_sum_; // in pA
-
-    double threshold_; // voltage threshold in mV
+    double V_m_;  						// membrane potential in mV
+    std::vector<double> ASCurrents_; 	// after-spike currents in pA
+    double ASCurrents_sum_; 			// in pA
+    double threshold_; 					// voltage threshold in mV
 
     double I_; // external current in pA
     std::vector< double > y1_; // synapse current evolution state 1 in pA
@@ -133,17 +128,16 @@ private:
 
   struct Variables_
   {
-    double t_ref_remaining_; // counter during refractory period, in ms
-    double t_ref_total_; // total time of refractory period, in ms
-
-    double last_spike_; // threshold spike component in mV
-    double last_voltage_; // threshold voltage component in mV
-    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
+    double t_ref_remaining_; 	// counter during refractory period, in ms
+    double t_ref_total_; 		// total time of refractory period, in ms
+    double last_spike_; 		// threshold spike component in mV
+    double last_voltage_; 		// threshold voltage component in mV
+    int method_; 				// voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
     std::vector< double > P11_; // synaptic current evolution parameter
     std::vector< double > P21_; // synaptic current evolution parameter
     std::vector< double > P22_; // synaptic current evolution parameter
-    double P30_; // membrane current/voltage evolution parameter
-    double P33_; // membrane voltage evolution parameter
+    double P30_; 				// membrane current/voltage evolution parameter
+    double P33_; 				// membrane voltage evolution parameter
     std::vector< double > P31_; // synaptic/membrane current evolution parameter
     std::vector< double > P32_; // synaptic/membrane current evolution parameter
 
@@ -151,7 +145,7 @@ private:
               This value is chosen such that a post-synaptic potential with
               weight one has an amplitude of 1 mV.
     */
-    std::vector< double > PSCInitialValues_; // post synaptic current intial values in pA
+    std::vector< double > PSCInitialValues_;
 
     unsigned int receptor_types_size_;
 
@@ -193,17 +187,6 @@ allen::glif_lif_r_asc_a_psc::send_test_event( nest::Node& target,
   e.set_sender( *this );
   return target.handles_test_event( e, receptor_type );
 }
-
-/*
-inline nest::port
-allen::glif_lif_r_asc_a_psc::handles_test_event( nest::SpikeEvent&,
-  nest::port receptor_type )
-{
-  if ( receptor_type != 0 )
-    throw nest::UnknownReceptorType( receptor_type, get_name() );
-  return 0;
-}
-*/
 
 inline nest::port
 allen::glif_lif_r_asc_a_psc::handles_test_event( nest::CurrentEvent&,
@@ -253,7 +236,5 @@ glif_lif_r_asc_a_psc::set_status( const DictionaryDatum& d )
 }
 
 } // namespace nest
-
-
 
 #endif

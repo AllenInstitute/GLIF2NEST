@@ -46,12 +46,12 @@ RecordablesMap< allen::glif_lif_asc_psc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_asc_psc::Parameters_::Parameters_()
-  : V_th_(0.0265*1.0e03)	// in mV
+  : V_th_(26.5)				// in mV
   , G_(4.6951)				// in nS
-  , E_l_(-0.0774*1.0e03)	// in mV
+  , E_l_(-77.4)				// in mV
   , C_m_(99.182)			// in pF
   , t_ref_(0.5)				// in mS
-  , V_reset_(0.0)			// in mV
+  , V_reset_(-77.4)			// in mV
   , asc_init_(std::vector<double>(2, 0.0)) 	// in pA
   , k_(std::vector<double>(2, 0.0))			// in 1/ms
   , asc_amps_(std::vector<double>(2, 0.0))	// in pA
@@ -63,8 +63,8 @@ allen::glif_lif_asc_psc::Parameters_::Parameters_()
 }
 
 allen::glif_lif_asc_psc::State_::State_( const Parameters_& p )
-  : V_m_(0.0) // in mV
-  , ASCurrents_(std::vector<double>(2, 0.0))	//in pA
+  : V_m_(p.E_l_) // in mV
+  , ASCurrents_(p.asc_init_) // in pA
   , I_(0.0)		// in pA
 {
 	y1_.clear();
@@ -109,6 +109,26 @@ allen::glif_lif_asc_psc::Parameters_::set( const DictionaryDatum& d )
   updateValue< std::vector<double> >(d, Name("r"), r_);
   updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ );
   updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
+
+  if ( V_reset_ >= V_th_ )
+  {
+    throw BadProperty( "Reset potential must be smaller than threshold." );
+  }
+
+  if ( C_m_ <= 0.0 )
+  {
+    throw BadProperty( "Capacitance must be strictly positive." );
+  }
+
+  if ( G_ <= 0.0 )
+  {
+    throw BadProperty( "Membrane conductance must be strictly positive." );
+  }
+
+  if ( t_ref_ <= 0.0 )
+  {
+    throw BadProperty( "Refractory time constant must be strictly positive." );
+  }
 
   const size_t old_n_receptors = this->n_receptors_();
   if ( updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ ) )
@@ -222,8 +242,6 @@ allen::glif_lif_asc_psc::calibrate()
   S_.y2_.resize( P_.n_receptors_() );
   V_.PSCInitialValues_.resize( P_.n_receptors_() );
 
-  //S_.i_syn_.resize( P_.n_receptors_());
-
   B_.spikes_.resize( P_.n_receptors_() );
 
   double Tau_ = P_.C_m_ / P_.G_;  // in second
@@ -258,15 +276,10 @@ void
 allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long to )
 { 
   const double dt = Time::get_resolution().get_ms();
-
   double v_old = S_.V_m_;
-  //double ASCurrent_old_sum = 0.0;
-  //double tau = P_.G_ / P_.C_m_;
-  //double exp_tau = std::exp(-dt * tau);
 
   for ( long lag = from; lag < to; ++lag )
   {
-
     if( V_.t_ref_remaining_ > 0.0)
     {
       // While neuron is in refractory period count-down in time steps (since dt
@@ -275,7 +288,7 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
       if( V_.t_ref_remaining_ <= 0.0)
       {
         // Neuron has left refractory period, reset voltage and after-spike current
-	      // Reset ASC_currents
+	    // Reset ASC_currents
       	for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       	{
       		S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);

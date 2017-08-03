@@ -61,19 +61,15 @@ private:
   friend class nest::RecordablesMap< glif_lif_r_psc >;
   friend class nest::UniversalDataLogger< glif_lif_r_psc >;
 
-
   struct Parameters_
   {
-  	//double thr_init_; 	// initial threshold in mV
     double th_inf_;  		// A threshold in mV
     double G_; 				// membrane conductance in nS
     double E_l_; 			// resting potential in mV
     double C_m_; 			// capacitance in pF
     double t_ref_; 			// refractory time in ms
-    double V_reset_; 		// Membrane voltage following spike in mV
     double a_spike_; 		// threshold additive constant following reset in mV
     double b_spike_; 		// spike induced threshold in 1/ms
-
     double voltage_reset_a_;// in 1/ms
     double voltage_reset_b_;// in 1/ms
     std::vector< double > tau_syn_; // synaptic port time constants in ms
@@ -121,17 +117,16 @@ private:
 
   struct Variables_
   {
-    double t_ref_remaining_; // counter during refractory period, in ms
-    double t_ref_total_; // total time of refractory period, in ms
-  	
-  	double last_spike_; // last spike component of threshold in mV
-    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
+    double t_ref_remaining_; 	// counter during refractory period, in ms
+    double t_ref_total_; 		// total time of refractory period, in ms
+  	double last_spike_; 		// last spike component of threshold in mV
+    int method_; 				// voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
 
     std::vector< double > P11_; // synaptic current evolution parameter
     std::vector< double > P21_; // synaptic current evolution parameter
     std::vector< double > P22_; // synaptic current evolution parameter
-    double P30_; // membrane current/voltage evolution parameter
-    double P33_; // membrane voltage evolution parameter
+    double P30_; 				// membrane current/voltage evolution parameter
+    double P33_; 				// membrane voltage evolution parameter
     std::vector< double > P31_; // synaptic/membrane current evolution parameter
     std::vector< double > P32_; // synaptic/membrane current evolution parameter
 
@@ -188,21 +183,6 @@ allen::glif_lif_r_psc::send_test_event( nest::Node& target,
   e.set_sender( *this );
   return target.handles_test_event( e, receptor_type );
 }
-
-/*
-inline nest::port
-allen::glif_lif_r_psc::handles_test_event( nest::SpikeEvent&,
-  nest::port receptor_type )
-{
-  // You should usually not change the code in this function.
-  // It confirms to the connection management system that we are able
-  // to handle @c SpikeEvent on port 0. You need to extend the function
-  // if you want to differentiate between input ports.
-  if ( receptor_type != 0 )
-    throw nest::UnknownReceptorType( receptor_type, get_name() );
-  return 0;
-}
-*/
 
 inline nest::port
 allen::glif_lif_r_psc::handles_test_event( nest::CurrentEvent&,

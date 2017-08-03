@@ -179,23 +179,6 @@ allen::glif_lif_psc::send_test_event( nest::Node& target,
   return target.handles_test_event( e, receptor_type );
 }
 
-/*
-inline nest::port
-allen::glif_lif_psc::handles_test_event( nest::SpikeEvent&,
-  nest::port receptor_type )
-{
-  // You should usually not change the code in this function.
-  // It confirms to the connection management system that we are able
-  // to handle @c SpikeEvent on port 0. You need to extend the function
-  // if you want to differentiate between input ports.
-  if ( receptor_type != 0 )
-    throw nest::UnknownReceptorType( receptor_type, get_name() );
-  return 0;
-}
-*/
-
-
-
 inline nest::port
 allen::glif_lif_psc::handles_test_event( nest::CurrentEvent&,
   nest::port receptor_type )

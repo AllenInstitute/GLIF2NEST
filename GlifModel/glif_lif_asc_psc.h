@@ -121,14 +121,14 @@ private:
 
   struct Variables_
   {
-    double t_ref_remaining_; // counter during refractory period, in ms
-    double t_ref_total_; // total time of refractory period, in ms
-    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
+    double t_ref_remaining_;	// counter during refractory period, in ms
+    double t_ref_total_;     	// total time of refractory period, in ms
+    int method_; 				// voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
     std::vector< double > P11_; // synaptic current evolution parameter
     std::vector< double > P21_; // synaptic current evolution parameter
     std::vector< double > P22_; // synaptic current evolution parameter
-    double P30_; // membrane current/voltage evolution parameter
-    double P33_; // membrane voltage evolution parameter
+    double P30_; 				// membrane current/voltage evolution parameter
+    double P33_; 				// membrane voltage evolution parameter
     std::vector< double > P31_; // synaptic/membrane current evolution parameter
     std::vector< double > P32_; // synaptic/membrane current evolution parameter
 
@@ -136,7 +136,7 @@ private:
               This value is chosen such that a post-synaptic potential with
               weight one has an amplitude of 1 mV.
     */
-    std::vector< double > PSCInitialValues_; // post synaptic current intial values
+    std::vector< double > PSCInitialValues_;
 
     unsigned int receptor_types_size_;
   };
@@ -176,17 +176,6 @@ allen::glif_lif_asc_psc::send_test_event( nest::Node& target,
   e.set_sender( *this );
   return target.handles_test_event( e, receptor_type );
 }
-
-/*
-inline nest::port
-allen::glif_lif_asc_psc::handles_test_event( nest::SpikeEvent&,
-  nest::port receptor_type )
-{
-  if ( receptor_type != 0 )
-    throw nest::UnknownReceptorType( receptor_type, get_name() );
-  return 0;
-}
-*/
 
 inline nest::port
 allen::glif_lif_asc_psc::handles_test_event( nest::CurrentEvent&,

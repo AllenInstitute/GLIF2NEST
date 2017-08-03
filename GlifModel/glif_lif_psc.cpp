@@ -48,12 +48,12 @@ RecordablesMap< allen::glif_lif_psc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_psc::Parameters_::Parameters_()
-  : th_inf_(0.0265*1.0e03) 	// mV
+  : th_inf_(26.5) 			// mV
   , G_(4.6951)				// nS (1/Gohm)
-  , E_l_(-0.0774*1.0e03)	// mV
+  , E_l_(-77.4)				// mV
   , C_m_(99.182)			// pF
   , t_ref_(0.5)				// ms
-  , V_reset_(0.0)			// mV
+  , V_reset_(-77.4)			// mV
   , tau_syn_(1, 2.0)		// ms
   , V_dynamics_method_("linear_forward_euler")
   , has_connections_( false )
@@ -62,7 +62,7 @@ allen::glif_lif_psc::Parameters_::Parameters_()
 }
 
 allen::glif_lif_psc::State_::State_( const Parameters_& p )
-  : V_m_(0.0)	// mV
+  : V_m_(p.E_l_)	// mV
   , I_(0.0)		// pA
 
 {
@@ -102,6 +102,26 @@ allen::glif_lif_psc::Parameters_::set( const DictionaryDatum& d )
   updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ );
   updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
 
+  if ( V_reset_ >= th_inf_ )
+  {
+    throw BadProperty( "Reset potential must be smaller than threshold." );
+  }
+
+  if ( C_m_ <= 0.0 )
+  {
+    throw BadProperty( "Capacitance must be strictly positive." );
+  }
+
+  if ( G_ <= 0.0 )
+  {
+    throw BadProperty( "Membrane conductance must be strictly positive." );
+  }
+
+  if ( t_ref_ <= 0.0 )
+  {
+    throw BadProperty( "Refractory time constant must be strictly positive." );
+  }
+
   const size_t old_n_receptors = this->n_receptors_();
   if ( updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ ) )
   {
@@ -135,8 +155,7 @@ allen::glif_lif_psc::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   // Only the membrane potential can be set; one could also make other state
-  // variables
-  // settable.
+  // variables settable.
   updateValue< double >( d, names::V_m, V_m_ );
 }
 
@@ -189,7 +208,6 @@ allen::glif_lif_psc::init_buffers_()
   B_.spikes_.clear();   // includes resize
   B_.currents_.clear(); // include resize
   B_.logger_.reset();  // includes resize
-  //Archiving_Node::clear_history();
 }
 
 void
@@ -251,14 +269,9 @@ allen::glif_lif_psc::calibrate()
 void
 allen::glif_lif_psc::update( Time const& origin, const long from, const long to )
 {
-  //assert(to >= 0 && ( delay ) from < kernel().connection_manager.get_min_delay() );
-  //assert( from < to );
   
   const double dt = Time::get_resolution().get_ms(); // in ms
   double v_old = S_.V_m_;
-  //double tau = P_.G_ / P_.C_m_;
-  //printf("tau: %f\n",tau);
-  //double exp_tau = std::exp(-dt * tau);
 
   for ( long lag = from; lag < to; ++lag )
   {
@@ -291,7 +304,6 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
       }
 
       // add synapse component for voltage dynamics
-      //double v_syn_ = 0.0;
       for ( size_t i = 0; i < P_.n_receptors_(); i++ )
       {
         S_.V_m_ += V_.P31_[i] * S_.y1_[i] + V_.P32_[i] * S_.y2_[i];
@@ -301,7 +313,6 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
       {
 
         V_.t_ref_remaining_ = V_.t_ref_total_;
-        //printf("%d\n", origin.get_steps() + lag + 1);
         // Determine spike offset and send spike event
         double spike_offset = (1 - (P_.th_inf_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
         if (spike_offset>0.005) printf("%ld, %f, %f,%.10f, %.10f, %.10f\n",origin.get_steps() + lag + 1, dt,S_.I_,spike_offset, v_old, S_.V_m_);
@@ -322,15 +333,12 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
 
       // Apply spikes delivered in this step: The spikes arriving at T+1 have an
       // immediate effect on the state of the neuron
-      //if (S_.y1_[i]>0.5) printf("%.10f,%.20f,%.20f\n",V_.PSCInitialValues_[i], S_.y1_[i],S_.y1_[i]);
       S_.y1_[i] += V_.PSCInitialValues_[i] * B_.spikes_[i].get_value( lag );
 
     }
 
     S_.I_ = B_.currents_.get_value( lag );
-    //if (origin.get_steps() + lag + 1<21000 && origin.get_steps() + lag + 1>20000){
-    //	printf("%d,%.13f,%.13f,%.13f,%.13f,%.13f,%.13f,%.13f,%.13f\n", origin.get_steps() + lag + 1,S_.I_,V_.P11_,S_.y1_,V_.P21_,S_.y2_,V_.P31_ ,V_.P32_ ,S_.V_m_);
-    //}
+
     B_.logger_.record_data( origin.get_steps() + lag);
 
     v_old = S_.V_m_;
