@@ -20,9 +20,7 @@
 #include "integerdatum.h"
 #include "lockptrdatum.h"
 
-
 using namespace nest;
-
 
 nest::RecordablesMap< allen::glif_lif >
   allen::glif_lif::recordablesMap_;
@@ -45,19 +43,18 @@ RecordablesMap< allen::glif_lif >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif::Parameters_::Parameters_()
-  : th_inf_(0.0265*1.0e03) 	// mV
+  : th_inf_(26.5) 			// mV
   , G_(4.6951)				// nS (1/Gohm)
-  , E_l_(-0.0774*1.0e03)	// mV
+  , E_l_(-77.4)				// mV
   , C_m_(99.182)			// pF
   , t_ref_(0.5)				// ms
-  , V_reset_(0.0)			// mV
+  , V_reset_(-77.4)			// mV
   , V_dynamics_method_("linear_forward_euler")
-
 {
 }
 
 allen::glif_lif::State_::State_( const Parameters_& p )
-  : V_m_(0.0)	// mV
+  : V_m_(p.E_l_)	// mV
   , I_(0.0)		// pA
 
 {
@@ -77,7 +74,6 @@ allen::glif_lif::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::t_ref, t_ref_);
   def<double>(d, names::V_reset, V_reset_);
   def<std::string>(d, "V_dynamics_method", V_dynamics_method_);
-
 }
 
 void
@@ -90,6 +86,26 @@ allen::glif_lif::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::t_ref, t_ref_ );
   updateValue< double >(d, names::V_reset, V_reset_ );
   updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
+
+  if ( V_reset_ >= th_inf_ )
+  {
+    throw BadProperty( "Reset potential must be smaller than threshold." );
+  }
+
+  if ( C_m_ <= 0.0 )
+  {
+    throw BadProperty( "Capacitance must be strictly positive." );
+  }
+
+  if ( G_ <= 0.0 )
+  {
+    throw BadProperty( "Membrane conductance must be strictly positive." );
+  }
+
+  if ( t_ref_ <= 0.0 )
+  {
+    throw BadProperty( "Refractory time constant must be strictly positive." );
+  }
 
 }
 
@@ -105,8 +121,7 @@ allen::glif_lif::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   // Only the membrane potential can be set; one could also make other state
-  // variables
-  // settable.
+  // variables settable.
   updateValue< double >( d, names::V_m, V_m_ );
 }
 

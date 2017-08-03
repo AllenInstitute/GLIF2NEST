@@ -45,12 +45,11 @@ RecordablesMap< allen::glif_lif_r_asc_a >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_r_asc_a::Parameters_::Parameters_()
-  : th_inf_(0.0265*1.0e03) 	// in mV
+  : th_inf_(26.5) 			// in mV
   , G_(4.6951)				// in nS
-  , E_l_(-0.0774*1.0e03) 	// in mv
+  , E_l_(-77.4) 			// in mv
   , C_m_(99.182)			// in pF
   , t_ref_(0.5)				// in ms
-  , V_reset_(0.0)			// in mV
   , a_spike_(0.0)			// in mV
   , b_spike_(0.0)			// in 1/ms
   , voltage_reset_a_(0.0)	// coefficient
@@ -66,8 +65,9 @@ allen::glif_lif_r_asc_a::Parameters_::Parameters_()
 }
 
 allen::glif_lif_r_asc_a::State_::State_( const Parameters_& p )
-  : V_m_(0.0)	// in mV
-  , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
+  : V_m_(p.E_l_)	// in mV
+  , ASCurrents_(p.asc_init_) // in pA
+  , threshold_(p.th_inf_) // in mV
   , I_(0.0)		// in pA
 {
 }
@@ -84,7 +84,7 @@ allen::glif_lif_r_asc_a::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::E_L, E_l_);
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
-  def<double>(d, names::V_reset, V_reset_);
+  //def<double>(d, names::V_reset, V_reset_);
 
   def<double>(d, "a_spike", a_spike_);
   def<double>(d, "b_spike", b_spike_);
@@ -110,7 +110,7 @@ allen::glif_lif_r_asc_a::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::E_L, E_l_ );
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
-  updateValue< double >(d, names::V_reset, V_reset_ );
+  //updateValue< double >(d, names::V_reset, V_reset_ );
 
   updateValue< double >(d, "a_spike", a_spike_ );
   updateValue< double >(d, "b_spike", b_spike_ );
@@ -125,6 +125,21 @@ allen::glif_lif_r_asc_a::Parameters_::set( const DictionaryDatum& d )
   updateValue< std::vector<double> >(d, Name("asc_amps"), asc_amps_);
   updateValue< std::vector<double> >(d, Name("r"), r_);
   updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
+
+  if ( C_m_ <= 0.0 )
+  {
+    throw BadProperty( "Capacitance must be strictly positive." );
+  }
+
+  if ( G_ <= 0.0 )
+  {
+    throw BadProperty( "Membrane conductance must be strictly positive." );
+  }
+
+  if ( t_ref_ <= 0.0 )
+  {
+    throw BadProperty( "Refractory time constant must be strictly positive." );
+  }
 
 }
 
@@ -232,7 +247,6 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
 
 	// update threshold via exact solution of dynamics of spike component of threshold
 	spike_component = V_.last_spike_ * std::exp(-P_.b_spike_ * dt);
-	//S_.threshold_ = spike_component + V_.last_voltage_ + P_.th_inf_;
 	V_.last_spike_ = spike_component;
 
     if( V_.t_ref_remaining_ > 0.0)
@@ -286,9 +300,7 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
       // voltage dynamic
       switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
-        case 0: //S_.V_m_ = v_old + dt * (S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_))/P_.C_m_;
-        	  	S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
-        	  	//voltage_t0 + (inj + np.sum(AScurrents_t0) - neuron.G * neuron.coeffs['G'] * (voltage_t0 - neuron.El)) * neuron.dt / (neuron.C * neuron.coeffs['C'])
+        case 0: S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
                 break;
         // Linear Exact to find next V_m value
         case 1: S_.V_m_ = v_old * exp_tau + ((S_.I_+ S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.C_m_) * (1 - exp_tau) / tau;
@@ -299,8 +311,8 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
       double beta = (S_.I_ + S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.G_;
       double phi = P_.a_voltage_ / (P_.b_voltage_ - P_.G_ / P_.C_m_);
 	  voltage_component = phi * (v_old - beta) * std::exp(-P_.G_ * dt / P_.C_m_) + 1 / (std::exp(P_.b_voltage_ * dt))\
-			  * (V_.last_voltage_ - phi * (v_old - beta) - (P_.a_voltage_ / P_.b_voltage_) * (beta - P_.E_l_) - 0.0)\
-			  + (P_.a_voltage_ / P_.b_voltage_) * (beta - P_.E_l_) + 0.0;
+			  * (V_.last_voltage_ - phi * (v_old - beta) - (P_.a_voltage_ / P_.b_voltage_) * (beta - P_.E_l_))\
+			  + (P_.a_voltage_ / P_.b_voltage_) * (beta - P_.E_l_);
 
 	  S_.threshold_ = V_.last_spike_ + voltage_component + P_.th_inf_;
       V_.last_voltage_ = voltage_component;
@@ -313,7 +325,6 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
 
 	    // Find the exact time during this step that the neuron crossed the threshold and record it
         double spike_offset = (1 - (v_old - th_old)/(( S_.threshold_- th_old)-(S_.V_m_ - v_old))) * Time::get_resolution().get_ms();
-        //printf("%f, %.10f, %.10f, %.10f, %.10f, %.10f\n",dt,spike_offset, v_old, S_.V_m_,th_old, S_.threshold_);
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
         se.set_offset(spike_offset);

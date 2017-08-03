@@ -70,7 +70,6 @@ private:
     double E_l_; 		// resting potential in mV
     double C_m_; 		// capacitance in pF
     double t_ref_; 		// refractory time in ms
-    double V_reset_; 	// Membrane voltage following spike inmV
     double a_spike_; 	// threshold additive constant following reset in mV
     double b_spike_; 	// spike induced threshold in 1/ms
 

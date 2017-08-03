@@ -64,14 +64,11 @@ private:
 
   struct Parameters_
   {
-	//double thr_init_; 	 // initial threshold in mV
 	double th_inf_;  		 // infinity threshold in mV
-    //double V_th_;  		 // A constant spiking threshold in mV
     double G_; 				 // membrane conductance in nS
     double E_l_; 			 // resting potential in mV
     double C_m_;			 // capacitance in pF
     double t_ref_; 			 // refractory time in ms
-    double V_reset_; 		 // Membrane voltage following spike in mV
 
     double a_spike_; 		 // threshold additive constant following reset in mV
     double b_spike_;	 	 //spike induced threshold in 1/ms
@@ -219,7 +216,5 @@ glif_lif_r_asc_a::set_status( const DictionaryDatum& d )
 }
 
 } // namespace nest
-
-
 
 #endif

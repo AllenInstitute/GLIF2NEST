@@ -20,7 +20,6 @@
 #include "integerdatum.h"
 #include "lockptrdatum.h"
 
-
 using namespace nest;
 
 
@@ -45,12 +44,11 @@ RecordablesMap< allen::glif_lif_r_asc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_r_asc::Parameters_::Parameters_()
-  : th_inf_(0.0265*1.0e03)  // in mV
+  : th_inf_(26.5)  			// in mV
   , G_(4.6951)				// in nS
-  , E_l_(-0.0774*1.0e03)	// in mV
+  , E_l_(-77.4)				// in mV
   , C_m_(99.182)			// in pF
   , t_ref_(0.5)				// in ms
-  , V_reset_(0.0)			// in mV
   , a_spike_(0.0)			// in mV
   , b_spike_(0.0)			// in 1/ms
   , voltage_reset_a_(0.0)	// coefficient
@@ -64,8 +62,9 @@ allen::glif_lif_r_asc::Parameters_::Parameters_()
 }
 
 allen::glif_lif_r_asc::State_::State_( const Parameters_& p )
-  : V_m_(0.0)	// in mV
-  , ASCurrents_(std::vector<double>(2, 0.0))	// in pA
+  : V_m_(p.E_l_)	// in mV
+  , ASCurrents_(p.asc_init_) // in pA
+  , threshold_(p.th_inf_) // in mV
   , I_(0.0)		// in pA
 {
 }
@@ -82,13 +81,10 @@ allen::glif_lif_r_asc::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::E_L, E_l_);
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
-  def<double>(d, names::V_reset, V_reset_);
-
   def<double>(d, "a_spike", a_spike_);
   def<double>(d, "b_spike", b_spike_);
   def<double>(d, "a_reset", voltage_reset_a_);
   def<double>(d, "b_reset", voltage_reset_b_);
-
   def< std::vector<double> >(d, Name("asc_init"), asc_init_);
   def< std::vector<double> >(d, Name("k"), k_ );
   def< std::vector<double> >(d, Name("asc_amps"), asc_amps_);
@@ -104,18 +100,30 @@ allen::glif_lif_r_asc::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::E_L, E_l_ );
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
-  updateValue< double >(d, names::V_reset, V_reset_ );
-
   updateValue< double >(d, "a_spike", a_spike_ );
   updateValue< double >(d, "b_spike", b_spike_ );
   updateValue< double >(d, "a_reset", voltage_reset_a_ );
   updateValue< double >(d, "b_reset", voltage_reset_b_ );
-
   updateValue< std::vector<double> >(d, Name("asc_init"), asc_init_);
   updateValue< std::vector<double> >(d, Name("k"), k_ );
   updateValue< std::vector<double> >(d, Name("asc_amps"), asc_amps_);
   updateValue< std::vector<double> >(d, Name("r"), r_);
   updateValue< std::string >(d, "V_dynamics_method", V_dynamics_method_);
+
+  if ( C_m_ <= 0.0 )
+  {
+    throw BadProperty( "Capacitance must be strictly positive." );
+  }
+
+  if ( G_ <= 0.0 )
+  {
+    throw BadProperty( "Membrane conductance must be strictly positive." );
+  }
+
+  if ( t_ref_ <= 0.0 )
+  {
+    throw BadProperty( "Refractory time constant must be strictly positive." );
+  }
 }
 
 void
@@ -208,7 +216,6 @@ allen::glif_lif_r_asc::update( Time const& origin, const long from, const long t
   const double dt = Time::get_resolution().get_ms();
 
   double v_old = S_.V_m_;
-  //double ASCurrent_old_sum = 0.0;
   double spike_component = 0.0;
   double th_old=S_.threshold_;
   double tau = P_.G_ / P_.C_m_;
@@ -216,7 +223,6 @@ allen::glif_lif_r_asc::update( Time const& origin, const long from, const long t
 
   for ( long lag = from; lag < to; ++lag )
   {
-
 	// update threshold via exact solution of dynamics of spike component of threshold
 	spike_component = V_.last_spike_ * std::exp(-P_.b_spike_ * dt);
 	S_.threshold_ = spike_component + P_.th_inf_;
