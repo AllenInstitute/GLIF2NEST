@@ -13,6 +13,11 @@
 #include "glif_lif_asc_psc.h"
 #include "glif_lif_r_asc_psc.h"
 #include "glif_lif_r_asc_a_psc.h"
+#include "glif_lif_cond.h"
+#include "glif_lif_r_cond.h"
+#include "glif_lif_asc_cond.h"
+#include "glif_lif_r_asc_cond.h"
+#include "glif_lif_r_asc_a_cond.h"
 
 // Includes from nestkernel:
 #include "connection_manager_impl.h"
@@ -66,4 +71,9 @@ void allen::GlifModules::init(SLIInterpreter *i) {
   nest::kernel().model_manager.register_node_model<glif_lif_asc_psc>("glif_lif_asc_psc");
   nest::kernel().model_manager.register_node_model<glif_lif_r_asc_psc>("glif_lif_r_asc_psc");
   nest::kernel().model_manager.register_node_model<glif_lif_r_asc_a_psc>("glif_lif_r_asc_a_psc");
+  nest::kernel().model_manager.register_node_model<glif_lif_cond>("glif_lif_cond");
+  nest::kernel().model_manager.register_node_model<glif_lif_r_cond>("glif_lif_r_cond");
+  nest::kernel().model_manager.register_node_model<glif_lif_asc_cond>("glif_lif_asc_cond");
+  nest::kernel().model_manager.register_node_model<glif_lif_r_asc_cond>("glif_lif_r_asc_cond");
+  nest::kernel().model_manager.register_node_model<glif_lif_r_asc_a_cond>("glif_lif_r_asc_a_cond");
 }
