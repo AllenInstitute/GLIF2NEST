@@ -56,7 +56,7 @@ First determine the type in injection schemes are available
 $ python run_model_psc.py --list-stimuli
 ```
 The following will run NEST implementation of a 4 neurons network as described below and plot voltage-traces and spike-trains. Model download is not required.
-* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is 2.0ms and one port is 1.0ms);
+* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is tau_syn=2.0ms and one port is tau_syn=1.0ms);
 * The first neuron is connected the first port of the second neuron;
 * The first neuron is connected the second port of the third neuron;
 * The first neuron is also connected both ports of the fourth neuron;
@@ -71,7 +71,7 @@ First determine the type in injection schemes are available
 $ python run_model_cond.py --list-stimuli
 ```
 The following will run NEST implementation of a 4 neurons network as described below and plot voltage-traces and spike-trains. Model download is not required.
-* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is 2.0ms and one port is 1.0ms);
+* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is tau_syn=2.0ms/E_rev=0.0mV and one port is tau_syn=1.0ms/E_rev=-70mV);
 * The first neuron is connected the first port of the second neuron;
 * The first neuron is connected the second port of the third neuron;
 * The first neuron is also connected both ports of the fourth neuron;
