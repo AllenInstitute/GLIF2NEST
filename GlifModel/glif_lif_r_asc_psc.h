@@ -100,7 +100,8 @@ private:
 
     double threshold_; // voltage threshold in mV
 
-    double I_; // external current in mV
+    double I_; 			// external current in pA
+    double I_syn_; 		// post synaptic current in pA
     std::vector< double > y1_; // synapse current evolution state 1 in pA
     std::vector< double > y2_; // synapse current evolution state 2 in pA
 
@@ -138,8 +139,8 @@ private:
     std::vector< double > P32_; // synaptic/membrane current evolution parameter
 
     /** Amplitude of the synaptic current.
-              This value is chosen such that a post-synaptic potential with
-              weight one has an amplitude of 1 mV.
+              This value is chosen such that a post-synaptic current with
+              weight one has an amplitude of 1 pA.
     */
     std::vector< double > PSCInitialValues_;
 
@@ -155,6 +156,11 @@ private:
   double get_AScurrents_sum_() const
   {
     return S_.ASCurrents_[0];
+  }
+
+  double get_I_syn_() const
+  {
+    return S_.I_syn_;
   }
 
   Parameters_ P_; 

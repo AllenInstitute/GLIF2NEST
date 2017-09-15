@@ -40,6 +40,7 @@ RecordablesMap< allen::glif_lif_psc >::create()
 {
   // use standard names whereever you can for consistency!
   insert_( names::V_m, &allen::glif_lif_psc::get_V_m_ );
+  insert_( names::I_syn, &allen::glif_lif_psc::get_I_syn_ );
 }
 }
 
@@ -304,9 +305,11 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
       }
 
       // add synapse component for voltage dynamics
+      S_.I_syn_ = 0.0;
       for ( size_t i = 0; i < P_.n_receptors_(); i++ )
       {
         S_.V_m_ += V_.P31_[i] * S_.y1_[i] + V_.P32_[i] * S_.y2_[i];
+        S_.I_syn_ += S_.y2_[i];
       }
 
       if( S_.V_m_ > P_.th_inf_ ) 
@@ -315,7 +318,7 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
         V_.t_ref_remaining_ = V_.t_ref_total_;
         // Determine spike offset and send spike event
         double spike_offset = (1 - (P_.th_inf_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
-        if (spike_offset>0.005) printf("%ld, %f, %f,%.10f, %.10f, %.10f\n",origin.get_steps() + lag + 1, dt,S_.I_,spike_offset, v_old, S_.V_m_);
+        //if (spike_offset>0.005) printf("%ld, %f, %f,%.10f, %.10f, %.10f\n",origin.get_steps() + lag + 1, dt,S_.I_,spike_offset, v_old, S_.V_m_);
 
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;

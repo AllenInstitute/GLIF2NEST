@@ -38,6 +38,7 @@ RecordablesMap< allen::glif_lif_asc_psc >::create()
 {
   insert_( names::V_m, &allen::glif_lif_asc_psc::get_V_m_ );
   insert_( Name("AScurrents_sum"), &allen::glif_lif_asc_psc::get_AScurrents_sum_ );
+  insert_( names::I_syn, &allen::glif_lif_asc_psc::get_I_syn_ );
 }
 }
 
@@ -326,9 +327,11 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
 
       // add synapse component for voltage dynamics
       //double v_syn_ = 0.0;
+      S_.I_syn_ = 0.0;
       for ( size_t i = 0; i < P_.n_receptors_(); i++ )
       {
         S_.V_m_ += V_.P31_[i] * S_.y1_[i] + V_.P32_[i] * S_.y2_[i];
+        S_.I_syn_ += S_.y2_[i];
       }
 
       // Check if their is an action potential

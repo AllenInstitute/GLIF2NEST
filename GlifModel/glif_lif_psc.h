@@ -90,6 +90,7 @@ private:
   {
     double V_m_;  	// membrane potential in mV
     double I_; 		// external current in pA
+    double I_syn_; 		// post synaptic current in pA
     std::vector< double > y1_; // synapse current evolution state 1 in pA
     std::vector< double > y2_; // synapse current evolution state 2 in pA
 
@@ -126,8 +127,8 @@ private:
     std::vector< double > P32_; // synaptic/membrane current evolution parameter
 
     /** Amplitude of the synaptic current.
-              This value is chosen such that a post-synaptic potential with
-              weight one has an amplitude of 1 mV.
+              This value is chosen such that a post-synaptic current with
+              weight one has an amplitude of 1 pA.
     */
     std::vector< double > PSCInitialValues_; // post synaptic current intial values in pA
 
@@ -137,6 +138,11 @@ private:
   double get_V_m_() const
   {
     return S_.V_m_;
+  }
+
+  double get_I_syn_() const
+  {
+    return S_.I_syn_;
   }
   /**
    * @defgroup glif_members Member variables of neuron model.
