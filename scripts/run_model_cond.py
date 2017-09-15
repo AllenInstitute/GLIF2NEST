@@ -27,7 +27,7 @@ import plot_helper as plotter
 
 nest.Install('glifmodule.so')
 
-def create_lif(config, dt_ms):
+def create_lif(config):
     """Creates a nest glif_lif object"""
     coeffs = config['coeffs']
     return nest.Create('glif_lif',
@@ -35,12 +35,12 @@ def create_lif(config, dt_ms):
                                'g': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El']  * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'V_reset': config['El_reference'] * 1.0e03,
                                #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
                                'V_dynamics_method': 'linear_exact'}) #'linear_forward_euler' or 'linear_exact'
 
-def create_lif_asc(config, dt_ms):
+def create_lif_asc(config):
     """Creates a nest glif_lif_asc object"""
     coeffs = config['coeffs']
     return nest.Create('glif_lif_asc',
@@ -48,7 +48,7 @@ def create_lif_asc(config, dt_ms):
                                'g': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'V_reset': config['El_reference'] * 1.0e03,
                                'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
                                'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
@@ -57,7 +57,7 @@ def create_lif_asc(config, dt_ms):
                                #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
                                'V_dynamics_method': 'linear_exact'})
     
-def create_lif_r(config, dt_ms):
+def create_lif_r(config):
     """Creates a nest glif_lif_r object"""
     coeffs = config['coeffs']
     threshold_params = config['threshold_dynamics_method']['params']
@@ -67,7 +67,7 @@ def create_lif_r(config, dt_ms):
                                'g': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                #'V_reset': config['El_reference'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
@@ -76,7 +76,7 @@ def create_lif_r(config, dt_ms):
                                #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
                                'V_dynamics_method': 'linear_exact'})  
     
-def create_lif_r_asc(config, dt_ms):
+def create_lif_r_asc(config):
     """Creates a nest glif_lif_r_asc object"""
     coeffs = config['coeffs']
     threshold_params = config['threshold_dynamics_method']['params']
@@ -86,7 +86,7 @@ def create_lif_r_asc(config, dt_ms):
                                'g': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_reset': reset_params['a'], 
@@ -98,7 +98,7 @@ def create_lif_r_asc(config, dt_ms):
                                #'V_dynamics_method': config['voltage_dynamics_method']['name']}) #'linear_forward_euler' or 'linear_exact'
                                'V_dynamics_method': 'linear_exact'})
 
-def create_lif_r_asc_a(config, dt_ms):
+def create_lif_r_asc_a(config):
     """Creates a nest glif_lif_r_asc_a object"""
     coeffs = config['coeffs']
     threshold_params = config['threshold_dynamics_method']['params']
@@ -109,7 +109,7 @@ def create_lif_r_asc_a(config, dt_ms):
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                 #'E_L': (config['El_reference']+config['El']) * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_voltage': threshold_params['a_voltage'] * coeffs['a'] * 1.0e-03,
@@ -124,7 +124,7 @@ def create_lif_r_asc_a(config, dt_ms):
                                'V_dynamics_method': 'linear_exact'})
 
 ## Create model with synaptic ports
-def create_lif_cond(config, syn_tau, E_rev, dt_ms):
+def create_lif_cond(config, syn_tau, E_rev):
     """Creates a nest glif_lif_cond object"""
     coeffs = config['coeffs']
     return nest.Create('glif_lif_cond', 
@@ -132,12 +132,12 @@ def create_lif_cond(config, syn_tau, E_rev, dt_ms):
                                'g_m': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms, # in ms
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03, # in ms
                                'V_reset': config['El_reference'] * 1.0e03,
                                'tau_syn': syn_tau, # in ms
                                'E_rev': E_rev}) # in mV
 
-def create_lif_r_cond(config, syn_tau, E_rev, dt_ms):
+def create_lif_r_cond(config, syn_tau, E_rev):
     """Creates a nest glif_lif_r_cond object"""
     coeffs = config['coeffs']
     threshold_params = config['threshold_dynamics_method']['params']
@@ -147,7 +147,7 @@ def create_lif_r_cond(config, syn_tau, E_rev, dt_ms):
                                'g_m': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                #'V_reset': config['El_reference'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
@@ -156,7 +156,7 @@ def create_lif_r_cond(config, syn_tau, E_rev, dt_ms):
                                'tau_syn': syn_tau, # in ms
                                'E_rev': E_rev}) # in mV
 
-def create_lif_asc_cond(config, syn_tau, E_rev, dt_ms):
+def create_lif_asc_cond(config, syn_tau, E_rev):
     """Creates a nest glif_lif_asc_cond object"""
     coeffs = config['coeffs']
     return nest.Create('glif_lif_asc_cond',
@@ -164,7 +164,7 @@ def create_lif_asc_cond(config, syn_tau, E_rev, dt_ms):
                                'g_m': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'V_reset': config['El_reference'] * 1.0e03,
                                'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
                                'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
@@ -173,7 +173,7 @@ def create_lif_asc_cond(config, syn_tau, E_rev, dt_ms):
                                'tau_syn': syn_tau, # in ms
                                'E_rev': E_rev}) # in mV
 
-def create_lif_r_asc_cond(config, syn_tau, E_rev, dt_ms):
+def create_lif_r_asc_cond(config, syn_tau, E_rev):
     """Creates a nest glif_lif_r_asc_cond object"""
     coeffs = config['coeffs']
     threshold_params = config['threshold_dynamics_method']['params']
@@ -183,7 +183,7 @@ def create_lif_r_asc_cond(config, syn_tau, E_rev, dt_ms):
                                'g_m': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_reset': reset_params['a'], 
@@ -195,7 +195,7 @@ def create_lif_r_asc_cond(config, syn_tau, E_rev, dt_ms):
                                'tau_syn': syn_tau, # in ms
                                'E_rev': E_rev}) # in mV
 
-def create_lif_r_asc_a_cond(config, syn_tau, E_rev, dt_ms):
+def create_lif_r_asc_a_cond(config, syn_tau, E_rev):
     """Creates a nest glif_lif_r_asc_a_cond object"""
     coeffs = config['coeffs']
     threshold_params = config['threshold_dynamics_method']['params']
@@ -204,9 +204,8 @@ def create_lif_r_asc_a_cond(config, syn_tau, E_rev, dt_ms):
                        params={'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'g_m': coeffs['G'] / config['R_input'] * 1.0e09,
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
-                                #'E_L': (config['El_reference']+config['El']) * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
-                               't_ref': config['spike_cut_length'] * dt_ms,
+                               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_voltage': threshold_params['a_voltage'] * coeffs['a'] * 1.0e-03,
@@ -240,26 +239,25 @@ def runNestModel(model_type, neuron_config, amp_times, amp_vals, dt_ms, simulati
     E_rev=[0.0,-70.0]
     neurons=[]
     if model_type == asdk.LIF:
-        neurons.append( create_lif(neuron_config, dt_ms)) 
-        #neurons.append( create_lif_cond(neuron_config, syn_tau, E_rev, dt_ms))
+        neurons.append( create_lif(neuron_config)) 
         for i in range(n-1):
-            neurons.append( create_lif_cond(neuron_config, syn_tau, E_rev, dt_ms))
+            neurons.append( create_lif_cond(neuron_config, syn_tau, E_rev))
     elif model_type == asdk.LIF_R:
-        neurons.append( create_lif_r(neuron_config, dt_ms))
+        neurons.append( create_lif_r(neuron_config))
         for i in range(n-1):
-            neurons.append( create_lif_r_cond(neuron_config, syn_tau, E_rev, dt_ms))
+            neurons.append( create_lif_r_cond(neuron_config, syn_tau, E_rev))
     elif model_type == asdk.LIF_ASC:
-        neurons.append( create_lif_asc(neuron_config, dt_ms))
+        neurons.append( create_lif_asc(neuron_config))
         for i in range(n-1):
-            neurons.append( create_lif_asc_cond(neuron_config, syn_tau, E_rev, dt_ms))
+            neurons.append( create_lif_asc_cond(neuron_config, syn_tau, E_rev))
     elif model_type == asdk.LIF_R_ASC:
-        neurons.append( create_lif_r_asc(neuron_config, dt_ms))
+        neurons.append( create_lif_r_asc(neuron_config))
         for i in range(n-1):
-            neurons.append( create_lif_r_asc_cond(neuron_config, syn_tau, E_rev, dt_ms))
+            neurons.append( create_lif_r_asc_cond(neuron_config, syn_tau, E_rev))
     elif model_type == asdk.LIF_R_ASC_A:
-        neurons.append( create_lif_r_asc_a(neuron_config, dt_ms))
+        neurons.append( create_lif_r_asc_a(neuron_config))
         for i in range(n-1):
-            neurons.append( create_lif_r_asc_a_cond(neuron_config, syn_tau, E_rev, dt_ms))
+            neurons.append( create_lif_r_asc_a_cond(neuron_config, syn_tau, E_rev))
 
     # Create voltmeter and spike reader
     voltmeters=[]
