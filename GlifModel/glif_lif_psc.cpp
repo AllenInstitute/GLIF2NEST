@@ -318,7 +318,6 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
         V_.t_ref_remaining_ = V_.t_ref_total_;
         // Determine spike offset and send spike event
         double spike_offset = (1 - (P_.th_inf_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
-        //if (spike_offset>0.005) printf("%ld, %f, %f,%.10f, %.10f, %.10f\n",origin.get_steps() + lag + 1, dt,S_.I_,spike_offset, v_old, S_.V_m_);
 
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;
