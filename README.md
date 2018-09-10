@@ -26,7 +26,7 @@ neuron = nest.Create('glif_lif') # or glif_lif_r, glif_lif_asc, glif_lif_r_asc
 
 ## Running and Testing
 ### Download Cell-Types-DB models to local machine
-In scripts/ folder, run the following command to install 10 specific modules from the paper
+In scripts/ folder, run the following command to install 10 specific modules
 ```bash
 $ python allensdk_helper.py
 ```
