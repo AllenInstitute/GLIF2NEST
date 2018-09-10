@@ -342,7 +342,7 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
 
 	    // Find the exact time during this step that the neuron crossed the threshold and record it
         double spike_offset = (1 - (P_.V_th_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
-        if (spike_offset>0.005) printf("%ld, %f, %f,%.10f, %.10f, %.10f\n",origin.get_steps() + lag + 1, dt,S_.I_,spike_offset, v_old, S_.V_m_);
+        //if (spike_offset>0.005) printf("%ld, %f, %f,%.10f, %.10f, %.10f\n",origin.get_steps() + lag + 1, dt,S_.I_,spike_offset, v_old, S_.V_m_);
 
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;

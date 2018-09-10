@@ -47,7 +47,7 @@ RecordablesMap< allen::glif_lif_asc >::create()
 allen::glif_lif_asc::Parameters_::Parameters_()
   : V_th_(26.5)	// in mV
   , G_(4.6951)				// in nS
-  , E_l_(-77.4)	// in mV
+  , E_L_(-77.4)	// in mV
   , C_m_(99.182)			// in pF
   , t_ref_(0.5)				// in mS
   , V_reset_(-77.4)			// in mV
@@ -60,7 +60,7 @@ allen::glif_lif_asc::Parameters_::Parameters_()
 }
 
 allen::glif_lif_asc::State_::State_( const Parameters_& p )
-  : V_m_(p.E_l_) // in mV
+  : V_m_(p.E_L_) // in mV
   , ASCurrents_(p.asc_init_) // in pA
   , I_(0.0)		// in pA
 {
@@ -75,7 +75,7 @@ allen::glif_lif_asc::Parameters_::get( DictionaryDatum& d ) const
 {
   def<double>(d, names::V_th, V_th_);
   def<double>(d, names::g, G_);
-  def<double>(d, names::E_L, E_l_);
+  def<double>(d, names::E_L, E_L_);
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
   def<double>(d, names::V_reset, V_reset_);
@@ -91,7 +91,7 @@ allen::glif_lif_asc::Parameters_::set( const DictionaryDatum& d )
 {
   updateValue< double >(d, names::V_th, V_th_ );
   updateValue< double >(d, names::g, G_ );
-  updateValue< double >(d, names::E_L, E_l_ );
+  updateValue< double >(d, names::E_L, E_L_ );
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
   updateValue< double >(d, names::V_reset, V_reset_ );
@@ -215,6 +215,10 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
   double tau = P_.G_ / P_.C_m_;
   double exp_tau = std::exp(-dt * tau);
 
+  if (origin.get_steps() < 5){
+	  printf("%f\n", P_.E_L_);
+  }
+
   for ( long lag = from; lag < to; ++lag )
   {
 
@@ -255,10 +259,10 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       // voltage dynamic
       switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
-        case 0: S_.V_m_ = v_old + dt * (S_.I_ + S_.ASCurrents_sum_ - P_.G_*(v_old - P_.E_l_))/P_.C_m_;
+        case 0: S_.V_m_ = v_old + dt * (S_.I_ + S_.ASCurrents_sum_ - P_.G_*(v_old - P_.E_L_))/P_.C_m_;
                 break;
         // Linear Exact to find next V_m value
-        case 1: S_.V_m_ = v_old * exp_tau + ((S_.I_+ S_.ASCurrents_sum_ + P_.G_ * P_.E_l_) / P_.C_m_) * (1 - exp_tau) / tau;
+        case 1: S_.V_m_ = v_old * exp_tau + ((S_.I_+ S_.ASCurrents_sum_ + P_.G_ * P_.E_L_) / P_.C_m_) * (1 - exp_tau) / tau;
                 break;
       }
 
