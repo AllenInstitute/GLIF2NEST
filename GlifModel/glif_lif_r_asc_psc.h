@@ -102,7 +102,7 @@ private:
 
     double I_; 			// external current in pA
     double I_syn_; 		// post synaptic current in pA
-    std::vector< double > y1_; // synapse current evolution state 1 in pA
+    std::vector< double > y1_; // synapse current evolution state 1 in pA/ms
     std::vector< double > y2_; // synapse current evolution state 2 in pA
 
     State_( const Parameters_& );
