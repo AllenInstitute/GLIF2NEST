@@ -130,7 +130,7 @@ private:
               This value is chosen such that a post-synaptic current with
               weight one has an amplitude of 1 pA.
     */
-    std::vector< double > PSCInitialValues_; // post synaptic current intial values in pA
+    std::vector< double > PSCInitialValues_; // post synaptic current initial values in pA
 
     unsigned int receptor_types_size_;
   };

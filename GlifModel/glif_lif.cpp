@@ -211,7 +211,7 @@ allen::glif_lif::update( Time const& origin, const long from, const long to )
       // While neuron is in refractory period count-down in time steps (since dt
       // may change while in refractory) while holding the voltage at last peak.
       V_.t_ref_remaining_ -= dt;
-      if( V_.t_ref_remaining_ <=0.0)
+      if( V_.t_ref_remaining_ <= 0.0)
       {
         S_.V_m_ = P_.V_reset_;
       }

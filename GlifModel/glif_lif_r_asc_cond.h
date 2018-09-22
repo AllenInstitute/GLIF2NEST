@@ -245,17 +245,6 @@ allen::glif_lif_r_asc_cond::send_test_event( nest::Node& target,
   return target.handles_test_event( e, receptor_type );
 }
 
-/*
-inline nest::port
-allen::glif_lif_r_asc_cond::handles_test_event( nest::SpikeEvent&,
-  nest::port receptor_type )
-{
-  if ( receptor_type != 0 )
-    throw nest::UnknownReceptorType( receptor_type, get_name() );
-  return 0;
-}
-*/
-
 inline nest::port
 allen::glif_lif_r_asc_cond::handles_test_event( nest::CurrentEvent&,
   nest::port receptor_type )

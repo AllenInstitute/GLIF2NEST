@@ -71,15 +71,15 @@ private:
     double t_ref_; 			 // refractory time in ms
 
     double a_spike_; 		 // threshold additive constant following reset in mV
-    double b_spike_;	 	 //spike induced threshold in 1/ms
-    double voltage_reset_a_; //voltage fraction following reset coefficient
+    double b_spike_;	 	 // spike induced threshold in 1/ms
+    double voltage_reset_a_; // voltage fraction following reset coefficient
     double voltage_reset_b_; // voltage additive constant following reset in mV
     double a_voltage_; 		 // a 'leak-conductance' for the voltage-dependent component of the threshold in 1/ms
     double b_voltage_; 		 // inverse of which is the time constant of the voltage-dependent component of the threshold in 1/ms
 
     std::vector<double> asc_init_; 	// initial values of ASCurrents_in pA
     std::vector<double> k_; 		// predefined time scale in 1/ms
-    std::vector<double> asc_amps_;	// ampilfy of after spike current in pA
+    std::vector<double> asc_amps_;	// amptitude of after spike current in pA
     std::vector<double> r_;			// after spike current coefficient, mostly 1.0
     std::string V_dynamics_method_; // voltage dynamic methods
 

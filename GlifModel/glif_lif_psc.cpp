@@ -64,7 +64,7 @@ allen::glif_lif_psc::Parameters_::Parameters_()
 
 allen::glif_lif_psc::State_::State_( const Parameters_& p )
   : V_m_(p.E_l_)	// mV
-  , I_(0.0)		// pA
+  , I_(0.0)			// pA
 
 {
 	y1_.clear();
@@ -282,7 +282,7 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
       // While neuron is in refractory period count-down in time steps (since dt
       // may change while in refractory) while holding the voltage at last peak.
       V_.t_ref_remaining_ -= dt;
-      if( V_.t_ref_remaining_ <=0.0)
+      if( V_.t_ref_remaining_ <= 0.0)
       {
         S_.V_m_ = P_.V_reset_;
       }
@@ -297,7 +297,7 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
       // voltage dynamics of membranes
       switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
-        case 0: S_.V_m_ = v_old + dt*(S_.I_ - P_.G_* (v_old - P_.E_l_))/P_.C_m_;
+        case 0: S_.V_m_ = v_old + dt * (S_.I_ - P_.G_ * (v_old - P_.E_l_)) / P_.C_m_;
         		break;
         // Linear Exact to find next V_m value
         case 1: S_.V_m_ = v_old * V_.P33_ + (S_.I_ + P_.G_ * P_.E_l_) * V_.P30_;

@@ -193,13 +193,6 @@ private:
     unsigned int receptor_types_size_;
   };
 
-  /*
-  double get_V_m_() const
-  {
-    return S_.V_m_;
-  }
-  */
-
   //! Read out state vector elements, used by UniversalDataLogger
   template < State_::StateVecElems elem >
   double

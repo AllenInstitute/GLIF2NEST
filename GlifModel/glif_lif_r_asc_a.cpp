@@ -168,7 +168,6 @@ allen::glif_lif_r_asc_a::Buffers_::Buffers_( const Buffers_&, glif_lif_r_asc_a& 
 {
 }
 
-
 /* ----------------------------------------------------------------
  * Default and copy constructor for node
  * ---------------------------------------------------------------- */
@@ -288,7 +287,7 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
     {
       // Integrate voltage and currents
 
-      // Calculate new ASCurrents value using expoential methods
+      // Calculate new ASCurrents value using exponential methods
       ASCurrents_old_sum = S_.ASCurrents_sum_;
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)

@@ -457,7 +457,7 @@ allen::glif_lif_r_asc_a_cond::update( Time const& origin, const long from, const
 	S_.threshold_ = spike_component + V_.last_voltage_ + P_.th_inf_;
 	V_.last_spike_ = spike_component;
 
-    // Calculate new ASCurrents value using expoential methods
+    // Calculate new ASCurrents value using exponential methods
     S_.ASCurrents_sum_ = 0.0;
     for(std::size_t a = 0; a < P_.n_ASCurrents_(); ++a)
     {

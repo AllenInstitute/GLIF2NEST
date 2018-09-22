@@ -265,7 +265,7 @@ allen::glif_lif_r_asc::update( Time const& origin, const long from, const long t
     {
       // Integrate voltage and currents
 
-      // Calculate new ASCurrents value using expoential methods
+      // Calculate new ASCurrents value using exponential methods
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {

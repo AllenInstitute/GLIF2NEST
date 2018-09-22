@@ -45,9 +45,9 @@ RecordablesMap< allen::glif_lif_asc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_asc::Parameters_::Parameters_()
-  : V_th_(26.5)	// in mV
+  : V_th_(26.5)				// in mV
   , G_(4.6951)				// in nS
-  , E_L_(-77.4)	// in mV
+  , E_L_(-77.4)				// in mV
   , C_m_(99.182)			// in pF
   , t_ref_(0.5)				// in mS
   , V_reset_(-77.4)			// in mV
@@ -215,10 +215,6 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
   double tau = P_.G_ / P_.C_m_;
   double exp_tau = std::exp(-dt * tau);
 
-  if (origin.get_steps() < 5){
-	  printf("%f\n", P_.E_L_);
-  }
-
   for ( long lag = from; lag < to; ++lag )
   {
 
@@ -230,7 +226,7 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       if( V_.t_ref_remaining_ <= 0.0)
       {
         // Neuron has left refractory period, reset voltage and after-spike current
-	      // Reset ASC_currents
+	    // Reset ASC_currents
       	for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       	{
       		S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
@@ -248,7 +244,7 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
     {
       // Integrate voltage and currents
 
-      // Calculate new ASCurrents value using expoenatial methods
+      // Calculate new ASCurrents value using exponential methods
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {
