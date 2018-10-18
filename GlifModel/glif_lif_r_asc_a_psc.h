@@ -12,6 +12,10 @@
 
 namespace allen
 {
+/*
+ * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ *
+ */
 
 class glif_lif_r_asc_a_psc : public nest::Archiving_Node
 {

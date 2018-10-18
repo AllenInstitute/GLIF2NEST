@@ -22,17 +22,11 @@
 
 namespace allen
 {
-
-/**
- * Function computing right-hand side of ODE for GSL solver.
- * @note Must be declared here so we can befriend it in class.
- * @note Must have C-linkage for passing to GSL. Internally, it is
- *       a first-class C++ function, but cannot be a member function
- *       because of the C-linkage.
- * @note No point in declaring it inline, since it is called
- *       through a function pointer.
- * @param void* Pointer to model neuron instance.
+/*
+ * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ *
  */
+
 extern "C" int glif_lif_cond_dynamics( double, const double*, double*, void* );
 
 
@@ -99,7 +93,7 @@ private:
     double t_ref_; 		// refractory time in ms
     double V_reset_; 	// Membrane voltage following spike in mV
     std::vector< double > tau_syn_; // synaptic port time constants in ms
-    std::vector< double > E_rev_; // reversal pontiental in mV
+    std::vector< double > E_rev_; // reversal potential in mV
 
     // boolean flag which indicates whether the neuron has connections
     bool has_connections_;

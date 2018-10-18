@@ -488,7 +488,7 @@ allen::glif_lif_asc_cond::update( Time const& origin, const long from, const lon
     }
     else
     {
-      // Check if their is an action potential
+      // Check if there is an action potential
       if( S_.y_[ State_::V_M ] > P_.V_th_ )
       {
 	    // Marks that the neuron is in a refractory period

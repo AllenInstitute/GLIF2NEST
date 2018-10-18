@@ -236,8 +236,6 @@ allen::glif_lif_psc::calibrate()
   S_.y2_.resize( P_.n_receptors_() );
   V_.PSCInitialValues_.resize( P_.n_receptors_() );
 
-  //S_.i_syn_.resize( P_.n_receptors_());
-
   B_.spikes_.resize( P_.n_receptors_() );
 
   double Tau_ = P_.C_m_ / P_.G_;  // in second

@@ -12,6 +12,10 @@
 
 namespace allen
 {
+/*
+ * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ *
+ */
 
 class glif_lif : public nest::Archiving_Node
 {
@@ -114,16 +118,7 @@ private:
   {
     return S_.V_m_;
   }
-  /**
-   * @defgroup glif_members Member variables of neuron model.
-   * Each model neuron should have precisely the following four data members,
-   * which are one instance each of the parameters, state, buffers and variables
-   * structures. Experience indicates that the state and variables member should
-   * be next to each other to achieve good efficiency (caching).
-   * @note Devices require one additional data member, an instance of the @c
-   *       Device child class they belong to.
-   * @{
-   */
+
   Parameters_ P_; //!< Free parameters.
   State_ S_;      //!< Dynamic state.
   Variables_ V_;  //!< Internal Variables
@@ -132,7 +127,6 @@ private:
   //! Mapping of recordables names to access functions
   static nest::RecordablesMap< glif_lif > recordablesMap_;
 
-  /** @} */
 };
 
 inline nest::port

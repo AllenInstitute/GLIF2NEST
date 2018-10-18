@@ -22,17 +22,11 @@
 
 namespace allen
 {
-
-/**
- * Function computing right-hand side of ODE for GSL solver.
- * @note Must be declared here so we can befriend it in class.
- * @note Must have C-linkage for passing to GSL. Internally, it is
- *       a first-class C++ function, but cannot be a member function
- *       because of the C-linkage.
- * @note No point in declaring it inline, since it is called
- *       through a function pointer.
- * @param void* Pointer to model neuron instance.
+/*
+ * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ *
  */
+
 extern "C" int glif_lif_r_asc_a_cond_dynamics( double, const double*, double*, void* );
 
 class glif_lif_r_asc_a_cond : public nest::Archiving_Node
@@ -109,7 +103,7 @@ private:
     std::vector<double> asc_amps_; // in pA
     std::vector<double> r_;	// coefficient
     std::vector< double > tau_syn_; // synaptic port time constants in ms
-    std::vector< double > E_rev_; // reversal pontiental in mV
+    std::vector< double > E_rev_; // reversal potential in mV
     //std::string V_dynamics_method_; // voltage dynamic methods
 
     // boolean flag which indicates whether the neuron has connections
@@ -200,7 +194,7 @@ private:
 
     /** Amplitude of the synaptic conductance.
         This value is chosen such that an event of weight 1.0 results in a peak conductance of 1 nS
-		at t = tau_syn..
+		at t = tau_syn.
     */
     std::vector< double > CondInitialValues_;
 

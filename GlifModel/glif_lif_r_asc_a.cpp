@@ -110,7 +110,6 @@ allen::glif_lif_r_asc_a::Parameters_::set( const DictionaryDatum& d )
   updateValue< double >(d, names::E_L, E_l_ );
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
-  //updateValue< double >(d, names::V_reset, V_reset_ );
 
   updateValue< double >(d, "a_spike", a_spike_ );
   updateValue< double >(d, "b_spike", b_spike_ );
@@ -316,7 +315,7 @@ allen::glif_lif_r_asc_a::update( Time const& origin, const long from, const long
 	  S_.threshold_ = V_.last_spike_ + voltage_component + P_.th_inf_;
       V_.last_voltage_ = voltage_component;
 
-      // Check if their is an action potential
+      // Check if there is an action potential
       if( S_.V_m_ >  S_.threshold_ )
       {
 	    // Marks that the neuron is in a refractory period

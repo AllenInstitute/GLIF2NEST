@@ -231,7 +231,7 @@ allen::glif_lif_asc_psc::calibrate()
      V_.method_ = 1;
 
   // post synapse currents
-  const double h = Time::get_resolution().get_ms(); // in second
+  const double h = Time::get_resolution().get_ms();
 
   V_.P11_.resize( P_.n_receptors_() );
   V_.P21_.resize( P_.n_receptors_() );
@@ -245,13 +245,13 @@ allen::glif_lif_asc_psc::calibrate()
 
   B_.spikes_.resize( P_.n_receptors_() );
 
-  double Tau_ = P_.C_m_ / P_.G_;  // in second
+  double Tau_ = P_.C_m_ / P_.G_;
   V_.P33_ = std::exp( -h / Tau_ );
   V_.P30_ = 1 / P_.C_m_ * ( 1 - V_.P33_ ) * Tau_;
 
   for (size_t i = 0; i < P_.n_receptors_() ; i++ )
   {
-	double Tau_syn_s_ = P_.tau_syn_[i];  // in second
+	double Tau_syn_s_ = P_.tau_syn_[i];
 	// these P are independent
 	V_.P11_[i] = V_.P22_[i] = std::exp( -h / Tau_syn_s_ );
 
@@ -265,7 +265,6 @@ allen::glif_lif_asc_psc::calibrate()
 	V_.PSCInitialValues_[i] = 1.0 * numerics::e / Tau_syn_s_;
 	B_.spikes_[ i ].resize();
   }
-
 
 }
 
@@ -307,7 +306,7 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
     {
       // Integrate voltage and currents
 
-      // Calculate new ASCurrents value using expoential methods
+      // Calculate new ASCurrents value using exponential methods
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {
@@ -333,7 +332,7 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
         S_.I_syn_ += S_.y2_[i];
       }
 
-      // Check if their is an action potential
+      // Check if there is an action potential
       if( S_.V_m_ > P_.V_th_ ) 
       {
 	    // Marks that the neuron is in a refractory period
