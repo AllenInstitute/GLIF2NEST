@@ -72,7 +72,7 @@ allen::glif_lif_cond_dynamics( double,
     I_syn += y[ S::G_SYN + j ] * ( y[ S::V_M] - node.P_.E_rev_[ i ] );
   }
 
-  const double I_leak = node.P_.G_ * ( y[ S::V_M ] - node.P_.E_l_ );
+  const double I_leak = node.P_.G_ * ( y[ S::V_M ] - node.P_.E_L_ );
 
   // dV_m/dt
   f[ 0 ] = ( -I_leak - I_syn  + node.B_.I_stim_ ) / node.P_.C_m_;
@@ -96,7 +96,7 @@ allen::glif_lif_cond_dynamics( double,
 allen::glif_lif_cond::Parameters_::Parameters_()
   : th_inf_(26.5) 			// mV
   , G_(4.6951)				// nS (1/Gohm)
-  , E_l_(-77.4)				// mV
+  , E_L_(-77.4)				// mV
   , C_m_(99.182)			// pF
   , t_ref_(0.5)				// ms
   , V_reset_(-77.4)			// mV
@@ -111,7 +111,7 @@ allen::glif_lif_cond::State_::State_( const Parameters_& p )
   : y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 
 {
-	y_[ V_M ] = p.E_l_; // initialize to membrane potential
+	y_[ V_M ] = p.E_L_; // initialize to membrane potential
 }
 
 allen::glif_lif_cond::State_::State_( const State_& s )
@@ -144,7 +144,7 @@ allen::glif_lif_cond::Parameters_::get( DictionaryDatum& d ) const
 {
   def<double>(d, names::V_th, th_inf_);
   def<double>(d, Name("g_m"), G_);
-  def<double>(d, names::E_L, E_l_);
+  def<double>(d, names::E_L, E_L_);
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
   def<double>(d, names::V_reset, V_reset_);
@@ -161,7 +161,7 @@ allen::glif_lif_cond::Parameters_::set( const DictionaryDatum& d )
 {
   updateValue< double >(d, names::V_th, th_inf_ );
   updateValue< double >(d, Name("g_m"), G_ );
-  updateValue< double >(d, names::E_L, E_l_ );
+  updateValue< double >(d, names::E_L, E_L_ );
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
   updateValue< double >(d, names::V_reset, V_reset_ );

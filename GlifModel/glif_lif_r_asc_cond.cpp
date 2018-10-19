@@ -69,7 +69,7 @@ allen::glif_lif_r_asc_cond_dynamics( double,
     I_syn += y[ S::G_SYN + j ] * ( y[ S::V_M] - node.P_.E_rev_[ i ]);
   }
 
-  const double I_leak = node.P_.G_ * ( y[ S::V_M ] - node.P_.E_l_ );
+  const double I_leak = node.P_.G_ * ( y[ S::V_M ] - node.P_.E_L_ );
 
   // dV_m/dt
   f[ 0 ] = ( -I_leak - I_syn  + node.B_.I_stim_ + node.S_.ASCurrents_sum_ ) / node.P_.C_m_;
@@ -100,7 +100,7 @@ allen::glif_lif_r_asc_cond_dynamics( double,
 allen::glif_lif_r_asc_cond::Parameters_::Parameters_()
   : th_inf_(26.5) 			// in mV
   , G_(4.6951)				// in nS
-  , E_l_(-77.4)				// in mV
+  , E_L_(-77.4)				// in mV
   , C_m_(99.182)			// in pF
   , t_ref_(0.5)				// in ms
   , a_spike_(0.0)			// in mV
@@ -121,7 +121,7 @@ allen::glif_lif_r_asc_cond::State_::State_( const Parameters_& p )
   : threshold_(p.th_inf_) // in mV
   , y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 {
-	y_[ V_M ] = p.E_l_; // initialize to membrane potential
+	y_[ V_M ] = p.E_L_; // initialize to membrane potential
 	for(std::size_t a = 0; a < p.n_ASCurrents_(); ++a)
 	{
 	  y_[ ASC + a ]= p.asc_init_[a];
@@ -157,7 +157,7 @@ allen::glif_lif_r_asc_cond::Parameters_::get( DictionaryDatum& d ) const
 {
   def<double>(d, names::V_th, th_inf_);
   def<double>(d, Name("g_m"), G_);
-  def<double>(d, names::E_L, E_l_);
+  def<double>(d, names::E_L, E_L_);
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
 
@@ -182,7 +182,7 @@ allen::glif_lif_r_asc_cond::Parameters_::set( const DictionaryDatum& d )
 {
   updateValue< double >(d, names::V_th, th_inf_ );
   updateValue< double >(d, Name("g_m"), G_ );
-  updateValue< double >(d, names::E_L, E_l_ );
+  updateValue< double >(d, names::E_L, E_L_ );
   updateValue< double >(d, names::C_m, C_m_ );
   updateValue< double >(d, names::t_ref, t_ref_ );
 
@@ -496,7 +496,7 @@ allen::glif_lif_r_asc_cond::update( Time const& origin, const long from, const l
       	}
 
       	// Reset voltage
-      	S_.y_[ State_::V_M ] = P_.E_l_ + P_.voltage_reset_a_ * ( v_old - P_.E_l_ ) + P_.voltage_reset_b_;
+      	S_.y_[ State_::V_M ] = P_.E_L_ + P_.voltage_reset_a_ * ( v_old - P_.E_L_ ) + P_.voltage_reset_b_;
 
         // reset spike component of threshold
         V_.last_spike_ = V_.last_spike_ + P_.a_spike_;

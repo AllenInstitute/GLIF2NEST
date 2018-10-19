@@ -71,7 +71,7 @@ private:
   	double thr_init_; 	// initial threshold in mV
     double th_inf_;  	// A threshold in mV
     double G_; 			// membrane conductance in nS
-    double E_l_; 		// resting potential in mV
+    double E_L_; 		// resting potential in mV
     double C_m_; 		// capacitance in pF
     double t_ref_; 		// refractory time in ms
     double a_spike_; 	// threshold additive constant following reset in mV

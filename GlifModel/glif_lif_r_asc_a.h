@@ -70,7 +70,7 @@ private:
   {
 	double th_inf_;  		 // infinity threshold in mV
     double G_; 				 // membrane conductance in nS
-    double E_l_; 			 // resting potential in mV
+    double E_L_; 			 // resting potential in mV
     double C_m_;			 // capacitance in pF
     double t_ref_; 			 // refractory time in ms
 
