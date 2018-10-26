@@ -3,14 +3,14 @@ A helper for running NEST Glif models with/without conductance-based synaptic po
 including setting up various types of input currents. 
 Plots a voltage and spike train comparsion of neurons
 ex:
-Run a long-square current on the LIF model for cell 52746013
-    $ python run_model_cond.py -c 52746013 -m LIF -s long-square-2
+Run a long-square current on the LIF model for cell 318556138
+    $ python run_model_cond.py -c 318556138 -m LIF -s long-square-1
 
 Run a short-square injection on three LIF-ASC models
-    $ python run_model_cond.py -c 52746013,490205998, -m LIF-ASC -s short-square-3
+    $ python run_model_cond.py -c 318556138,490205998 -m LIF-ASC -s single-short-square-3
 
-Run 4 different ramp injections of a LIF model
-    $ python run_model_cond.py -c 52746013 -m LIF-R -s ramp-1,ramp-2,ramp-3,ramp-4
+Run 4 different ramp injections of a LIF-R model
+    $ python run_model_cond.py -c 490205998 -m LIF-R -s ramp-1,ramp-2,ramp-3,ramp-4
 """
 
 from functools import partial
@@ -68,7 +68,6 @@ def create_lif_r(config):
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
                                't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
-                               #'V_reset': config['El_reference'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_reset': reset_params['a'], 
@@ -148,7 +147,6 @@ def create_lif_r_cond(config, syn_tau, E_rev):
                                'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
                                'C_m': coeffs['C'] * config['C'] * 1.0e12,
                                't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
-                               #'V_reset': config['El_reference'] * 1.0e03,
                                'a_spike': threshold_params['a_spike'] * 1.0e03,
                                'b_spike': threshold_params['b_spike'] * 1.0e-03,
                                'a_reset': reset_params['a'], 
@@ -278,8 +276,8 @@ def runNestModel(model_type, neuron_config, amp_times, amp_vals, dt_ms, simulati
         nest.Connect(neurons[i], spikedetectors[i])
 
     # Step current for first neuron
-    scg = nest.Create("step_current_generator", params={'amplitude_times': amp_times, 'amplitude_values': np.array(amp_vals) * 1.0e12}) # convert to pF
-    nest.Connect(scg, neurons[0],syn_spec={'delay': dt_ms})
+    scg = nest.Create("step_current_generator", params={'amplitude_times': amp_times[1:], 'amplitude_values': np.array(amp_vals[1:]) * 1.0e12}) # convert to pF
+    nest.Connect(scg, neurons[0], syn_spec={'delay': dt_ms})
 
     # Simulate, grab run values and return
     nest.Simulate(simulation_time_ms)
@@ -520,7 +518,7 @@ if __name__ == '__main__':
         print(stimulus.keys())
         exit()
 
-    cell_ids = options.cells.split(',')
+    cell_ids = [int(id) for id in options.cells.split(',')]
     if len(cell_ids) == 0:
         print('No cells specified, please use -c option.')
         exit(1)
@@ -542,7 +540,7 @@ if __name__ == '__main__':
             neuron_config = glif_api.get_neuron_configs([model_id])[model_id]
             for stim in options.stimulus.split(','):
                 simulate = stimulus[stim]
-                output = simulate(cell_id, options.model,neuron_config)
+                output = simulate(cell_id, options.model, neuron_config)
                 plt.figure('Cell '+str(cell_id)+' '+options.model+' '+stim)
                 plotter.plt_comparison_neurons(np.array(output['I']) * 1.0e12,output['times'], output['voltages'], output['spike_times'], show=False)
     plt.show()

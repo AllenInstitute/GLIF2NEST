@@ -203,7 +203,7 @@ def plt_comparison(I, allen_ms, allen_v, allen_spikes_ms, nest_ms, nest_v, nest_
     # Plot the voltage traces
     ax2 = plt.subplot(gs[1])
     ax2.axes.get_xaxis().set_visible(False)
-    ax2.set_ylabel('V', fontsize=10)
+    ax2.set_ylabel('V (mV)', fontsize=10)
     plt.xlim(allen_ms[0], allen_ms[-1])
     plt.ylim(*ylim(allen_v, margins=.05))
     l1, = plt.plot(allen_ms, allen_v, 'b', label='allen')
@@ -214,7 +214,7 @@ def plt_comparison(I, allen_ms, allen_v, allen_spikes_ms, nest_ms, nest_v, nest_
     # Plot the currents
     ax3 = plt.subplot(gs[2])
     ax3.set_xlabel('t (ms)', fontsize=10)
-    ax3.set_ylabel('I', fontsize=10)
+    ax3.set_ylabel('I (pA)', fontsize=10)
     plt.plot(allen_ms, I)
     plt.xlim(allen_ms[0], allen_ms[-1])
     plt.ylim(*ylim(I, margins=.2))

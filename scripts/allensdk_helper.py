@@ -225,7 +225,7 @@ def get_model_params(cell_id=None, model_type=None, model_id=None, base_dir='../
 if __name__ == '__main__':
     parser = OptionParser()
     options, args = parser.parse_args()
-
+    
     if not args:
         # list provide by Corinne, http://biorxiv.org/content/early/2017/01/31/104703
         cell_ids = [314822529, # Rorb
@@ -242,6 +242,6 @@ if __name__ == '__main__':
                     313862134, # Sst
                     490944352] # Rbp4
     else:
-        cell_ids = args
+        cell_ids = [int(a) for a in args]
 
     download_glif_models(cell_ids, '../models/')

@@ -15,6 +15,7 @@ import unittest
 
 import allensdk_helper as asdk
 import run_model as models
+import json
 
 # Change this to the location where the cell files are located
 BASE_DIR = '../models'
@@ -32,6 +33,24 @@ class Test_LIF_ASC(unittest.TestCase):
     model_id = 'LIF-ASC'
 
 
+class Test_LIF_R(unittest.TestCase):
+    """LIF tests"""
+    longMessage = True
+    model_id = 'LIF-R'
+
+
+class Test_LIF_ASC_R(unittest.TestCase):
+    """LIF-ASC tests"""
+    longMessage = True
+    model_id = 'LIF-ASC-R'
+    
+
+class Test_LIF_ASC_R_A(unittest.TestCase):
+    """LIF-ASC tests"""
+    longMessage = True
+    model_id = 'LIF-ASC-R-A'
+
+
 def make_test_function(cell_id, stim):
     """Dynamically generates a test for the given cell and stimulus
 
@@ -43,7 +62,10 @@ def make_test_function(cell_id, stim):
     def test(self):
         # Grab stimulus function + params and run for both AllenSDK and NEST models
         sim_fn = models.stimulus[stim]
-        output = sim_fn(cell_id, self.model_id)
+        m_data_one = asdk.get_models_dir(base_dir=BASE_DIR, cell_id  = cell_id, model_type = self.model_id)
+        with open(m_data_one[0]['model-config-file'],'r') as f_config:
+            config = json.load(f_config)
+        output = sim_fn(cell_id, self.model_id, config)
         nest_vals = output['nest']
         allen_vals = output['allen']
 
@@ -67,5 +89,17 @@ if __name__ == '__main__':
         for name in models.stimulus.keys():
             test_func = make_test_function(cell_id, name)
             setattr(Test_LIF_ASC, 'test_{}_{}'.format(cell_id, name), test_func)
+            
+        for name in models.stimulus.keys():
+            test_func = make_test_function(cell_id, name)
+            setattr(Test_LIF_R, 'test_{}_{}'.format(cell_id, name), test_func)
+
+        for name in models.stimulus.keys():
+            test_func = make_test_function(cell_id, name)
+            setattr(Test_LIF_ASC_R, 'test_{}_{}'.format(cell_id, name), test_func)
+            
+        for name in models.stimulus.keys():
+            test_func = make_test_function(cell_id, name)
+            setattr(Test_LIF_ASC_R_A, 'test_{}_{}'.format(cell_id, name), test_func)
 
     unittest.main(verbosity=2)
