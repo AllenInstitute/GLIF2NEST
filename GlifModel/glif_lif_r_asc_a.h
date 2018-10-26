@@ -13,7 +13,7 @@
 namespace allen
 {
 /*
- * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ * Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
  *
  */
 
@@ -104,7 +104,7 @@ private:
 
     double I_; // external current in pA
 
-    State_( const Parameters_& );
+    State_();
 
     void get( DictionaryDatum& ) const;
     void set( const DictionaryDatum&, const Parameters_& );

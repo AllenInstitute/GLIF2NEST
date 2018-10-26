@@ -121,7 +121,7 @@ allen::glif_lif_r_asc_a_cond::Parameters_::Parameters_()
 }
 
 allen::glif_lif_r_asc_a_cond::State_::State_( const Parameters_& p )
-  : threshold_(p.th_inf_) // in mV
+  : threshold_(26.5) // in mV
   , y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 
 {
@@ -293,6 +293,7 @@ allen::glif_lif_r_asc_a_cond::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   updateValue< double >( d, names::V_m, y_[V_M] );
+  threshold_ = p.th_inf_;
 }
 
 allen::glif_lif_r_asc_a_cond::Buffers_::Buffers_( glif_lif_r_asc_a_cond& n )

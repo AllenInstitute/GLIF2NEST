@@ -53,8 +53,8 @@ allen::glif_lif::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif::State_::State_( const Parameters_& p )
-  : V_m_(p.E_L_)	// mV
+allen::glif_lif::State_::State_()
+  : V_m_(-77.4)	// mV
   , I_(0.0)		// pA
 
 {
@@ -122,7 +122,9 @@ allen::glif_lif::State_::set( const DictionaryDatum& d,
 {
   // Only the membrane potential can be set; one could also make other state
   // variables settable.
-  updateValue< double >( d, names::V_m, V_m_ );
+  //updateValue< double >( d, names::V_m, V_m_ );
+  updateValue< double >(d, names::V_m, V_m_);
+  V_m_ = p.E_L_;
 }
 
 allen::glif_lif::Buffers_::Buffers_( glif_lif& n )
@@ -143,7 +145,7 @@ allen::glif_lif::Buffers_::Buffers_( const Buffers_&, glif_lif& n )
 allen::glif_lif::glif_lif()
   : Archiving_Node()
   , P_()
-  , S_( P_ )
+  , S_()
   , B_( *this )
 {
   recordablesMap_.create();

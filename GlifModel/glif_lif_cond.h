@@ -23,7 +23,7 @@
 namespace allen
 {
 /*
- * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ * Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
  *
  */
 

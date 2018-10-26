@@ -61,9 +61,9 @@ allen::glif_lif_r_psc::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_r_psc::State_::State_( const Parameters_& p )
-  : V_m_(p.E_L_)	// in mV
-  , threshold_(p.th_inf_) // in mV
+allen::glif_lif_r_psc::State_::State_()
+  : V_m_(-77.4)	// in mV
+  , threshold_(26.5) // in mV
   , I_(0.0)		// in pF
 
 {
@@ -155,6 +155,8 @@ allen::glif_lif_r_psc::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   updateValue< double >( d, names::V_m, V_m_ );
+  V_m_ = p.E_L_;
+  threshold_ = p.th_inf_;
 }
 
 allen::glif_lif_r_psc::Buffers_::Buffers_( glif_lif_r_psc& n )
@@ -174,7 +176,7 @@ allen::glif_lif_r_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_r_psc& n )
 allen::glif_lif_r_psc::glif_lif_r_psc()
   : Archiving_Node()
   , P_()
-  , S_( P_ )
+  , S_()
   , B_( *this )
 {
   recordablesMap_.create();

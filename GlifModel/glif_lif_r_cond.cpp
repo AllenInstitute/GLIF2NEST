@@ -109,7 +109,7 @@ allen::glif_lif_r_cond::Parameters_::Parameters_()
 }
 
 allen::glif_lif_r_cond::State_::State_( const Parameters_& p )
-  : threshold_(p.th_inf_) // in mV
+  : threshold_(26.5) // in mV
   , y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 {
 	y_[ V_M ] = p.E_L_; // initialize to membrane potential
@@ -259,6 +259,7 @@ allen::glif_lif_r_cond::State_::set( const DictionaryDatum& d,
 {
   // Only the membrane potential can be set; one could also make other state variables settable.
   updateValue< double >( d, names::V_m, y_[V_M] );
+  threshold_ = p.th_inf_;
 }
 
 allen::glif_lif_r_cond::Buffers_::Buffers_( glif_lif_r_cond& n )

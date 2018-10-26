@@ -58,9 +58,9 @@ allen::glif_lif_r::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_r::State_::State_( const Parameters_& p )
-  : V_m_(p.E_L_)	// in mV
-  , threshold_(p.th_inf_) // in mV
+allen::glif_lif_r::State_::State_()
+  : V_m_(-77.4)	// in mV
+  , threshold_(26.5) // in mV
   , I_(0.0)			// in pF
 {
 }
@@ -127,6 +127,9 @@ allen::glif_lif_r::State_::set( const DictionaryDatum& d,
 {
 
   updateValue< double >( d, names::V_m, V_m_ );
+  V_m_ = p.E_L_;
+  threshold_ = p.th_inf_;
+
 }
 
 allen::glif_lif_r::Buffers_::Buffers_( glif_lif_r& n )
@@ -147,7 +150,7 @@ allen::glif_lif_r::Buffers_::Buffers_( const Buffers_&, glif_lif_r& n )
 allen::glif_lif_r::glif_lif_r()
   : Archiving_Node()
   , P_()
-  , S_( P_ )
+  , S_()
   , B_( *this )
 {
   recordablesMap_.create();

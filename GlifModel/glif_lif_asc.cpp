@@ -59,9 +59,9 @@ allen::glif_lif_asc::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_asc::State_::State_( const Parameters_& p )
-  : V_m_(p.E_L_) // in mV
-  , ASCurrents_(p.asc_init_) // in pA
+allen::glif_lif_asc::State_::State_()
+  : V_m_(-77.4) // in mV
+  , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
   , I_(0.0)		// in pA
 {
 }
@@ -136,6 +136,9 @@ allen::glif_lif_asc::State_::set( const DictionaryDatum& d,
 {
   updateValue< double >( d, names::V_m, V_m_ );
   updateValue< std::vector<double> >(d, Name("ASCurrents"), ASCurrents_ );
+
+  V_m_ = p.E_L_;
+  ASCurrents_ = p.asc_init_;
 }
 
 allen::glif_lif_asc::Buffers_::Buffers_( glif_lif_asc& n )
@@ -156,7 +159,7 @@ allen::glif_lif_asc::Buffers_::Buffers_( const Buffers_&, glif_lif_asc& n )
 allen::glif_lif_asc::glif_lif_asc()
   : Archiving_Node()
   , P_()
-  , S_( P_ )
+  , S_()
   , B_( *this )
 {
   recordablesMap_.create();

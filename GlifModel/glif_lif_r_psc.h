@@ -13,7 +13,7 @@
 namespace allen
 {
 /*
- * Author: Binghuang Cai, Kael Dai, Stefan Mihalas @ Allen Institute for Brain Science
+ * Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
  *
  */
 
@@ -101,7 +101,7 @@ private:
     std::vector< double > y1_; // synapse current evolution state 1 in pA
     std::vector< double > y2_; // synapse current evolution state 2 in pA
 
-    State_( const Parameters_& );
+    State_();
 
     void get( DictionaryDatum& ) const;
     void set( const DictionaryDatum&, const Parameters_& );

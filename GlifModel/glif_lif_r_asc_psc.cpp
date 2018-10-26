@@ -64,10 +64,10 @@ allen::glif_lif_r_asc_psc::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_r_asc_psc::State_::State_( const Parameters_& p )
-  : V_m_(p.E_L_)	// in mV
-  , ASCurrents_(p.asc_init_) // in pA
-  , threshold_(p.th_inf_) // in mV
+allen::glif_lif_r_asc_psc::State_::State_()
+  : V_m_(-77.4)	// in mV
+  , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
+  , threshold_(26.5) // in mV
   , I_(0.0)		// in pA
 
 {
@@ -169,6 +169,10 @@ allen::glif_lif_r_asc_psc::State_::set( const DictionaryDatum& d,
 {
   updateValue< double >( d, names::V_m, V_m_ );
   updateValue< std::vector<double> >(d, Name("ASCurrents"), ASCurrents_ );
+
+  V_m_ = p.E_L_;
+  ASCurrents_ = p.asc_init_;
+  threshold_ = p.th_inf_;
 }
 
 allen::glif_lif_r_asc_psc::Buffers_::Buffers_( glif_lif_r_asc_psc& n )
@@ -188,7 +192,7 @@ allen::glif_lif_r_asc_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_r_asc_p
 allen::glif_lif_r_asc_psc::glif_lif_r_asc_psc()
   : Archiving_Node()
   , P_()
-  , S_( P_ )
+  , S_()
   , B_( *this )
 {
   recordablesMap_.create();
