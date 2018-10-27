@@ -10,12 +10,27 @@
 
 #include "dictdatum.h"
 
+/* BeginDocumentation
+Name: glif_lif_r_psc - Generalized leaky integrate and fire (GLIF) model 2 -
+				   	   Leaky integrate and fire with biologically defined reset rules model.
+
+Description:
+
+  glif_lif_r_psc is an implementation of a generalized leaky integrate and fire (GLIF) model 2
+  (i.e., leaky integrate and fire with biologically defined reset rules model)
+  with alpha-function shaped synaptic currents.
+
+References:
+  [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
+      Cain N, Zeng H, Hawrylycz M, Koch C, & Mihalas S (2018)
+      Generalized leaky integrate-and-fire models classify multiple neuron types.
+      Nature Communications 9:709.
+
+Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
+*/
+
 namespace allen
 {
-/*
- * Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
- *
- */
 
 class glif_lif_r_psc : public nest::Archiving_Node
 {
