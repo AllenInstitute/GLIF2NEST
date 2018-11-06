@@ -16,11 +16,35 @@ Name: glif_lif_r_asc_a_psc - Generalized leaky integrate and fire (GLIF) model 5
 				   	   	 reset rules, after-spike currents and a voltage
 				   	   	 dependent threshold model.
 
+Parameters:
+
+  The following parameters can be set in the status dictionary.
+
+  V_m        		double - Membrane potential in mV
+  V_th				double - Instantaneous threshold in mV.
+  g					double - Membrane conductance in nS.
+  E_L 				double - Resting membrane potential in mV.
+  C_m 				double - Capacitance of the membrane in pF.
+  t_ref 			double - Duration of refractory time in ms.
+  a_spike 			double - Threshold addition following spike in mV.
+  b_spike			double - Spike-induced threshold time constant in 1/ms.
+  a_reset			double - Voltage fraction coefficient following spike.
+  b_reset			double - Voltage addition following spike in mV.
+  asc_init 			double vector - Initial values of after-spike currents in pA.
+  k 				double vector - After-spike current time constants in 1/ms (kj in Equation (3) in [1]).
+  asc_amps			double vector - After-spike current amplitudes in pA (deltaIj in Equation (7) in [1]).
+  r					double vector - Current fraction following spike coefficients (fj in Equation (7) in [1]).
+  tau_syn			double vector - Rise time constants of the synaptic alpha function in ms.
+  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
+  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
+
+
 Description:
 
   glif_lif_r_asc_a_psc is an implementation of a generalized leaky integrate and fire (GLIF) model 5
   (i.e., leaky integrate and fire with biologically defined reset rules, after-spike currents
-  and a voltage dependent threshold model) with alpha-function shaped synaptic currents.
+  and a voltage dependent threshold model) with alpha-function shaped synaptic currents, described in [1].
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,

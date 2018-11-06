@@ -17,8 +17,22 @@ Name: glif_lif_asc - Generalized leaky integrate and fire (GLIF) model 3 -
 Description:
 
   glif_lif_r_asc_a_cond is an implementation of a generalized leaky integrate and fire (GLIF) model 3
-  (i.e., leaky integrate and fire with after-spike currents model).
+  (i.e., leaky integrate and fire with after-spike currents model), described in [1].
 
+Parameters:
+
+  The following parameters can be set in the status dictionary.
+
+  V_m        		double - Membrane potential in mV
+  V_th				double - Instantaneous threshold in mV.
+  g					double - Membrane conductance in nS.
+  E_L 				double - Resting membrane potential in mV.
+  C_m 				double - Capacitance of the membrane in pF.
+  t_ref 			double - Duration of refractory time in ms.
+  V_reset 			double - Reset potential of the membrane in mV.
+  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
+  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,

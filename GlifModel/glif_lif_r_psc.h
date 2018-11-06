@@ -18,7 +18,26 @@ Description:
 
   glif_lif_r_psc is an implementation of a generalized leaky integrate and fire (GLIF) model 2
   (i.e., leaky integrate and fire with biologically defined reset rules model)
-  with alpha-function shaped synaptic currents.
+  with alpha-function shaped synaptic currents, described in [1].
+
+Parameters:
+
+  The following parameters can be set in the status dictionary.
+
+  V_m        		double - Membrane potential in mV
+  V_th				double - Instantaneous threshold in mV.
+  g					double - Membrane conductance in nS.
+  E_L 				double - Resting membrane potential in mV.
+  C_m 				double - Capacitance of the membrane in pF.
+  t_ref 			double - Duration of refractory time in ms.
+  a_spike 			double - Threshold addition following spike in mV.
+  b_spike			double - Spike-induced threshold time constant in 1/ms.
+  a_reset			double - Voltage fraction coefficient following spike.
+  b_reset			double - Voltage addition following spike in mV.
+  tau_syn			double vector - Rise time constants of the synaptic alpha function in ms.
+  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
+  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
@@ -89,8 +108,8 @@ private:
     double t_ref_; 			// refractory time in ms
     double a_spike_; 		// threshold additive constant following reset in mV
     double b_spike_; 		// spike induced threshold in 1/ms
-    double voltage_reset_a_;// in 1/ms
-    double voltage_reset_b_;// in 1/ms
+    double voltage_reset_a_; //voltage fraction following reset coefficient
+    double voltage_reset_b_; // voltage additive constant following reset in mV
     std::vector< double > tau_syn_; // synaptic port time constants in ms
     std::string V_dynamics_method_; // voltage dynamic methods
 
