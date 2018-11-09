@@ -4,7 +4,7 @@
 ```bash
 $ mkdir build
 $ cd build
-$ cmake --Dwith-nest=nest-config -Dwith-ltdl=ON [-Dwith-mpi=ON] ../GlifModule
+$ cmake --Dwith-nest=nest-config -Dwith-ltdl=ON [-Dwith-mpi=ON] ../GlifModel
 $ make
 $ make install
 ```
