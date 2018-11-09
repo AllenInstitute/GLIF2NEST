@@ -12,7 +12,7 @@
 
 /* BeginDocumentation
 Name: glif_lif_r - Generalized leaky integrate and fire (GLIF) model 2 -
-				   Leaky integrate and fire with biologically defined reset rules model.
+                   Leaky integrate and fire with biologically defined reset rules model.
 
 Description:
 
@@ -23,19 +23,19 @@ Parameters:
 
   The following parameters can be set in the status dictionary.
 
-  V_m        		double - Membrane potential in mV.
-  V_th				double - Instantaneous threshold in mV.
-  g					double - Membrane conductance in nS.
-  E_L 				double - Resting membrane potential in mV.
-  C_m 				double - Capacitance of the membrane in pF.
-  t_ref 			double - Duration of refractory time in ms.
-  a_spike 			double - Threshold addition following spike in mV.
-  b_spike			double - Spike-induced threshold time constant in 1/ms.
-  a_reset			double - Voltage fraction coefficient following spike.
-  b_reset			double - Voltage addition following spike in mV.
+  V_m               double - Membrane potential in mV.
+  V_th              double - Instantaneous threshold in mV.
+  g                 double - Membrane conductance in nS.
+  E_L               double - Resting membrane potential in mV.
+  C_m               double - Capacitance of the membrane in pF.
+  t_ref             double - Duration of refractory time in ms.
+  a_spike           double - Threshold addition following spike in mV.
+  b_spike           double - Spike-induced threshold time constant in 1/ms.
+  a_reset           double - Voltage fraction coefficient following spike.
+  b_reset           double - Voltage addition following spike in mV.
   V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
-  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
-   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
+                             'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+                             'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
@@ -100,13 +100,13 @@ private:
 
   struct Parameters_
   {
-    double th_inf_;  	// A threshold in mV
-    double G_; 			// membrane conductance in nS
-    double E_L_; 		// resting potential in mV
-    double C_m_; 		// capacitance in pF
-    double t_ref_; 		// refractory time in ms
-    double a_spike_; 	// threshold additive constant following reset in mV
-    double b_spike_; 	// spike induced threshold in 1/ms
+    double th_inf_; // A threshold in mV
+    double G_; // membrane conductance in nS
+    double E_L_; // resting potential in mV
+    double C_m_; // capacitance in pF
+    double t_ref_; // refractory time in ms
+    double a_spike_; // threshold additive constant following reset in mV
+    double b_spike_; // spike induced threshold in 1/ms
     double voltage_reset_a_; //voltage fraction following reset coefficient
     double voltage_reset_b_; // voltage additive constant following reset in mV
     std::string V_dynamics_method_; // voltage dynamic methods
@@ -147,8 +147,7 @@ private:
   {
     double t_ref_remaining_; // counter during refractory period, seconds
     double t_ref_total_; // total time of refractory period, seconds
-  	
-  	double last_spike_; // last spike component of threshold
+    double last_spike_; // last spike component of threshold
     int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
   };
 
@@ -189,8 +188,9 @@ allen::glif_lif_r::handles_test_event( nest::SpikeEvent&,
   // It confirms to the connection management system that we are able
   // to handle @c SpikeEvent on port 0. You need to extend the function
   // if you want to differentiate between input ports.
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -202,8 +202,9 @@ allen::glif_lif_r::handles_test_event( nest::CurrentEvent&,
   // It confirms to the connection management system that we are able
   // to handle @c CurrentEvent on port 0. You need to extend the function
   // if you want to differentiate between input ports.
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -216,8 +217,9 @@ allen::glif_lif_r::handles_test_event( nest::DataLoggingRequest& dlr,
   // to handle @c DataLoggingRequest on port 0.
   // The function also tells the built-in UniversalDataLogger that this node
   // is recorded from and that it thus needs to collect data during simulation.
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
 
   return B_.logger_.connect_logging_device( dlr, recordablesMap_ );
 }
@@ -256,4 +258,4 @@ glif_lif_r::set_status( const DictionaryDatum& d )
 
 } // namespace
 
-#endif 
+#endif

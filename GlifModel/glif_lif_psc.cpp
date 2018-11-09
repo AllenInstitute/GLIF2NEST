@@ -1,6 +1,3 @@
-// GLIF1 with alpha shape post-synaptic current model
-// refer from iaf_psc_alpha_multisynapse
-
 #include "glif_lif_psc.h"
 
 // C++ includes:
@@ -49,13 +46,13 @@ RecordablesMap< allen::glif_lif_psc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_psc::Parameters_::Parameters_()
-  : th_inf_(26.5) 			// mV
-  , G_(4.6951)				// nS (1/Gohm)
-  , E_L_(-77.4)				// mV
-  , C_m_(99.182)			// pF
-  , t_ref_(0.5)				// ms
-  , V_reset_(-77.4)			// mV
-  , tau_syn_(1, 2.0)		// ms
+  : th_inf_(26.5) // mV
+  , G_(4.6951) // nS (1/Gohm)
+  , E_L_(-77.4) // mV
+  , C_m_(99.182) // pF
+  , t_ref_(0.5) // ms
+  , V_reset_(-77.4) // mV
+  , tau_syn_(1, 2.0) // ms
   , V_dynamics_method_("linear_forward_euler")
   , has_connections_( false )
 
@@ -63,12 +60,12 @@ allen::glif_lif_psc::Parameters_::Parameters_()
 }
 
 allen::glif_lif_psc::State_::State_()
-  : V_m_(-77.4)	// mV
-  , I_(0.0)			// pA
+  : V_m_(-77.4) // mV
+  , I_(0.0) // pA
 
 {
-	y1_.clear();
-	y2_.clear();
+  y1_.clear();
+  y2_.clear();
 }
 
 /* ----------------------------------------------------------------
@@ -222,9 +219,9 @@ allen::glif_lif_psc::calibrate()
   V_.t_ref_total_ = P_.t_ref_; //in ms
 
   V_.method_ = 0; // default using linear forward Euler for voltage dynamics
-  if(P_.V_dynamics_method_=="linear_exact")
+  if(P_.V_dynamics_method_=="linear_exact"){
      V_.method_ = 1;
-
+  }
   // post synapse currents
   const double h = Time::get_resolution().get_ms(); // in ms
 
@@ -246,19 +243,19 @@ allen::glif_lif_psc::calibrate()
 
   for (size_t i = 0; i < P_.n_receptors_() ; i++ )
   {
-	double Tau_syn_s_ = P_.tau_syn_[i];  // in ms
-	// these P are independent
-	V_.P11_[i] = V_.P22_[i] = std::exp( -h / Tau_syn_s_ );
+    double Tau_syn_s_ = P_.tau_syn_[i];  // in ms
+    // these P are independent
+    V_.P11_[i] = V_.P22_[i] = std::exp( -h / Tau_syn_s_ );
 
-	V_.P21_[i] = h * V_.P11_[i];
+    V_.P21_[i] = h * V_.P11_[i];
 
-	// these are determined according to a numeric stability criterion
-	// input time parameter shall be in ms, capacity in pF
-	V_.P31_[i] = propagator_31( P_.tau_syn_[i], Tau_, P_.C_m_, h);
-	V_.P32_[i] = propagator_32( P_.tau_syn_[i], Tau_, P_.C_m_, h);
+    // these are determined according to a numeric stability criterion
+    // input time parameter shall be in ms, capacity in pF
+    V_.P31_[i] = propagator_31( P_.tau_syn_[i], Tau_, P_.C_m_, h);
+    V_.P32_[i] = propagator_32( P_.tau_syn_[i], Tau_, P_.C_m_, h);
 
-	V_.PSCInitialValues_[i] = 1.0 * numerics::e / Tau_syn_s_;
-	B_.spikes_[ i ].resize();
+    V_.PSCInitialValues_[i] = 1.0 * numerics::e / Tau_syn_s_;
+    B_.spikes_[ i ].resize();
   }
 
 }
@@ -270,7 +267,7 @@ allen::glif_lif_psc::calibrate()
 void
 allen::glif_lif_psc::update( Time const& origin, const long from, const long to )
 {
-  
+
   const double dt = Time::get_resolution().get_ms(); // in ms
   double v_old = S_.V_m_;
 
@@ -298,10 +295,10 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
       switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
         case 0: S_.V_m_ = v_old + dt * (S_.I_ - P_.G_ * (v_old - P_.E_L_)) / P_.C_m_;
-        		break;
+                break;
         // Linear Exact to find next V_m value
         case 1: S_.V_m_ = v_old * V_.P33_ + (S_.I_ + P_.G_ * P_.E_L_) * V_.P30_;
-        		break;
+                break;
       }
 
       // add synapse component for voltage dynamics
@@ -312,7 +309,7 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
         S_.I_syn_ += S_.y2_[i];
       }
 
-      if( S_.V_m_ > P_.th_inf_ ) 
+      if( S_.V_m_ > P_.th_inf_ )
       {
 
         V_.t_ref_remaining_ = V_.t_ref_total_;

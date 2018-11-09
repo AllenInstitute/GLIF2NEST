@@ -36,7 +36,7 @@ void
 RecordablesMap< allen::glif_lif_asc >::create()
 {
   insert_( names::V_m, &allen::glif_lif_asc::get_V_m_ );
-  insert_( Name("AScurrents_sum"), &allen::glif_lif_asc::get_AScurrents_sum_ ); 
+  insert_( Name("AScurrents_sum"), &allen::glif_lif_asc::get_AScurrents_sum_ );
 }
 }
 
@@ -45,16 +45,16 @@ RecordablesMap< allen::glif_lif_asc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_asc::Parameters_::Parameters_()
-  : V_th_(26.5)				// in mV
-  , G_(4.6951)				// in nS
-  , E_L_(-77.4)				// in mV
-  , C_m_(99.182)			// in pF
-  , t_ref_(0.5)				// in mS
-  , V_reset_(-77.4)			// in mV
-  , asc_init_(std::vector<double>(2, 0.0)) 	// in pA
-  , k_(std::vector<double>(2, 0.0))			// in 1/ms
-  , asc_amps_(std::vector<double>(2, 0.0))	// in pA
-  , r_(std::vector<double>(2, 1.0))			//coefficient
+  : V_th_(26.5) // in mV
+  , G_(4.6951) // in nS
+  , E_L_(-77.4) // in mV
+  , C_m_(99.182) // in pF
+  , t_ref_(0.5) // in mS
+  , V_reset_(-77.4) // in mV
+  , asc_init_(std::vector<double>(2, 0.0)) // in pA
+  , k_(std::vector<double>(2, 0.0)) // in 1/ms
+  , asc_amps_(std::vector<double>(2, 0.0)) // in pA
+  , r_(std::vector<double>(2, 1.0)) //coefficient
   , V_dynamics_method_("linear_forward_euler")
 {
 }
@@ -62,7 +62,7 @@ allen::glif_lif_asc::Parameters_::Parameters_()
 allen::glif_lif_asc::State_::State_()
   : V_m_(-77.4) // in mV
   , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
-  , I_(0.0)		// in pA
+  , I_(0.0) // in pA
 {
 }
 
@@ -201,9 +201,9 @@ allen::glif_lif_asc::calibrate()
   V_.t_ref_total_ = P_.t_ref_;
 
   V_.method_ = 0; // default using linear forward euler for voltage dynamics
-  if(P_.V_dynamics_method_=="linear_exact")
+  if(P_.V_dynamics_method_=="linear_exact"){
      V_.method_ = 1;
-
+  }
 }
 
 /* ----------------------------------------------------------------
@@ -212,7 +212,7 @@ allen::glif_lif_asc::calibrate()
 
 void
 allen::glif_lif_asc::update( Time const& origin, const long from, const long to )
-{ 
+{
   const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
   double tau = P_.G_ / P_.C_m_;
@@ -229,13 +229,13 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       if( V_.t_ref_remaining_ <= 0.0)
       {
         // Neuron has left refractory period, reset voltage and after-spike current
-	    // Reset ASC_currents
-      	for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
-      	{
-      		S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
-      	}
+        // Reset ASC_currents
+        for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
+        {
+          S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
+         }
 
-      	// Reset voltage 
+        // Reset voltage
         S_.V_m_ = P_.V_reset_;
       }
       else
@@ -251,8 +251,8 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {
-      	S_.ASCurrents_sum_ += S_.ASCurrents_[a];
-      	S_.ASCurrents_[a] = S_.ASCurrents_[a] * std::exp(-P_.k_[a] * dt);
+        S_.ASCurrents_sum_ += S_.ASCurrents_[a];
+        S_.ASCurrents_[a] = S_.ASCurrents_[a] * std::exp(-P_.k_[a] * dt);
       }
 
       // voltage dynamic
@@ -266,12 +266,12 @@ allen::glif_lif_asc::update( Time const& origin, const long from, const long to 
       }
 
       // Check if there is an action potential
-      if( S_.V_m_ > P_.V_th_ ) 
+      if( S_.V_m_ > P_.V_th_ )
       {
-	    // Marks that the neuron is in a refractory period
+        // Marks that the neuron is in a refractory period
         V_.t_ref_remaining_ = V_.t_ref_total_;
 
-	    // Find the exact time during this step that the neuron crossed the threshold and record it
+        // Find the exact time during this step that the neuron crossed the threshold and record it
         double spike_offset = (1 - (P_.V_th_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;

@@ -1,6 +1,3 @@
-// GLIF1 with alpha shape conductance-based model
-// refer from iaf_cond_alpha
-
 #include "glif_lif_cond.h"
 
 // C++ includes:
@@ -94,14 +91,14 @@ allen::glif_lif_cond_dynamics( double,
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_cond::Parameters_::Parameters_()
-  : th_inf_(26.5) 			// mV
-  , G_(4.6951)				// nS (1/Gohm)
-  , E_L_(-77.4)				// mV
-  , C_m_(99.182)			// pF
-  , t_ref_(0.5)				// ms
-  , V_reset_(-77.4)			// mV
-  , tau_syn_(1, 2.0)		// ms
-  , E_rev_(1, -70.0)		// mV
+  : th_inf_(26.5) // mV
+  , G_(4.6951) // nS (1/Gohm)
+  , E_L_(-77.4) // mV
+  , C_m_(99.182) // pF
+  , t_ref_(0.5) // ms
+  , V_reset_(-77.4) // mV
+  , tau_syn_(1, 2.0) // ms
+  , E_rev_(1, -70.0) // mV
   , has_connections_( false )
 
 {
@@ -111,7 +108,7 @@ allen::glif_lif_cond::State_::State_( const Parameters_& p )
   : y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 
 {
-	y_[ V_M ] = p.E_L_; // initialize to membrane potential
+    y_[ V_M ] = p.E_L_; // initialize to membrane potential
 }
 
 allen::glif_lif_cond::State_::State_( const State_& s )
@@ -187,27 +184,24 @@ allen::glif_lif_cond::Parameters_::set( const DictionaryDatum& d )
   }
 
   const size_t old_n_receptors = this->n_receptors_();
-  bool tau_flag =
-    updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ );
-  bool Erev_flag =
-	updateValue< std::vector< double > >( d, "E_rev", E_rev_ );
+  bool tau_flag = updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ );
+  bool Erev_flag = updateValue< std::vector< double > >( d, "E_rev", E_rev_ );
 
   if (tau_flag || Erev_flag)
   { // receptor arrays have been modified
-    if ( ( E_rev_.size() != old_n_receptors || tau_syn_.size() != old_n_receptors )
-	        and ( not Erev_flag || not tau_flag ) )
-	{
-	  throw BadProperty(
-	    "If the number of receptor ports is changed, both arrays "
-	    "E_rev and tau_syn must be provided." );
-	}
+    if ( ( E_rev_.size() != old_n_receptors || tau_syn_.size() != old_n_receptors ) and ( not Erev_flag || not tau_flag ) )
+    {
+      throw BadProperty(
+        "If the number of receptor ports is changed, both arrays "
+        "E_rev and tau_syn must be provided." );
+    }
 
     if ( E_rev_.size() != tau_syn_.size() )
-	{
-	  throw BadProperty(
-	    "The reversal potential, and synaptic time constant arrays "
-	    "must have the same size." );
-	}
+    {
+      throw BadProperty(
+        "The reversal potential, and synaptic time constant arrays "
+        "must have the same size." );
+    }
 
     if ( this->n_receptors_() != old_n_receptors && has_connections_ == true )
     {
@@ -378,8 +372,8 @@ allen::glif_lif_cond::calibrate()
 
   for (size_t i = 0; i < P_.n_receptors_() ; i++ )
   {
-	V_.CondInitialValues_[i] = 1.0 * numerics::e / P_.tau_syn_[i];
-	B_.spikes_[ i ].resize();
+    V_.CondInitialValues_[i] = 1.0 * numerics::e / P_.tau_syn_[i];
+    B_.spikes_[ i ].resize();
   }
 
   // reallocate instance of stepping function for ODE GSL solver
@@ -407,40 +401,40 @@ allen::glif_lif_cond::calibrate()
 void
 allen::glif_lif_cond::update( Time const& origin, const long from, const long to )
 {
-  
+
   const double dt = Time::get_resolution().get_ms(); // in ms
   double v_old = S_.y_[ State_::V_M ];
 
   for ( long lag = from; lag < to; ++lag )
   {
     double t = 0.0;
-	// numerical integration with adaptive step size control:
-	// ------------------------------------------------------
-	// gsl_odeiv_evolve_apply performs only a single numerical
-	// integration step, starting from t and bounded by step;
-	// the while-loop ensures integration over the whole simulation
-	// step (0, step] if more than one integration step is needed due
-	// to a small integration step size;
-	// note that (t+IntegrationStep > step) leads to integration over
-	// (t, step] and afterwards setting t to step, but it does not
-	// enforce setting IntegrationStep to step-t; this is of advantage
-	// for a consistent and efficient integration across subsequent
-	// simulation intervals
-	while ( t < B_.step_ )
-	{
-	  const int status = gsl_odeiv_evolve_apply( B_.e_,
-	    B_.c_,
-	    B_.s_,
-		&B_.sys_,             // system of ODE
-	    &t,                   // from t
-		B_.step_,             // to t <= step
-	    &B_.IntegrationStep_, // integration step size
-		&S_.y_[0] );               // neuronal state
-	  if ( status != GSL_SUCCESS )
-	  {
-	    throw GSLSolverFailure( get_name(), status );
-	  }
-	}
+    // numerical integration with adaptive step size control:
+    // ------------------------------------------------------
+    // gsl_odeiv_evolve_apply performs only a single numerical
+    // integration step, starting from t and bounded by step;
+    // the while-loop ensures integration over the whole simulation
+    // step (0, step] if more than one integration step is needed due
+    // to a small integration step size;
+    // note that (t+IntegrationStep > step) leads to integration over
+    // (t, step] and afterwards setting t to step, but it does not
+    // enforce setting IntegrationStep to step-t; this is of advantage
+    // for a consistent and efficient integration across subsequent
+    // simulation intervals
+    while ( t < B_.step_ )
+    {
+      const int status = gsl_odeiv_evolve_apply( B_.e_,
+        B_.c_,
+        B_.s_,
+        &B_.sys_,             // system of ODE
+        &t,                   // from t
+        B_.step_,             // to t <= step
+        &B_.IntegrationStep_, // integration step size
+        &S_.y_[0] );               // neuronal state
+      if ( status != GSL_SUCCESS )
+      {
+        throw GSLSolverFailure( get_name(), status );
+      }
+    }
 
     if( V_.t_ref_remaining_ > 0.0)
     {
@@ -449,7 +443,7 @@ allen::glif_lif_cond::update( Time const& origin, const long from, const long to
       V_.t_ref_remaining_ -= dt;
       if( V_.t_ref_remaining_ <=0.0)
       {
-    	  S_.y_[ State_::V_M ] = P_.V_reset_;
+          S_.y_[ State_::V_M ] = P_.V_reset_;
       }
       else
       {

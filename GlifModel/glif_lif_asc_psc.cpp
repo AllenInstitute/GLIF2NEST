@@ -21,9 +21,7 @@
 #include "integerdatum.h"
 #include "lockptrdatum.h"
 
-
 using namespace nest;
-
 
 nest::RecordablesMap< allen::glif_lif_asc_psc >
   allen::glif_lif_asc_psc::recordablesMap_;
@@ -47,17 +45,17 @@ RecordablesMap< allen::glif_lif_asc_psc >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_asc_psc::Parameters_::Parameters_()
-  : V_th_(26.5)				// in mV
-  , G_(4.6951)				// in nS
-  , E_L_(-77.4)				// in mV
-  , C_m_(99.182)			// in pF
-  , t_ref_(0.5)				// in mS
-  , V_reset_(-77.4)			// in mV
-  , asc_init_(std::vector<double>(2, 0.0)) 	// in pA
-  , k_(std::vector<double>(2, 0.0))			// in 1/ms
-  , asc_amps_(std::vector<double>(2, 0.0))	// in pA
-  , r_(std::vector<double>(2, 1.0))			//coefficient
-  , tau_syn_(1, 2.0)		// in ms
+  : V_th_(26.5) // in mV
+  , G_(4.6951) // in nS
+  , E_L_(-77.4) // in mV
+  , C_m_(99.182) // in pF
+  , t_ref_(0.5) // in mS
+  , V_reset_(-77.4) // in mV
+  , asc_init_(std::vector<double>(2, 0.0)) // in pA
+  , k_(std::vector<double>(2, 0.0)) // in 1/ms
+  , asc_amps_(std::vector<double>(2, 0.0)) // in pA
+  , r_(std::vector<double>(2, 1.0)) //coefficient
+  , tau_syn_(1, 2.0) // in ms
   , V_dynamics_method_("linear_forward_euler")
   , has_connections_( false )
 {
@@ -66,10 +64,10 @@ allen::glif_lif_asc_psc::Parameters_::Parameters_()
 allen::glif_lif_asc_psc::State_::State_()
   : V_m_(-77.4) // in mV
   , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
-  , I_(0.0)		// in pA
+  , I_(0.0) // in pA
 {
-	y1_.clear();
-	y2_.clear();
+  y1_.clear();
+  y2_.clear();
 }
 
 /* ----------------------------------------------------------------
@@ -229,9 +227,9 @@ allen::glif_lif_asc_psc::calibrate()
   V_.t_ref_total_ = P_.t_ref_;
 
   V_.method_ = 0; // default using linear forward euler for voltage dynamics
-  if(P_.V_dynamics_method_=="linear_exact")
+  if(P_.V_dynamics_method_=="linear_exact"){
      V_.method_ = 1;
-
+  }
   // post synapse currents
   const double h = Time::get_resolution().get_ms();
 
@@ -253,19 +251,19 @@ allen::glif_lif_asc_psc::calibrate()
 
   for (size_t i = 0; i < P_.n_receptors_() ; i++ )
   {
-	double Tau_syn_s_ = P_.tau_syn_[i];
-	// these P are independent
-	V_.P11_[i] = V_.P22_[i] = std::exp( -h / Tau_syn_s_ );
+    double Tau_syn_s_ = P_.tau_syn_[i];
+    // these P are independent
+    V_.P11_[i] = V_.P22_[i] = std::exp( -h / Tau_syn_s_ );
 
-	V_.P21_[i] = h * V_.P11_[i];
+    V_.P21_[i] = h * V_.P11_[i];
 
-	// these are determined according to a numeric stability criterion
-	// input time parameter shall be in ms, capacity in pF
-	V_.P31_[i] = propagator_31( P_.tau_syn_[i], Tau_, P_.C_m_, h );
-	V_.P32_[i] = propagator_32( P_.tau_syn_[i], Tau_, P_.C_m_, h );
+    // these are determined according to a numeric stability criterion
+    // input time parameter shall be in ms, capacity in pF
+    V_.P31_[i] = propagator_31( P_.tau_syn_[i], Tau_, P_.C_m_, h );
+    V_.P32_[i] = propagator_32( P_.tau_syn_[i], Tau_, P_.C_m_, h );
 
-	V_.PSCInitialValues_[i] = 1.0 * numerics::e / Tau_syn_s_;
-	B_.spikes_[ i ].resize();
+    V_.PSCInitialValues_[i] = 1.0 * numerics::e / Tau_syn_s_;
+    B_.spikes_[ i ].resize();
   }
 
 }
@@ -276,7 +274,7 @@ allen::glif_lif_asc_psc::calibrate()
 
 void
 allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long to )
-{ 
+{
   const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
 
@@ -290,13 +288,13 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
       if( V_.t_ref_remaining_ <= 0.0)
       {
         // Neuron has left refractory period, reset voltage and after-spike current
-	    // Reset ASC_currents
-      	for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
-      	{
-      		S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
-      	}
+        // Reset ASC_currents
+        for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
+        {
+          S_.ASCurrents_[a] = P_.asc_amps_[a] + S_.ASCurrents_[a] * P_.r_[a] * std::exp(-P_.k_[a] * V_.t_ref_total_);
+        }
 
-      	// Reset voltage 
+        // Reset voltage
         S_.V_m_ = P_.V_reset_;
       }
       else
@@ -312,18 +310,18 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
       S_.ASCurrents_sum_ = 0.0;
       for(std::size_t a = 0; a < S_.ASCurrents_.size(); ++a)
       {
-      	S_.ASCurrents_sum_ += S_.ASCurrents_[a];
-      	S_.ASCurrents_[a] = S_.ASCurrents_[a] * std::exp(-P_.k_[a] * dt);
+        S_.ASCurrents_sum_ += S_.ASCurrents_[a];
+        S_.ASCurrents_[a] = S_.ASCurrents_[a] * std::exp(-P_.k_[a] * dt);
       }
 
       // voltage dynamics of membranes
       switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
         case 0: S_.V_m_ = v_old + dt*(S_.I_ + S_.ASCurrents_sum_ - P_.G_* (v_old - P_.E_L_))/P_.C_m_;
-        		break;
+                break;
         // Linear Exact to find next V_m value
         case 1: S_.V_m_ = v_old * V_.P33_ + (S_.I_ + S_.ASCurrents_sum_ + P_.G_ * P_.E_L_) * V_.P30_;
-        		break;
+                break;
       }
 
       // add synapse component for voltage dynamics
@@ -335,12 +333,12 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
       }
 
       // Check if there is an action potential
-      if( S_.V_m_ > P_.V_th_ ) 
+      if( S_.V_m_ > P_.V_th_ )
       {
-	    // Marks that the neuron is in a refractory period
+        // Marks that the neuron is in a refractory period
         V_.t_ref_remaining_ = V_.t_ref_total_;
 
-	    // Find the exact time during this step that the neuron crossed the threshold and record it
+        // Find the exact time during this step that the neuron crossed the threshold and record it
         double spike_offset = (1 - (P_.V_th_ - v_old)/(S_.V_m_ - v_old)) * Time::get_resolution().get_ms();
 
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );

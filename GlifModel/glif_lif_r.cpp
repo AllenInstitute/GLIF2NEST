@@ -20,9 +20,7 @@
 #include "integerdatum.h"
 #include "lockptrdatum.h"
 
-
 using namespace nest;
-
 
 nest::RecordablesMap< allen::glif_lif_r >
   allen::glif_lif_r::recordablesMap_;
@@ -45,23 +43,23 @@ RecordablesMap< allen::glif_lif_r >::create()
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_r::Parameters_::Parameters_()
-  : th_inf_(26.5)			// in mV
-  , G_(4.6951)				// in nS
-  , E_L_(-77.4)				// in mV
-  , C_m_(99.182)			// in pF
-  , t_ref_(0.5)				// in ms
-  , a_spike_(0.0)			// in mV
-  , b_spike_(0.0)			// in 1/ms
-  , voltage_reset_a_(0.0)	// in 1/ms
-  , voltage_reset_b_(0.0)	// in 1/ms
+  : th_inf_(26.5) // in mV
+  , G_(4.6951) // in nS
+  , E_L_(-77.4) // in mV
+  , C_m_(99.182) // in pF
+  , t_ref_(0.5) // in ms
+  , a_spike_(0.0) // in mV
+  , b_spike_(0.0) // in 1/ms
+  , voltage_reset_a_(0.0) // in 1/ms
+  , voltage_reset_b_(0.0) // in 1/ms
   , V_dynamics_method_("linear_forward_euler")
 {
 }
 
 allen::glif_lif_r::State_::State_()
-  : V_m_(-77.4)	// in mV
+  : V_m_(-77.4) // in mV
   , threshold_(26.5) // in mV
-  , I_(0.0)			// in pF
+  , I_(0.0) // in pF
 {
 }
 
@@ -77,7 +75,7 @@ allen::glif_lif_r::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::E_L, E_L_);
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
-  def<double>(d, "a_spike", a_spike_); 
+  def<double>(d, "a_spike", a_spike_);
   def<double>(d, "b_spike", b_spike_);
   def<double>(d, "a_reset", voltage_reset_a_);
   def<double>(d, "b_reset", voltage_reset_b_);
@@ -194,8 +192,9 @@ allen::glif_lif_r::calibrate()
   V_.last_spike_ = 0.0;
 
   V_.method_ = 0; // default using linear forward euler for voltage dynamics
-  if(P_.V_dynamics_method_=="linear_exact")
+  if(P_.V_dynamics_method_=="linear_exact"){
      V_.method_ = 1;
+  }
 }
 
 /* ----------------------------------------------------------------
@@ -205,7 +204,6 @@ allen::glif_lif_r::calibrate()
 void
 allen::glif_lif_r::update( Time const& origin, const long from, const long to )
 {
-  
   const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
   double spike_component = 0.0;
@@ -234,7 +232,9 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
 
         // Check if bad reset
         // TODO: Better way to handle?
-        if(S_.V_m_ > S_.threshold_) printf("Simulation Terminated: Voltage (%f) reset above threshold (%f)!!\n", S_.V_m_, S_.threshold_);
+        if(S_.V_m_ > S_.threshold_){
+          printf("Simulation Terminated: Voltage (%f) reset above threshold (%f)!!\n", S_.V_m_, S_.threshold_);
+        }
         assert( S_.V_m_ <= S_.threshold_ );
 
       }
@@ -250,17 +250,17 @@ allen::glif_lif_r::update( Time const& origin, const long from, const long to )
       switch(V_.method_){
         // Linear Euler forward (RK1) to find next V_m value
         case 0: S_.V_m_ = v_old + dt * (S_.I_ - P_.G_* (v_old - P_.E_L_))/P_.C_m_;
-        		break;
+                break;
         // Linear Exact to find next V_m value
         case 1: S_.V_m_ = v_old * exp_tau + ((S_.I_+ P_.G_ * P_.E_L_) / P_.C_m_) * (1 - exp_tau) / tau;
-        		break;
+                break;
       }
 
-      if( S_.V_m_ > S_.threshold_ ) 
+      if( S_.V_m_ > S_.threshold_ )
       {
         V_.t_ref_remaining_ = V_.t_ref_total_;
         
-        // Determine 
+        // Determine
         double spike_offset = (1 - ((v_old - th_old)/((S_.threshold_- th_old)-(S_.V_m_ - v_old)))) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;

@@ -12,32 +12,37 @@
 
 /* BeginDocumentation
 Name: glif_lif_r_psc - Generalized leaky integrate and fire (GLIF) model 2 -
-				   	   Leaky integrate and fire with biologically defined reset rules model.
+                       Leaky integrate and fire with biologically defined reset rules model.
 
 Description:
 
   glif_lif_r_psc is an implementation of a generalized leaky integrate and fire (GLIF) model 2
-  (i.e., leaky integrate and fire with biologically defined reset rules model)
-  with alpha-function shaped synaptic currents, described in [1].
+  (i.e., leaky integrate and fire with biologically defined reset rules model) [1]
+  with alpha-function shaped synaptic currents. Incoming spike events induce a post-synaptic change
+  of current modeled by an alpha function. The alpha function is normalized such that an event of
+  weight 1.0 results in a peak current of 1 pA at t = tau_syn. On the postsynapic side, there can be
+  arbitrarily many synaptic time constants. This can be reached by specifying separate receptor ports,
+  each for a different time constant. The port number has to match the respective
+  "receptor_type" in the connectors.
 
 Parameters:
 
   The following parameters can be set in the status dictionary.
 
-  V_m        		double - Membrane potential in mV
-  V_th				double - Instantaneous threshold in mV.
-  g					double - Membrane conductance in nS.
-  E_L 				double - Resting membrane potential in mV.
-  C_m 				double - Capacitance of the membrane in pF.
-  t_ref 			double - Duration of refractory time in ms.
-  a_spike 			double - Threshold addition following spike in mV.
-  b_spike			double - Spike-induced threshold time constant in 1/ms.
-  a_reset			double - Voltage fraction coefficient following spike.
-  b_reset			double - Voltage addition following spike in mV.
-  tau_syn			double vector - Rise time constants of the synaptic alpha function in ms.
+  V_m               double - Membrane potential in mV
+  V_th              double - Instantaneous threshold in mV.
+  g                 double - Membrane conductance in nS.
+  E_L               double - Resting membrane potential in mV.
+  C_m               double - Capacitance of the membrane in pF.
+  t_ref             double - Duration of refractory time in ms.
+  a_spike           double - Threshold addition following spike in mV.
+  b_spike           double - Spike-induced threshold time constant in 1/ms.
+  a_reset           double - Voltage fraction coefficient following spike.
+  b_reset           double - Voltage addition following spike in mV.
+  tau_syn           double vector - Rise time constants of the synaptic alpha function in ms.
   V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
-  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
-   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
+                             'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+                             'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
@@ -101,13 +106,13 @@ private:
 
   struct Parameters_
   {
-    double th_inf_;  		// A threshold in mV
-    double G_; 				// membrane conductance in nS
-    double E_L_; 			// resting potential in mV
-    double C_m_; 			// capacitance in pF
-    double t_ref_; 			// refractory time in ms
-    double a_spike_; 		// threshold additive constant following reset in mV
-    double b_spike_; 		// spike induced threshold in 1/ms
+    double th_inf_; // A threshold in mV
+    double G_; // membrane conductance in nS
+    double E_L_; // resting potential in mV
+    double C_m_; // capacitance in pF
+    double t_ref_; // refractory time in ms
+    double a_spike_; // threshold additive constant following reset in mV
+    double b_spike_; // spike induced threshold in 1/ms
     double voltage_reset_a_; //voltage fraction following reset coefficient
     double voltage_reset_b_; // voltage additive constant following reset in mV
     std::vector< double > tau_syn_; // synaptic port time constants in ms
@@ -130,7 +135,7 @@ private:
     double V_m_;  // membrane potential in mV
     double threshold_; // voltage threshold in mV
     double I_; // external current in pA
-    double I_syn_; 		// post synaptic current in pA
+    double I_syn_; // post synaptic current in pA
 
     std::vector< double > y1_; // synapse current evolution state 1 in pA
     std::vector< double > y2_; // synapse current evolution state 2 in pA
@@ -156,16 +161,16 @@ private:
 
   struct Variables_
   {
-    double t_ref_remaining_; 	// counter during refractory period, in ms
-    double t_ref_total_; 		// total time of refractory period, in ms
-  	double last_spike_; 		// last spike component of threshold in mV
-    int method_; 				// voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
+    double t_ref_remaining_; // counter during refractory period, in ms
+    double t_ref_total_; // total time of refractory period, in ms
+    double last_spike_; // last spike component of threshold in mV
+    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
 
     std::vector< double > P11_; // synaptic current evolution parameter
     std::vector< double > P21_; // synaptic current evolution parameter
     std::vector< double > P22_; // synaptic current evolution parameter
-    double P30_; 				// membrane current/voltage evolution parameter
-    double P33_; 				// membrane voltage evolution parameter
+    double P30_; // membrane current/voltage evolution parameter
+    double P33_; // membrane voltage evolution parameter
     std::vector< double > P31_; // synaptic/membrane current evolution parameter
     std::vector< double > P32_; // synaptic/membrane current evolution parameter
 
@@ -226,8 +231,9 @@ allen::glif_lif_r_psc::handles_test_event( nest::CurrentEvent&,
   // It confirms to the connection management system that we are able
   // to handle @c CurrentEvent on port 0. You need to extend the function
   // if you want to differentiate between input ports.
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -240,9 +246,9 @@ allen::glif_lif_r_psc::handles_test_event( nest::DataLoggingRequest& dlr,
   // to handle @c DataLoggingRequest on port 0.
   // The function also tells the built-in UniversalDataLogger that this node
   // is recorded from and that it thus needs to collect data during simulation.
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
-
+  }
   return B_.logger_.connect_logging_device( dlr, recordablesMap_ );
 }
 
@@ -280,4 +286,4 @@ glif_lif_r_psc::set_status( const DictionaryDatum& d )
 
 } // namespace
 
-#endif 
+#endif

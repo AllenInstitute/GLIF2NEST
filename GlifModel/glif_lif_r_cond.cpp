@@ -92,18 +92,18 @@ allen::glif_lif_r_cond_dynamics( double,
  * ---------------------------------------------------------------- */
 
 allen::glif_lif_r_cond::Parameters_::Parameters_()
-  : th_inf_(26.5)			// in mV
-  , G_(4.6951)				// in nS
-  , E_L_(-77.4)				// in mV
-  , C_m_(99.182)			// in pF
-  , t_ref_(0.5)				// in ms
-  , V_reset_(-77.4)			// in mV
-  , a_spike_(0.0)			// in mV
-  , b_spike_(0.0)			// in 1/ms
-  , voltage_reset_a_(0.0)	// in 1/ms
-  , voltage_reset_b_(0.0)	// in 1/ms
-  , tau_syn_(1, 2.0)		// in ms
-  , E_rev_(1, -70.0)		// mV
+  : th_inf_(26.5) // in mV
+  , G_(4.6951) // in nS
+  , E_L_(-77.4) // in mV
+  , C_m_(99.182) // in pF
+  , t_ref_(0.5) // in ms
+  , V_reset_(-77.4) // in mV
+  , a_spike_(0.0) // in mV
+  , b_spike_(0.0) // in 1/ms
+  , voltage_reset_a_(0.0) // in 1/ms
+  , voltage_reset_b_(0.0) // in 1/ms
+  , tau_syn_(1, 2.0) // in ms
+  , E_rev_(1, -70.0) // mV
   , has_connections_( false )
 {
 }
@@ -112,7 +112,7 @@ allen::glif_lif_r_cond::State_::State_( const Parameters_& p )
   : threshold_(26.5) // in mV
   , y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 {
-	y_[ V_M ] = p.E_L_; // initialize to membrane potential
+  y_[ V_M ] = p.E_L_; // initialize to membrane potential
 }
 
 allen::glif_lif_r_cond::State_::State_( const State_& s )
@@ -147,7 +147,7 @@ allen::glif_lif_r_cond::Parameters_::get( DictionaryDatum& d ) const
   def<double>(d, names::C_m, C_m_);
   def<double>(d, names::t_ref, t_ref_);
   def<double>(d, names::V_reset, V_reset_);
-  def<double>(d, "a_spike", a_spike_); 
+  def<double>(d, "a_spike", a_spike_);
   def<double>(d, "b_spike", b_spike_);
   def<double>(d, "a_reset", voltage_reset_a_);
   def<double>(d, "b_reset", voltage_reset_b_);
@@ -188,27 +188,24 @@ allen::glif_lif_r_cond::Parameters_::set( const DictionaryDatum& d )
   }
 
   const size_t old_n_receptors = this->n_receptors_();
-  bool tau_flag =
-    updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ );
-  bool Erev_flag =
-	updateValue< std::vector< double > >( d, "E_rev", E_rev_ );
+  bool tau_flag = updateValue< std::vector< double > >( d, "tau_syn", tau_syn_ );
+  bool Erev_flag = updateValue< std::vector< double > >( d, "E_rev", E_rev_ );
 
   if (tau_flag || Erev_flag)
   { // receptor arrays have been modified
-    if ( ( E_rev_.size() != old_n_receptors || tau_syn_.size() != old_n_receptors )
-	        and ( not Erev_flag || not tau_flag ) )
-	{
-	  throw BadProperty(
-	    "If the number of receptor ports is changed, both arrays "
-	    "E_rev and tau_syn must be provided." );
-	}
+    if ( ( E_rev_.size() != old_n_receptors || tau_syn_.size() != old_n_receptors ) and ( not Erev_flag || not tau_flag ) )
+    {
+      throw BadProperty(
+        "If the number of receptor ports is changed, both arrays "
+        "E_rev and tau_syn must be provided." );
+    }
 
     if ( E_rev_.size() != tau_syn_.size() )
-	{
-	  throw BadProperty(
-	    "The reversal potential, and synaptic time constant arrays "
-	    "must have the same size." );
-	}
+    {
+      throw BadProperty(
+        "The reversal potential, and synaptic time constant arrays "
+        "must have the same size." );
+    }
 
     if ( this->n_receptors_() != old_n_receptors && has_connections_ == true )
     {
@@ -232,24 +229,24 @@ allen::glif_lif_r_cond::Parameters_::set( const DictionaryDatum& d )
 void
 allen::glif_lif_r_cond::State_::get( DictionaryDatum& d ) const
 {
-	  def< double >(d, names::V_m, y_[V_M] );
+  def< double >(d, names::V_m, y_[V_M] );
 
-	  std::vector< double >* dg = new std::vector< double >();
-	  std::vector< double >* g = new std::vector< double >();
+  std::vector< double >* dg = new std::vector< double >();
+  std::vector< double >* g = new std::vector< double >();
 
-	  for ( size_t i = 0;
-	        i < ( ( y_.size() - State_::NUMBER_OF_FIXED_STATES_ELEMENTS )
-	              / State_::NUMBER_OF_STATES_ELEMENTS_PER_RECEPTOR );
-	        ++i )
-	  {
-	    dg->push_back( y_[ State_::DG_SYN
-	      + ( State_::NUMBER_OF_STATES_ELEMENTS_PER_RECEPTOR * i ) ] );
-	    g->push_back( y_[ State_::G_SYN
-	      + ( State_::NUMBER_OF_STATES_ELEMENTS_PER_RECEPTOR * i ) ] );
-	  }
+  for ( size_t i = 0;
+        i < ( ( y_.size() - State_::NUMBER_OF_FIXED_STATES_ELEMENTS )
+              / State_::NUMBER_OF_STATES_ELEMENTS_PER_RECEPTOR );
+        ++i )
+  {
+    dg->push_back( y_[ State_::DG_SYN
+      + ( State_::NUMBER_OF_STATES_ELEMENTS_PER_RECEPTOR * i ) ] );
+    g->push_back( y_[ State_::G_SYN
+      + ( State_::NUMBER_OF_STATES_ELEMENTS_PER_RECEPTOR * i ) ] );
+  }
 
-	  ( *d )[ names::dg ] = DoubleVectorDatum( dg );
-	  ( *d )[ names::g ] = DoubleVectorDatum( g );
+  ( *d )[ names::dg ] = DoubleVectorDatum( dg );
+  ( *d )[ names::g ] = DoubleVectorDatum( g );
 
 }
 
@@ -383,8 +380,8 @@ allen::glif_lif_r_cond::calibrate()
 
   for (size_t i = 0; i < P_.n_receptors_() ; i++ )
   {
-	V_.CondInitialValues_[i] = 1.0 * numerics::e / P_.tau_syn_[i];
-	B_.spikes_[ i ].resize();
+    V_.CondInitialValues_[i] = 1.0 * numerics::e / P_.tau_syn_[i];
+    B_.spikes_[ i ].resize();
   }
 
   // reallocate instance of stepping function for ODE GSL solver
@@ -412,7 +409,7 @@ allen::glif_lif_r_cond::calibrate()
 void
 allen::glif_lif_r_cond::update( Time const& origin, const long from, const long to )
 {
-  
+
   const double dt = Time::get_resolution().get_ms();
   double v_old = S_.y_[ State_::V_M ];
   double spike_component = 0.0;
@@ -426,33 +423,33 @@ allen::glif_lif_r_cond::update( Time const& origin, const long from, const long 
     V_.last_spike_ = spike_component;
 
     double t = 0.0;
- 	// numerical integration with adaptive step size control:
- 	// ------------------------------------------------------
- 	// gsl_odeiv_evolve_apply performs only a single numerical
- 	// integration step, starting from t and bounded by step;
- 	// the while-loop ensures integration over the whole simulation
- 	// step (0, step] if more than one integration step is needed due
- 	// to a small integration step size;
- 	// note that (t+IntegrationStep > step) leads to integration over
- 	// (t, step] and afterwards setting t to step, but it does not
- 	// enforce setting IntegrationStep to step-t; this is of advantage
- 	// for a consistent and efficient integration across subsequent
- 	// simulation intervals
- 	while ( t < B_.step_ )
- 	{
- 	  const int status = gsl_odeiv_evolve_apply( B_.e_,
- 	    B_.c_,
- 	    B_.s_,
- 		&B_.sys_,             // system of ODE
- 	    &t,                   // from t
- 		B_.step_,             // to t <= step
- 	    &B_.IntegrationStep_, // integration step size
- 		&S_.y_[0] );               // neuronal state
- 	  if ( status != GSL_SUCCESS )
- 	  {
- 	    throw GSLSolverFailure( get_name(), status );
- 	  }
- 	}
+    // numerical integration with adaptive step size control:
+    // ------------------------------------------------------
+    // gsl_odeiv_evolve_apply performs only a single numerical
+    // integration step, starting from t and bounded by step;
+    // the while-loop ensures integration over the whole simulation
+    // step (0, step] if more than one integration step is needed due
+    // to a small integration step size;
+    // note that (t+IntegrationStep > step) leads to integration over
+    // (t, step] and afterwards setting t to step, but it does not
+    // enforce setting IntegrationStep to step-t; this is of advantage
+    // for a consistent and efficient integration across subsequent
+    // simulation intervals
+    while ( t < B_.step_ )
+    {
+      const int status = gsl_odeiv_evolve_apply( B_.e_,
+        B_.c_,
+        B_.s_,
+        &B_.sys_,             // system of ODE
+        &t,                   // from t
+        B_.step_,             // to t <= step
+        &B_.IntegrationStep_, // integration step size
+        &S_.y_[0] );               // neuronal state
+      if ( status != GSL_SUCCESS )
+      {
+        throw GSLSolverFailure( get_name(), status );
+      }
+    }
 
     if( V_.t_ref_remaining_ > 0.0)
     {
@@ -461,20 +458,22 @@ allen::glif_lif_r_cond::update( Time const& origin, const long from, const long 
       V_.t_ref_remaining_ -= dt;
       if( V_.t_ref_remaining_ <= 0.0)
       {
-    	S_.y_[ State_::V_M ] = P_.E_L_ + P_.voltage_reset_a_ * ( v_old - P_.E_L_ ) + P_.voltage_reset_b_;
+        S_.y_[ State_::V_M ] = P_.E_L_ + P_.voltage_reset_a_ * ( v_old - P_.E_L_ ) + P_.voltage_reset_b_;
 
         V_.last_spike_ = V_.last_spike_ + P_.a_spike_;
         S_.threshold_ = V_.last_spike_ + P_.th_inf_;
 
         // Check if bad reset
         // TODO: Better way to handle?
-        if(S_.y_[ State_::V_M ] > S_.threshold_) printf("Simulation Terminated: Voltage (%f) reset above threshold (%f)!!\n", S_.y_[ State_::V_M ], S_.threshold_);
+        if(S_.y_[ State_::V_M ] > S_.threshold_){
+           printf("Simulation Terminated: Voltage (%f) reset above threshold (%f)!!\n", S_.y_[ State_::V_M ], S_.threshold_);
+        }
         assert( S_.y_[ State_::V_M ] <= S_.threshold_ );
 
       }
       else
       {
-    	S_.y_[ State_::V_M ] = v_old;
+        S_.y_[ State_::V_M ] = v_old;
       }
     }
     else
@@ -483,7 +482,7 @@ allen::glif_lif_r_cond::update( Time const& origin, const long from, const long 
       {
         V_.t_ref_remaining_ = V_.t_ref_total_;
         
-        // Determine 
+        // Determine
         double spike_offset = (1 - ((v_old - th_old)/((S_.threshold_- th_old)-(S_.y_[ State_::V_M ] - v_old)))) * Time::get_resolution().get_ms();
         set_spiketime( Time::step( origin.get_steps() + lag + 1 ), spike_offset );
         SpikeEvent se;

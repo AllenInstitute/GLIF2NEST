@@ -12,7 +12,7 @@
 
 /* BeginDocumentation
 Name: glif_lif_asc - Generalized leaky integrate and fire (GLIF) model 3 -
-					 Leaky integrate and fire with after-spike currents model.
+                     Leaky integrate and fire with after-spike currents model.
 
 Description:
 
@@ -23,16 +23,20 @@ Parameters:
 
   The following parameters can be set in the status dictionary.
 
-  V_m        		double - Membrane potential in mV
-  V_th				double - Instantaneous threshold in mV.
-  g					double - Membrane conductance in nS.
-  E_L 				double - Resting membrane potential in mV.
-  C_m 				double - Capacitance of the membrane in pF.
-  t_ref 			double - Duration of refractory time in ms.
-  V_reset 			double - Reset potential of the membrane in mV.
+  V_m               double - Membrane potential in mV
+  V_th              double - Instantaneous threshold in mV.
+  g                 double - Membrane conductance in nS.
+  E_L               double - Resting membrane potential in mV.
+  C_m               double - Capacitance of the membrane in pF.
+  t_ref             double - Duration of refractory time in ms.
+  V_reset           double - Reset potential of the membrane in mV.
+  asc_init          double vector - Initial values of after-spike currents in pA.
+  k                 double vector - After-spike current time constants in 1/ms (kj in Equation (3) in [1]).
+  asc_amps          double vector - After-spike current amplitudes in pA (deltaIj in Equation (7) in [1]).
+  r                 double vector - Current fraction following spike coefficients (fj in Equation (7) in [1]).
   V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
-  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
-   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
+                             'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+                             'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
@@ -97,17 +101,17 @@ private:
 
   struct Parameters_
   {
-    double V_th_;  		// A constant spiking threshold in mV
-    double G_; 			// membrane conductance in nS
-    double E_L_; 		// resting potential in mV
-    double C_m_; 		// capacitance in pF
-    double t_ref_; 		// refractory time in ms
-    double V_reset_; 	// Membrane voltage following spike in mV
+    double V_th_; // A constant spiking threshold in mV
+    double G_; // membrane conductance in nS
+    double E_L_; // resting potential in mV
+    double C_m_; // capacitance in pF
+    double t_ref_; // refractory time in ms
+    double V_reset_; // Membrane voltage following spike in mV
 
-    std::vector<double> asc_init_; 	// initial values of ASCurrents_ in pA
-    std::vector<double> k_;  		// predefined time scale in 1/ms
-    std::vector<double> asc_amps_;	// in pA
-    std::vector<double> r_;			// coefficient
+    std::vector<double> asc_init_; // initial values of ASCurrents_ in pA
+    std::vector<double> k_; // predefined time scale in 1/ms
+    std::vector<double> asc_amps_; // in pA
+    std::vector<double> r_; // coefficient
     std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
@@ -121,7 +125,7 @@ private:
   {
     double V_m_;  // membrane potential in mV
     std::vector<double> ASCurrents_; // after-spike currents in pA
-    double ASCurrents_sum_;	// in sum of after-spike currents in pA
+    double ASCurrents_sum_; // in sum of after-spike currents in pA
 
     double I_; // external current in pA
 
@@ -146,9 +150,9 @@ private:
 
   struct Variables_
   {
-    double t_ref_remaining_;  	// counter during refractory period in ms
-    double t_ref_total_;    	// total time of refractory period in ms
-    int method_; 				// voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
+    double t_ref_remaining_; // counter during refractory period in ms
+    double t_ref_total_; // total time of refractory period in ms
+    int method_; // voltage dynamics solver method flag: 0-linear forward euler; 1-linear exact
   };
 
   double get_V_m_() const
@@ -161,10 +165,10 @@ private:
     return S_.ASCurrents_[0];
   }
 
-  Parameters_ P_; 
-  State_ S_;      
-  Variables_ V_;  
-  Buffers_ B_;    
+  Parameters_ P_;
+  State_ S_;
+  Variables_ V_;
+  Buffers_ B_;
 
   // Mapping of recordables names to access functions
   static nest::RecordablesMap< glif_lif_asc > recordablesMap_;
@@ -185,8 +189,9 @@ inline nest::port
 allen::glif_lif_asc::handles_test_event( nest::SpikeEvent&,
   nest::port receptor_type )
 {
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -194,8 +199,9 @@ inline nest::port
 allen::glif_lif_asc::handles_test_event( nest::CurrentEvent&,
   nest::port receptor_type )
 {
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -203,9 +209,9 @@ inline nest::port
 allen::glif_lif_asc::handles_test_event( nest::DataLoggingRequest& dlr,
   nest::port receptor_type )
 {
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
-
+  }
   return B_.logger_.connect_logging_device( dlr, recordablesMap_ );
 }
 

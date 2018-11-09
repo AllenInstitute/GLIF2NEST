@@ -12,36 +12,36 @@
 
 /* BeginDocumentation
 Name: glif_lif_r_asc - Generalized leaky integrate and fire (GLIF) model 4 -
-				   	   Leaky integrate and fire with biologically defined
-				   	   reset rules and after-spike currents model.
-
-Parameters:
-
-  The following parameters can be set in the status dictionary.
-
-  V_m        		double - Membrane potential in mV
-  V_th				double - Instantaneous threshold in mV.
-  g					double - Membrane conductance in nS.
-  E_L 				double - Resting membrane potential in mV.
-  C_m 				double - Capacitance of the membrane in pF.
-  t_ref 			double - Duration of refractory time in ms.
-  a_spike 			double - Threshold addition following spike in mV.
-  b_spike			double - Spike-induced threshold time constant in 1/ms.
-  a_reset			double - Voltage fraction coefficient following spike.
-  b_reset			double - Voltage addition following spike in mV.
-  asc_init 			double vector - Initial values of after-spike currents in pA.
-  k 				double vector - After-spike current time constants in 1/ms (kj in Equation (3) in [1]).
-  asc_amps			double vector - After-spike current amplitudes in pA (deltaIj in Equation (7) in [1]).
-  r					double vector - Current fraction following spike coefficients (fj in Equation (7) in [1]).
-  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
-  	  	  	  	  	  	  	 'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
-   	   	   	   	   	   	   	 'linear_exact' - Linear exact to find next V_m value.
+                       Leaky integrate and fire with biologically defined
+                       reset rules and after-spike currents model.
 
 Description:
 
   glif_lif_r_asc is an implementation of a generalized leaky integrate and fire (GLIF) model 4
   (i.e., leaky integrate and fire with biologically defined reset rules and
   after-spike currents model), described in [1].
+
+Parameters:
+
+  The following parameters can be set in the status dictionary.
+
+  V_m               double - Membrane potential in mV
+  V_th              double - Instantaneous threshold in mV.
+  g                 double - Membrane conductance in nS.
+  E_L               double - Resting membrane potential in mV.
+  C_m               double - Capacitance of the membrane in pF.
+  t_ref             double - Duration of refractory time in ms.
+  a_spike           double - Threshold addition following spike in mV.
+  b_spike           double - Spike-induced threshold time constant in 1/ms.
+  a_reset           double - Voltage fraction coefficient following spike.
+  b_reset           double - Voltage addition following spike in mV.
+  asc_init          double vector - Initial values of after-spike currents in pA.
+  k                 double vector - After-spike current time constants in 1/ms (kj in Equation (3) in [1]).
+  asc_amps          double vector - After-spike current amplitudes in pA (deltaIj in Equation (7) in [1]).
+  r                 double vector - Current fraction following spike coefficients (fj in Equation (7) in [1]).
+  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
+                             'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+                             'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
@@ -106,19 +106,19 @@ private:
 
   struct Parameters_
   {
-	double th_inf_;  			// infinity threshold in mV
-    double G_; 					// membrane conductance in nS
-    double E_L_; 				// resting potential in mV
-    double C_m_; 				// capacitance in pF
-    double t_ref_; 				// refractory time in ms
-    double a_spike_; 			// threshold additive constant following reset in mV
-    double b_spike_; 			//spike induced threshold in 1/ms
-    double voltage_reset_a_; 	//voltage fraction following reset coefficient
-    double voltage_reset_b_; 	// voltage additive constant following reset in mV
-    std::vector<double> asc_init_; 	// initial values of ASCurrents_ in pA
-    std::vector<double> k_; 		// predefined time scale in 1/ms
-    std::vector<double> asc_amps_;	// in pA
-    std::vector<double> r_;			// coefficient
+    double th_inf_; // infinity threshold in mV
+    double G_; // membrane conductance in nS
+    double E_L_; // resting potential in mV
+    double C_m_; // capacitance in pF
+    double t_ref_; // refractory time in ms
+    double a_spike_; // threshold additive constant following reset in mV
+    double b_spike_; //spike induced threshold in 1/ms
+    double voltage_reset_a_; //voltage fraction following reset coefficient
+    double voltage_reset_b_; // voltage additive constant following reset in mV
+    std::vector<double> asc_init_; // initial values of ASCurrents_ in pA
+    std::vector<double> k_; // predefined time scale in 1/ms
+    std::vector<double> asc_amps_; // in pA
+    std::vector<double> r_; // coefficient
     std::string V_dynamics_method_; // voltage dynamic methods
 
     Parameters_();
@@ -132,11 +132,11 @@ private:
   {
     double V_m_;  // membrane potential
     std::vector<double> ASCurrents_; // after-spike currents in pA
-    double ASCurrents_sum_;			 // in pA
+    double ASCurrents_sum_; // in pA
 
-    double threshold_; 				 // voltage threshold in mV
+    double threshold_; // voltage threshold in mV
 
-    double I_; 						 // external current in pA
+    double I_; // external current in pA
 
     State_();
 
@@ -176,10 +176,10 @@ private:
     return S_.ASCurrents_[0];
   }
 
-  Parameters_ P_; 
-  State_ S_;      
-  Variables_ V_;  
-  Buffers_ B_;    
+  Parameters_ P_;
+  State_ S_;
+  Variables_ V_;
+  Buffers_ B_;
 
   // Mapping of recordables names to access functions
   static nest::RecordablesMap< glif_lif_r_asc > recordablesMap_;
@@ -200,8 +200,9 @@ inline nest::port
 allen::glif_lif_r_asc::handles_test_event( nest::SpikeEvent&,
   nest::port receptor_type )
 {
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -209,8 +210,9 @@ inline nest::port
 allen::glif_lif_r_asc::handles_test_event( nest::CurrentEvent&,
   nest::port receptor_type )
 {
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
   return 0;
 }
 
@@ -218,8 +220,9 @@ inline nest::port
 allen::glif_lif_r_asc::handles_test_event( nest::DataLoggingRequest& dlr,
   nest::port receptor_type )
 {
-  if ( receptor_type != 0 )
+  if ( receptor_type != 0 ){
     throw nest::UnknownReceptorType( receptor_type, get_name() );
+  }
 
   return B_.logger_.connect_logging_device( dlr, recordablesMap_ );
 }
