@@ -17,7 +17,7 @@ Name: glif_lif - Generalized leaky integrate and fire (GLIF) model 1 -
 Description:
 
   glif_lif is an implementation of a generalized leaky integrate and fire (GLIF)
-model 1, i.e., traditional leaky integrate and fire (LIF) model, described in [1].
+  model 1, i.e., traditional leaky integrate and fire (LIF) model, described in [1].
 
 Parameters:
 
@@ -38,8 +38,7 @@ References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
       Cain N, Zeng H, Hawrylycz M, Koch C, & Mihalas S (2018)
       Generalized leaky integrate-and-fire models classify multiple neuron
-types.
-      Nature Communications 9:709.
+      types. Nature Communications 9:709.
 
 Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
 */

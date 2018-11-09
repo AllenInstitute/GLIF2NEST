@@ -35,6 +35,7 @@ Description:
   On the postsynapic side, there can be arbitrarily many synaptic time constants.
   This can be reached by specifying separate receptor ports, each for a different time constant.
   The port number has to match the respective "receptor_type" in the connectors.
+
 Parameters:
 
   The following parameters can be set in the status dictionary.
