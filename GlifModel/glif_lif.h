@@ -12,14 +12,12 @@
 
 /* BeginDocumentation
 Name: glif_lif - Generalized leaky integrate and fire (GLIF) model 1 -
-                                 Traditional leaky integrate and fire (LIF)
-model.
+                 Traditional leaky integrate and fire (LIF) model.
 
 Description:
 
   glif_lif is an implementation of a generalized leaky integrate and fire (GLIF)
-model 1,
-  i.e., traditional leaky integrate and fire (LIF) model, described in [1].
+model 1, i.e., traditional leaky integrate and fire (LIF) model, described in [1].
 
 Parameters:
 
@@ -32,12 +30,9 @@ Parameters:
   C_m               double - Capacitance of the membrane in pF.
   t_ref             double - Duration of refractory time in ms.
   V_reset           double - Reset potential of the membrane in mV.
-  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution
-methods:
-                                                         'linear_forward_euler'
-- Linear Euler forward (RK1) to find next V_m value, or
-                                                         'linear_exact' - Linear
-exact to find next V_m value.
+  V_dynamics_method string - Voltage dynamics (Equation (1) in [1]) solution methods:
+                             'linear_forward_euler' - Linear Euler forward (RK1) to find next V_m value, or
+                             'linear_exact' - Linear exact to find next V_m value.
 
 References:
   [1] Teeter C, Iyer R, Menon V, Gouwens N, Feng D, Berg J, Szafer A,
