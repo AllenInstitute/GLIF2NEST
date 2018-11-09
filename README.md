@@ -26,13 +26,13 @@ neuron = nest.Create('glif_lif') # or glif_lif_r, glif_lif_asc, glif_lif_r_asc
 
 ## Running and Testing
 ### Download Cell-Types-DB models to local machine
-In scripts/ folder, run the following command to install 10 specific modules
+In scripts/ folder, run the following command to install 10 specific modules ([AllenSDK](https://allensdk.readthedocs.io/en/latest/) is required)
 ```bash
 $ python allensdk_helper.py
 ```
 Or to get a specific set of models for a given cell-id
 ```bash
-$ python allensdk_helper.py -c CELL-ID1[,CELL-ID2,...]
+$ python allensdk_helper.py CELL-ID1 [CELL-ID2 CELL-ID3 ...]
 ```
 
 ### Test all downloaded models
@@ -56,7 +56,7 @@ First determine the type in injection schemes are available
 $ python run_model_psc.py --list-stimuli
 ```
 The following will run NEST implementation of a 4 neurons network as described below and plot voltage-traces and spike-trains. Model download is not required.
-* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is tau_syn=2.0ms and one port is tau_syn=1.0ms);
+* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is 2.0ms and one port is 1.0ms);
 * The first neuron is connected the first port of the second neuron;
 * The first neuron is connected the second port of the third neuron;
 * The first neuron is also connected both ports of the fourth neuron;
@@ -71,7 +71,7 @@ First determine the type in injection schemes are available
 $ python run_model_cond.py --list-stimuli
 ```
 The following will run NEST implementation of a 4 neurons network as described below and plot voltage-traces and spike-trains. Model download is not required.
-* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is tau_syn=2.0ms/E_rev=0.0mV and one port is tau_syn=1.0ms/E_rev=-70mV);
+* One neuron is without synaptic port, the other three are with 2 syaptic ports (one port is 2.0ms and one port is 1.0ms);
 * The first neuron is connected the first port of the second neuron;
 * The first neuron is connected the second port of the third neuron;
 * The first neuron is also connected both ports of the fourth neuron;
