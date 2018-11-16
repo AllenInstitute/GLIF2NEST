@@ -78,7 +78,7 @@ References:
 Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
 */
 
-namespace allen
+namespace nest
 {
 
 extern "C" int glif_lif_r_asc_cond_dynamics( double, const double*, double*, void* );
@@ -270,20 +270,20 @@ private:
 };
 
 inline size_t
-allen::glif_lif_r_asc_cond::Parameters_::n_receptors_() const
+nest::glif_lif_r_asc_cond::Parameters_::n_receptors_() const
 {
   return tau_syn_.size();
 }
 
 inline size_t
-allen::glif_lif_r_asc_cond::Parameters_::n_ASCurrents_() const
+nest::glif_lif_r_asc_cond::Parameters_::n_ASCurrents_() const
 {
   return k_.size();
 }
 
 
 inline nest::port
-allen::glif_lif_r_asc_cond::send_test_event( nest::Node& target,
+nest::glif_lif_r_asc_cond::send_test_event( nest::Node& target,
   nest::port receptor_type,
   nest::synindex,
   bool )
@@ -294,7 +294,7 @@ allen::glif_lif_r_asc_cond::send_test_event( nest::Node& target,
 }
 
 inline nest::port
-allen::glif_lif_r_asc_cond::handles_test_event( nest::CurrentEvent&,
+nest::glif_lif_r_asc_cond::handles_test_event( nest::CurrentEvent&,
   nest::port receptor_type )
 {
   if ( receptor_type != 0 ){
@@ -304,7 +304,7 @@ allen::glif_lif_r_asc_cond::handles_test_event( nest::CurrentEvent&,
 }
 
 inline nest::port
-allen::glif_lif_r_asc_cond::handles_test_event( nest::DataLoggingRequest& dlr,
+nest::glif_lif_r_asc_cond::handles_test_event( nest::DataLoggingRequest& dlr,
   nest::port receptor_type )
 {
   if ( receptor_type != 0 ){

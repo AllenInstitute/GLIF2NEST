@@ -22,14 +22,14 @@
 
 using namespace nest;
 
-nest::RecordablesMap<allen::glif_lif> allen::glif_lif::recordablesMap_;
+nest::RecordablesMap<nest::glif_lif> nest::glif_lif::recordablesMap_;
 
 namespace nest {
 // Override the create() method with one call to RecordablesMap::insert_()
 // for each quantity to be recorded.
-template <> void RecordablesMap<allen::glif_lif>::create() {
+template <> void RecordablesMap<nest::glif_lif>::create() {
   // use standard names whereever you can for consistency!
-  insert_(names::V_m, &allen::glif_lif::get_V_m_);
+  insert_(names::V_m, &nest::glif_lif::get_V_m_);
 }
 }
 
@@ -37,7 +37,7 @@ template <> void RecordablesMap<allen::glif_lif>::create() {
  * Default constructors defining default parameters and state
  * ---------------------------------------------------------------- */
 
-allen::glif_lif::Parameters_::Parameters_()
+nest::glif_lif::Parameters_::Parameters_()
     : th_inf_(26.5) // mV
       ,
       G_(4.6951) // nS (1/Gohm)
@@ -52,7 +52,7 @@ allen::glif_lif::Parameters_::Parameters_()
       ,
       V_dynamics_method_("linear_forward_euler") {}
 
-allen::glif_lif::State_::State_()
+nest::glif_lif::State_::State_()
     : V_m_(-77.4) // mV
       ,
       I_(0.0) // pA
@@ -62,7 +62,7 @@ allen::glif_lif::State_::State_()
  * Parameter and state extractions and manipulation functions
  * ---------------------------------------------------------------- */
 
-void allen::glif_lif::Parameters_::get(DictionaryDatum &d) const {
+void nest::glif_lif::Parameters_::get(DictionaryDatum &d) const {
   def<double>(d, names::V_th, th_inf_);
   def<double>(d, names::g, G_);
   def<double>(d, names::E_L, E_L_);
@@ -72,7 +72,7 @@ void allen::glif_lif::Parameters_::get(DictionaryDatum &d) const {
   def<std::string>(d, "V_dynamics_method", V_dynamics_method_);
 }
 
-void allen::glif_lif::Parameters_::set(const DictionaryDatum &d) {
+void nest::glif_lif::Parameters_::set(const DictionaryDatum &d) {
   updateValue<double>(d, names::V_th, th_inf_);
   updateValue<double>(d, names::g, G_);
   updateValue<double>(d, names::E_L, E_L_);
@@ -98,11 +98,11 @@ void allen::glif_lif::Parameters_::set(const DictionaryDatum &d) {
   }
 }
 
-void allen::glif_lif::State_::get(DictionaryDatum &d) const {
+void nest::glif_lif::State_::get(DictionaryDatum &d) const {
   def<double>(d, names::V_m, V_m_);
 }
 
-void allen::glif_lif::State_::set(const DictionaryDatum &d,
+void nest::glif_lif::State_::set(const DictionaryDatum &d,
                                   const Parameters_ &p) {
   // Only the membrane potential can be set; one could also make other state
   // variables settable.
@@ -111,38 +111,38 @@ void allen::glif_lif::State_::set(const DictionaryDatum &d,
   V_m_ = p.E_L_;
 }
 
-allen::glif_lif::Buffers_::Buffers_(glif_lif &n) : logger_(n) {}
+nest::glif_lif::Buffers_::Buffers_(glif_lif &n) : logger_(n) {}
 
-allen::glif_lif::Buffers_::Buffers_(const Buffers_ &, glif_lif &n)
+nest::glif_lif::Buffers_::Buffers_(const Buffers_ &, glif_lif &n)
     : logger_(n) {}
 
 /* ----------------------------------------------------------------
  * Default and copy constructor for node
  * ---------------------------------------------------------------- */
 
-allen::glif_lif::glif_lif() : Archiving_Node(), P_(), S_(), B_(*this) {
+nest::glif_lif::glif_lif() : Archiving_Node(), P_(), S_(), B_(*this) {
   recordablesMap_.create();
 }
 
-allen::glif_lif::glif_lif(const glif_lif &n)
+nest::glif_lif::glif_lif(const glif_lif &n)
     : Archiving_Node(n), P_(n.P_), S_(n.S_), B_(n.B_, *this) {}
 
 /* ----------------------------------------------------------------
  * Node initialization functions
  * ---------------------------------------------------------------- */
 
-void allen::glif_lif::init_state_(const Node &proto) {
+void nest::glif_lif::init_state_(const Node &proto) {
   const glif_lif &pr = downcast<glif_lif>(proto);
   S_ = pr.S_;
 }
 
-void allen::glif_lif::init_buffers_() {
+void nest::glif_lif::init_buffers_() {
   B_.spikes_.clear();   // includes resize
   B_.currents_.clear(); // include resize
   B_.logger_.reset();   // includes resize
 }
 
-void allen::glif_lif::calibrate() {
+void nest::glif_lif::calibrate() {
   B_.logger_.init();
 
   V_.t_ref_remaining_ = 0.0;
@@ -158,7 +158,7 @@ void allen::glif_lif::calibrate() {
  * Update and spike handling functions
  * ---------------------------------------------------------------- */
 
-void allen::glif_lif::update(Time const &origin, const long from,
+void nest::glif_lif::update(Time const &origin, const long from,
                              const long to) {
 
   const double dt = Time::get_resolution().get_ms();
@@ -213,7 +213,7 @@ void allen::glif_lif::update(Time const &origin, const long from,
   }
 }
 
-void allen::glif_lif::handle(SpikeEvent &e) {
+void nest::glif_lif::handle(SpikeEvent &e) {
   assert(e.get_delay() > 0);
 
   B_.spikes_.add_value(
@@ -221,7 +221,7 @@ void allen::glif_lif::handle(SpikeEvent &e) {
       e.get_weight());
 }
 
-void allen::glif_lif::handle(CurrentEvent &e) {
+void nest::glif_lif::handle(CurrentEvent &e) {
   assert(e.get_delay() > 0);
 
   B_.currents_.add_value(
@@ -231,6 +231,6 @@ void allen::glif_lif::handle(CurrentEvent &e) {
 
 // Do not move this function as inline to h-file. It depends on
 // universal_data_logger_impl.h being included here.
-void allen::glif_lif::handle(DataLoggingRequest &e) {
+void nest::glif_lif::handle(DataLoggingRequest &e) {
   B_.logger_.handle(e); // the logger does this for us
 }

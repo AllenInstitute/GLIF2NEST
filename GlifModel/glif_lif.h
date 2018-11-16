@@ -43,7 +43,7 @@ References:
 Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
 */
 
-namespace allen {
+namespace nest {
 
 class glif_lif : public nest::Archiving_Node {
 public:
@@ -145,7 +145,7 @@ private:
   static nest::RecordablesMap<glif_lif> recordablesMap_;
 };
 
-inline nest::port allen::glif_lif::send_test_event(nest::Node &target,
+inline nest::port nest::glif_lif::send_test_event(nest::Node &target,
                                                    nest::port receptor_type,
                                                    nest::synindex, bool) {
   // You should usually not change the code in this function.
@@ -157,7 +157,7 @@ inline nest::port allen::glif_lif::send_test_event(nest::Node &target,
 }
 
 inline nest::port
-allen::glif_lif::handles_test_event(nest::SpikeEvent &,
+nest::glif_lif::handles_test_event(nest::SpikeEvent &,
                                     nest::port receptor_type) {
   // You should usually not change the code in this function.
   // It confirms to the connection management system that we are able
@@ -170,7 +170,7 @@ allen::glif_lif::handles_test_event(nest::SpikeEvent &,
 }
 
 inline nest::port
-allen::glif_lif::handles_test_event(nest::CurrentEvent &,
+nest::glif_lif::handles_test_event(nest::CurrentEvent &,
                                     nest::port receptor_type) {
   // You should usually not change the code in this function.
   // It confirms to the connection management system that we are able
@@ -183,7 +183,7 @@ allen::glif_lif::handles_test_event(nest::CurrentEvent &,
 }
 
 inline nest::port
-allen::glif_lif::handles_test_event(nest::DataLoggingRequest &dlr,
+nest::glif_lif::handles_test_event(nest::DataLoggingRequest &dlr,
                                     nest::port receptor_type) {
   // You should usually not change the code in this function.
   // It confirms to the connection management system that we are able

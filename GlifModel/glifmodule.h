@@ -8,7 +8,7 @@
 
 #include <string>
 
-namespace allen
+namespace nest
 {
 
   class GlifModules : public SLIModule {

@@ -23,8 +23,8 @@
 
 using namespace nest;
 
-nest::RecordablesMap< allen::glif_lif_asc_psc >
-  allen::glif_lif_asc_psc::recordablesMap_;
+nest::RecordablesMap< nest::glif_lif_asc_psc >
+  nest::glif_lif_asc_psc::recordablesMap_;
 
 namespace nest
 {
@@ -32,11 +32,11 @@ namespace nest
 // for each quantity to be recorded.
 template<>
 void
-RecordablesMap< allen::glif_lif_asc_psc >::create()
+RecordablesMap< nest::glif_lif_asc_psc >::create()
 {
-  insert_( names::V_m, &allen::glif_lif_asc_psc::get_V_m_ );
-  insert_( Name("AScurrents_sum"), &allen::glif_lif_asc_psc::get_AScurrents_sum_ );
-  insert_( names::I_syn, &allen::glif_lif_asc_psc::get_I_syn_ );
+  insert_( names::V_m, &nest::glif_lif_asc_psc::get_V_m_ );
+  insert_( Name("AScurrents_sum"), &nest::glif_lif_asc_psc::get_AScurrents_sum_ );
+  insert_( names::I_syn, &nest::glif_lif_asc_psc::get_I_syn_ );
 }
 }
 
@@ -44,7 +44,7 @@ RecordablesMap< allen::glif_lif_asc_psc >::create()
  * Default constructors defining default parameters and state
  * ---------------------------------------------------------------- */
 
-allen::glif_lif_asc_psc::Parameters_::Parameters_()
+nest::glif_lif_asc_psc::Parameters_::Parameters_()
   : V_th_(26.5) // in mV
   , G_(4.6951) // in nS
   , E_L_(-77.4) // in mV
@@ -61,7 +61,7 @@ allen::glif_lif_asc_psc::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_asc_psc::State_::State_()
+nest::glif_lif_asc_psc::State_::State_()
   : V_m_(-77.4) // in mV
   , ASCurrents_(std::vector<double>(2, 0.0)) // in pA
   , I_(0.0) // in pA
@@ -75,7 +75,7 @@ allen::glif_lif_asc_psc::State_::State_()
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_asc_psc::Parameters_::get( DictionaryDatum& d ) const
+nest::glif_lif_asc_psc::Parameters_::get( DictionaryDatum& d ) const
 {
   def<double>(d, names::V_th, V_th_);
   def<double>(d, names::g, G_);
@@ -94,7 +94,7 @@ allen::glif_lif_asc_psc::Parameters_::get( DictionaryDatum& d ) const
 }
 
 void
-allen::glif_lif_asc_psc::Parameters_::set( const DictionaryDatum& d )
+nest::glif_lif_asc_psc::Parameters_::set( const DictionaryDatum& d )
 {
   updateValue< double >(d, names::V_th, V_th_ );
   updateValue< double >(d, names::g, G_ );
@@ -151,14 +151,14 @@ allen::glif_lif_asc_psc::Parameters_::set( const DictionaryDatum& d )
 }
 
 void
-allen::glif_lif_asc_psc::State_::get( DictionaryDatum& d ) const
+nest::glif_lif_asc_psc::State_::get( DictionaryDatum& d ) const
 {
   def< double >(d, names::V_m, V_m_ );
   def< std::vector<double> >(d, Name("ASCurrents"), ASCurrents_ );
 }
 
 void
-allen::glif_lif_asc_psc::State_::set( const DictionaryDatum& d,
+nest::glif_lif_asc_psc::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   updateValue< double >( d, names::V_m, V_m_ );
@@ -167,12 +167,12 @@ allen::glif_lif_asc_psc::State_::set( const DictionaryDatum& d,
   ASCurrents_ = p.asc_init_;
 }
 
-allen::glif_lif_asc_psc::Buffers_::Buffers_( glif_lif_asc_psc& n )
+nest::glif_lif_asc_psc::Buffers_::Buffers_( glif_lif_asc_psc& n )
   : logger_( n )
 {
 }
 
-allen::glif_lif_asc_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_asc_psc& n )
+nest::glif_lif_asc_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_asc_psc& n )
   : logger_( n )
 {
 }
@@ -182,7 +182,7 @@ allen::glif_lif_asc_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_asc_psc& 
  * Default and copy constructor for node
  * ---------------------------------------------------------------- */
 
-allen::glif_lif_asc_psc::glif_lif_asc_psc()
+nest::glif_lif_asc_psc::glif_lif_asc_psc()
   : Archiving_Node()
   , P_()
   , S_()
@@ -191,7 +191,7 @@ allen::glif_lif_asc_psc::glif_lif_asc_psc()
   recordablesMap_.create();
 }
 
-allen::glif_lif_asc_psc::glif_lif_asc_psc( const glif_lif_asc_psc& n )
+nest::glif_lif_asc_psc::glif_lif_asc_psc( const glif_lif_asc_psc& n )
   : Archiving_Node( n )
   , P_( n.P_ )
   , S_( n.S_ )
@@ -204,14 +204,14 @@ allen::glif_lif_asc_psc::glif_lif_asc_psc( const glif_lif_asc_psc& n )
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_asc_psc::init_state_( const Node& proto )
+nest::glif_lif_asc_psc::init_state_( const Node& proto )
 {
   const glif_lif_asc_psc& pr = downcast< glif_lif_asc_psc >( proto );
   S_ = pr.S_;
 }
 
 void
-allen::glif_lif_asc_psc::init_buffers_()
+nest::glif_lif_asc_psc::init_buffers_()
 {
   B_.spikes_.clear();   // includes resize
   B_.currents_.clear(); // include resize
@@ -219,7 +219,7 @@ allen::glif_lif_asc_psc::init_buffers_()
 }
 
 void
-allen::glif_lif_asc_psc::calibrate()
+nest::glif_lif_asc_psc::calibrate()
 {
   B_.logger_.init();
 
@@ -273,7 +273,7 @@ allen::glif_lif_asc_psc::calibrate()
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long to )
+nest::glif_lif_asc_psc::update( Time const& origin, const long from, const long to )
 {
   const double dt = Time::get_resolution().get_ms();
   double v_old = S_.V_m_;
@@ -371,7 +371,7 @@ allen::glif_lif_asc_psc::update( Time const& origin, const long from, const long
 }
 
 nest::port
-allen::glif_lif_asc_psc::handles_test_event( SpikeEvent&,
+nest::glif_lif_asc_psc::handles_test_event( SpikeEvent&,
   rport receptor_type )
 {
   if ( receptor_type <= 0
@@ -385,7 +385,7 @@ allen::glif_lif_asc_psc::handles_test_event( SpikeEvent&,
 }
 
 void
-allen::glif_lif_asc_psc::handle( SpikeEvent& e )
+nest::glif_lif_asc_psc::handle( SpikeEvent& e )
 {
   assert( e.get_delay() > 0 );
 
@@ -395,7 +395,7 @@ allen::glif_lif_asc_psc::handle( SpikeEvent& e )
 }
 
 void
-allen::glif_lif_asc_psc::handle( CurrentEvent& e )
+nest::glif_lif_asc_psc::handle( CurrentEvent& e )
 {
   assert( e.get_delay() > 0 );
 
@@ -407,7 +407,7 @@ allen::glif_lif_asc_psc::handle( CurrentEvent& e )
 // Do not move this function as inline to h-file. It depends on
 // universal_data_logger_impl.h being included here.
 void
-allen::glif_lif_asc_psc::handle( DataLoggingRequest& e )
+nest::glif_lif_asc_psc::handle( DataLoggingRequest& e )
 {
   B_.logger_.handle( e ); // the logger does this for us
 }

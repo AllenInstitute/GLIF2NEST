@@ -24,8 +24,8 @@
 
 using namespace nest;
 
-nest::RecordablesMap< allen::glif_lif_psc >
-  allen::glif_lif_psc::recordablesMap_;
+nest::RecordablesMap< nest::glif_lif_psc >
+  nest::glif_lif_psc::recordablesMap_;
 
 namespace nest
 {
@@ -33,11 +33,11 @@ namespace nest
 // for each quantity to be recorded.
 template <>
 void
-RecordablesMap< allen::glif_lif_psc >::create()
+RecordablesMap< nest::glif_lif_psc >::create()
 {
   // use standard names whereever you can for consistency!
-  insert_( names::V_m, &allen::glif_lif_psc::get_V_m_ );
-  insert_( names::I_syn, &allen::glif_lif_psc::get_I_syn_ );
+  insert_( names::V_m, &nest::glif_lif_psc::get_V_m_ );
+  insert_( names::I_syn, &nest::glif_lif_psc::get_I_syn_ );
 }
 }
 
@@ -45,7 +45,7 @@ RecordablesMap< allen::glif_lif_psc >::create()
  * Default constructors defining default parameters and state
  * ---------------------------------------------------------------- */
 
-allen::glif_lif_psc::Parameters_::Parameters_()
+nest::glif_lif_psc::Parameters_::Parameters_()
   : th_inf_(26.5) // mV
   , G_(4.6951) // nS (1/Gohm)
   , E_L_(-77.4) // mV
@@ -59,7 +59,7 @@ allen::glif_lif_psc::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_psc::State_::State_()
+nest::glif_lif_psc::State_::State_()
   : V_m_(-77.4) // mV
   , I_(0.0) // pA
 
@@ -73,7 +73,7 @@ allen::glif_lif_psc::State_::State_()
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_psc::Parameters_::get( DictionaryDatum& d ) const
+nest::glif_lif_psc::Parameters_::get( DictionaryDatum& d ) const
 {
   def<double>(d, names::V_th, th_inf_);
   def<double>(d, names::g, G_);
@@ -89,7 +89,7 @@ allen::glif_lif_psc::Parameters_::get( DictionaryDatum& d ) const
 }
 
 void
-allen::glif_lif_psc::Parameters_::set( const DictionaryDatum& d )
+nest::glif_lif_psc::Parameters_::set( const DictionaryDatum& d )
 {
   updateValue< double >(d, names::V_th, th_inf_ );
   updateValue< double >(d, names::g, G_ );
@@ -142,14 +142,14 @@ allen::glif_lif_psc::Parameters_::set( const DictionaryDatum& d )
 }
 
 void
-allen::glif_lif_psc::State_::get( DictionaryDatum& d ) const
+nest::glif_lif_psc::State_::get( DictionaryDatum& d ) const
 {
   def< double >(d, names::V_m, V_m_ );
 
 }
 
 void
-allen::glif_lif_psc::State_::set( const DictionaryDatum& d,
+nest::glif_lif_psc::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   // Only the membrane potential can be set; one could also make other state
@@ -159,12 +159,12 @@ allen::glif_lif_psc::State_::set( const DictionaryDatum& d,
   V_m_ = p.E_L_;
 }
 
-allen::glif_lif_psc::Buffers_::Buffers_( glif_lif_psc& n )
+nest::glif_lif_psc::Buffers_::Buffers_( glif_lif_psc& n )
   : logger_( n )
 {
 }
 
-allen::glif_lif_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_psc& n )
+nest::glif_lif_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_psc& n )
   : logger_( n )
 {
 }
@@ -174,7 +174,7 @@ allen::glif_lif_psc::Buffers_::Buffers_( const Buffers_&, glif_lif_psc& n )
  * Default and copy constructor for node
  * ---------------------------------------------------------------- */
 
-allen::glif_lif_psc::glif_lif_psc()
+nest::glif_lif_psc::glif_lif_psc()
   : Archiving_Node()
   , P_()
   , S_()
@@ -183,7 +183,7 @@ allen::glif_lif_psc::glif_lif_psc()
   recordablesMap_.create();
 }
 
-allen::glif_lif_psc::glif_lif_psc( const glif_lif_psc& n )
+nest::glif_lif_psc::glif_lif_psc( const glif_lif_psc& n )
   : Archiving_Node( n )
   , P_( n.P_ )
   , S_( n.S_ )
@@ -196,14 +196,14 @@ allen::glif_lif_psc::glif_lif_psc( const glif_lif_psc& n )
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_psc::init_state_( const Node& proto )
+nest::glif_lif_psc::init_state_( const Node& proto )
 {
   const glif_lif_psc& pr = downcast< glif_lif_psc >( proto );
   S_ = pr.S_;
 }
 
 void
-allen::glif_lif_psc::init_buffers_()
+nest::glif_lif_psc::init_buffers_()
 {
   B_.spikes_.clear();   // includes resize
   B_.currents_.clear(); // include resize
@@ -211,7 +211,7 @@ allen::glif_lif_psc::init_buffers_()
 }
 
 void
-allen::glif_lif_psc::calibrate()
+nest::glif_lif_psc::calibrate()
 {
   B_.logger_.init();
 
@@ -265,7 +265,7 @@ allen::glif_lif_psc::calibrate()
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_psc::update( Time const& origin, const long from, const long to )
+nest::glif_lif_psc::update( Time const& origin, const long from, const long to )
 {
 
   const double dt = Time::get_resolution().get_ms(); // in ms
@@ -346,7 +346,7 @@ allen::glif_lif_psc::update( Time const& origin, const long from, const long to 
 
 
 nest::port
-allen::glif_lif_psc::handles_test_event( SpikeEvent&,
+nest::glif_lif_psc::handles_test_event( SpikeEvent&,
   rport receptor_type )
 {
   if ( receptor_type <= 0
@@ -361,7 +361,7 @@ allen::glif_lif_psc::handles_test_event( SpikeEvent&,
 
 
 void
-allen::glif_lif_psc::handle( SpikeEvent& e )
+nest::glif_lif_psc::handle( SpikeEvent& e )
 {
   assert( e.get_delay() > 0 );
 
@@ -371,7 +371,7 @@ allen::glif_lif_psc::handle( SpikeEvent& e )
 }
 
 void
-allen::glif_lif_psc::handle( CurrentEvent& e )
+nest::glif_lif_psc::handle( CurrentEvent& e )
 {
   assert( e.get_delay() > 0 );
 
@@ -383,7 +383,7 @@ allen::glif_lif_psc::handle( CurrentEvent& e )
 // Do not move this function as inline to h-file. It depends on
 // universal_data_logger_impl.h being included here.
 void
-allen::glif_lif_psc::handle( DataLoggingRequest& e )
+nest::glif_lif_psc::handle( DataLoggingRequest& e )
 {
   B_.logger_.handle( e ); // the logger does this for us
 }

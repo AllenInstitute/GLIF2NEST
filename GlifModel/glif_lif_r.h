@@ -46,7 +46,7 @@ References:
 Author: Binghuang Cai and Kael Dai @ Allen Institute for Brain Science
 */
 
-namespace allen
+namespace nest
 {
 
 class glif_lif_r : public nest::Archiving_Node
@@ -167,7 +167,7 @@ private:
 };
 
 inline nest::port
-allen::glif_lif_r::send_test_event( nest::Node& target,
+nest::glif_lif_r::send_test_event( nest::Node& target,
   nest::port receptor_type,
   nest::synindex,
   bool )
@@ -181,7 +181,7 @@ allen::glif_lif_r::send_test_event( nest::Node& target,
 }
 
 inline nest::port
-allen::glif_lif_r::handles_test_event( nest::SpikeEvent&,
+nest::glif_lif_r::handles_test_event( nest::SpikeEvent&,
   nest::port receptor_type )
 {
   // You should usually not change the code in this function.
@@ -195,7 +195,7 @@ allen::glif_lif_r::handles_test_event( nest::SpikeEvent&,
 }
 
 inline nest::port
-allen::glif_lif_r::handles_test_event( nest::CurrentEvent&,
+nest::glif_lif_r::handles_test_event( nest::CurrentEvent&,
   nest::port receptor_type )
 {
   // You should usually not change the code in this function.
@@ -209,7 +209,7 @@ allen::glif_lif_r::handles_test_event( nest::CurrentEvent&,
 }
 
 inline nest::port
-allen::glif_lif_r::handles_test_event( nest::DataLoggingRequest& dlr,
+nest::glif_lif_r::handles_test_event( nest::DataLoggingRequest& dlr,
   nest::port receptor_type )
 {
   // You should usually not change the code in this function.

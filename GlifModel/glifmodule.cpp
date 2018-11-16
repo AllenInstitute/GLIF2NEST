@@ -39,28 +39,28 @@
 #include "tokenarray.h"
 
 #if defined( LTX_MODULE) | defined( LINKED_MODULE )
-allen::GlifModules glifmodule_LTX_mod;
+nest::GlifModules glifmodule_LTX_mod;
 #endif
 
-allen::GlifModules::GlifModules() {
+nest::GlifModules::GlifModules() {
 #ifdef LINKED_MODULE
   nest::DynamicLoaderModule::registerLinkedModule(this);
 #endif
 }
 
-allen::GlifModules::~GlifModules() {
+nest::GlifModules::~GlifModules() {
 }
 
-const std::string allen::GlifModules::name() const {
+const std::string nest::GlifModules::name() const {
   return std::string("Allen Institute Glif Modules");
 }
 
 const std::string
-allen::GlifModules::commandstring() const {
+nest::GlifModules::commandstring() const {
   return std::string("(glifmodule-init) run");
 }
 
-void allen::GlifModules::init(SLIInterpreter *i) {
+void nest::GlifModules::init(SLIInterpreter *i) {
   nest::kernel().model_manager.register_node_model<glif_lif>("glif_lif");
   nest::kernel().model_manager.register_node_model<glif_lif_r>("glif_lif_r");
   nest::kernel().model_manager.register_node_model<glif_lif_asc>("glif_lif_asc");

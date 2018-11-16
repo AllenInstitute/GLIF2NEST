@@ -23,8 +23,8 @@
 
 using namespace nest;
 
-nest::RecordablesMap< allen::glif_lif_cond >
-  allen::glif_lif_cond::recordablesMap_;
+nest::RecordablesMap< nest::glif_lif_cond >
+  nest::glif_lif_cond::recordablesMap_;
 
 namespace nest
 {
@@ -32,9 +32,9 @@ namespace nest
 // for each quantity to be recorded.
 template <>
 void
-RecordablesMap< allen::glif_lif_cond >::create()
+RecordablesMap< nest::glif_lif_cond >::create()
 {
-  insert_( names::V_m, &allen::glif_lif_cond::get_y_elem_< allen::glif_lif_cond::State_::V_M > );
+  insert_( names::V_m, &nest::glif_lif_cond::get_y_elem_< nest::glif_lif_cond::State_::V_M > );
 }
 }
 
@@ -43,18 +43,18 @@ RecordablesMap< allen::glif_lif_cond >::create()
  * ---------------------------------------------------------------- */
 
 extern "C" inline int
-allen::glif_lif_cond_dynamics( double,
+nest::glif_lif_cond_dynamics( double,
   const double y[],
   double f[],
   void* pnode )
 {
   // a shorthand
-  typedef allen::glif_lif_cond::State_ S;
+  typedef nest::glif_lif_cond::State_ S;
 
   // get access to node so we can almost work as in a member function
   assert( pnode );
-  const allen::glif_lif_cond& node =
-    *( reinterpret_cast< allen::glif_lif_cond* >( pnode ) );
+  const nest::glif_lif_cond& node =
+    *( reinterpret_cast< nest::glif_lif_cond* >( pnode ) );
 
   // y[] here is---and must be---the state vector supplied by the integrator,
   // not the state vector in the node, node.S_.y[].
@@ -90,7 +90,7 @@ allen::glif_lif_cond_dynamics( double,
  * Default constructors defining default parameters and state
  * ---------------------------------------------------------------- */
 
-allen::glif_lif_cond::Parameters_::Parameters_()
+nest::glif_lif_cond::Parameters_::Parameters_()
   : th_inf_(26.5) // mV
   , G_(4.6951) // nS (1/Gohm)
   , E_L_(-77.4) // mV
@@ -104,20 +104,20 @@ allen::glif_lif_cond::Parameters_::Parameters_()
 {
 }
 
-allen::glif_lif_cond::State_::State_( const Parameters_& p )
+nest::glif_lif_cond::State_::State_( const Parameters_& p )
   : y_( STATE_VECTOR_MIN_SIZE, 0.0 )
 
 {
     y_[ V_M ] = p.E_L_; // initialize to membrane potential
 }
 
-allen::glif_lif_cond::State_::State_( const State_& s )
+nest::glif_lif_cond::State_::State_( const State_& s )
 
 {
   y_ = s.y_;
 }
 
-allen::glif_lif_cond::State_& allen::glif_lif_cond::State_::operator=(
+nest::glif_lif_cond::State_& nest::glif_lif_cond::State_::operator=(
   const State_& s )
 {
 
@@ -137,7 +137,7 @@ allen::glif_lif_cond::State_& allen::glif_lif_cond::State_::operator=(
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_cond::Parameters_::get( DictionaryDatum& d ) const
+nest::glif_lif_cond::Parameters_::get( DictionaryDatum& d ) const
 {
   def<double>(d, names::V_th, th_inf_);
   def<double>(d, Name("g_m"), G_);
@@ -154,7 +154,7 @@ allen::glif_lif_cond::Parameters_::get( DictionaryDatum& d ) const
 }
 
 void
-allen::glif_lif_cond::Parameters_::set( const DictionaryDatum& d )
+nest::glif_lif_cond::Parameters_::set( const DictionaryDatum& d )
 {
   updateValue< double >(d, names::V_th, th_inf_ );
   updateValue< double >(d, Name("g_m"), G_ );
@@ -223,7 +223,7 @@ allen::glif_lif_cond::Parameters_::set( const DictionaryDatum& d )
 }
 
 void
-allen::glif_lif_cond::State_::get( DictionaryDatum& d ) const
+nest::glif_lif_cond::State_::get( DictionaryDatum& d ) const
 {
   def< double >(d, names::V_m, y_[V_M] );
 
@@ -247,7 +247,7 @@ allen::glif_lif_cond::State_::get( DictionaryDatum& d ) const
 }
 
 void
-allen::glif_lif_cond::State_::set( const DictionaryDatum& d,
+nest::glif_lif_cond::State_::set( const DictionaryDatum& d,
   const Parameters_& p )
 {
   // Only the membrane potential can be set; one could also make other state
@@ -255,7 +255,7 @@ allen::glif_lif_cond::State_::set( const DictionaryDatum& d,
   updateValue< double >( d, names::V_m, y_[V_M] );
 }
 
-allen::glif_lif_cond::Buffers_::Buffers_( glif_lif_cond& n )
+nest::glif_lif_cond::Buffers_::Buffers_( glif_lif_cond& n )
   : logger_( n )
   , s_( 0 )
   , c_( 0 )
@@ -266,7 +266,7 @@ allen::glif_lif_cond::Buffers_::Buffers_( glif_lif_cond& n )
 {
 }
 
-allen::glif_lif_cond::Buffers_::Buffers_( const Buffers_& b, glif_lif_cond& n )
+nest::glif_lif_cond::Buffers_::Buffers_( const Buffers_& b, glif_lif_cond& n )
   : logger_( n )
   , s_( 0 )
   , c_( 0 )
@@ -282,7 +282,7 @@ allen::glif_lif_cond::Buffers_::Buffers_( const Buffers_& b, glif_lif_cond& n )
  * Default and copy constructor for node
  * ---------------------------------------------------------------- */
 
-allen::glif_lif_cond::glif_lif_cond()
+nest::glif_lif_cond::glif_lif_cond()
   : Archiving_Node()
   , P_()
   , S_( P_ )
@@ -291,7 +291,7 @@ allen::glif_lif_cond::glif_lif_cond()
   recordablesMap_.create();
 }
 
-allen::glif_lif_cond::glif_lif_cond( const glif_lif_cond& n )
+nest::glif_lif_cond::glif_lif_cond( const glif_lif_cond& n )
   : Archiving_Node( n )
   , P_( n.P_ )
   , S_( n.S_ )
@@ -299,7 +299,7 @@ allen::glif_lif_cond::glif_lif_cond( const glif_lif_cond& n )
 {
 }
 
-allen::glif_lif_cond::~glif_lif_cond()
+nest::glif_lif_cond::~glif_lif_cond()
 {
   // GSL structs may not have been allocated, so we need to protect destruction
   if ( B_.s_ )
@@ -321,14 +321,14 @@ allen::glif_lif_cond::~glif_lif_cond()
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_cond::init_state_( const Node& proto )
+nest::glif_lif_cond::init_state_( const Node& proto )
 {
   const glif_lif_cond& pr = downcast< glif_lif_cond >( proto );
   S_ = pr.S_;
 }
 
 void
-allen::glif_lif_cond::init_buffers_()
+nest::glif_lif_cond::init_buffers_()
 {
   B_.spikes_.clear();   // includes resize
   B_.currents_.clear(); // include resize
@@ -355,7 +355,7 @@ allen::glif_lif_cond::init_buffers_()
 }
 
 void
-allen::glif_lif_cond::calibrate()
+nest::glif_lif_cond::calibrate()
 {
   B_.logger_.init();
 
@@ -399,7 +399,7 @@ allen::glif_lif_cond::calibrate()
  * ---------------------------------------------------------------- */
 
 void
-allen::glif_lif_cond::update( Time const& origin, const long from, const long to )
+nest::glif_lif_cond::update( Time const& origin, const long from, const long to )
 {
 
   const double dt = Time::get_resolution().get_ms(); // in ms
@@ -488,7 +488,7 @@ allen::glif_lif_cond::update( Time const& origin, const long from, const long to
 
 
 nest::port
-allen::glif_lif_cond::handles_test_event( SpikeEvent&,
+nest::glif_lif_cond::handles_test_event( SpikeEvent&,
   rport receptor_type )
 {
   if ( receptor_type <= 0
@@ -503,7 +503,7 @@ allen::glif_lif_cond::handles_test_event( SpikeEvent&,
 
 
 void
-allen::glif_lif_cond::handle( SpikeEvent& e )
+nest::glif_lif_cond::handle( SpikeEvent& e )
 {
   assert( e.get_delay() > 0 );
 
@@ -513,7 +513,7 @@ allen::glif_lif_cond::handle( SpikeEvent& e )
 }
 
 void
-allen::glif_lif_cond::handle( CurrentEvent& e )
+nest::glif_lif_cond::handle( CurrentEvent& e )
 {
   assert( e.get_delay() > 0 );
 
@@ -525,7 +525,7 @@ allen::glif_lif_cond::handle( CurrentEvent& e )
 // Do not move this function as inline to h-file. It depends on
 // universal_data_logger_impl.h being included here.
 void
-allen::glif_lif_cond::handle( DataLoggingRequest& e )
+nest::glif_lif_cond::handle( DataLoggingRequest& e )
 {
   B_.logger_.handle( e ); // the logger does this for us
 }
