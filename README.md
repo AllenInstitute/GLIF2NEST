@@ -84,5 +84,5 @@ $ python run_model_cond.py --cells cell-id[,cell_id,...] --model LIF[-R|-ASC|-R-
 * Has only been tested with python 2.7
 
 ## Update
-* The most updated implementation of GLIF models have been integrated into <a href="https://github.com/nest/nest-simulator/" target="_blank">NEST Simulator master repo</a> as [```glif_psc```](https://github.com/nest/nest-simulator/blob/master/models/glif_psc.h) (current-based model) and [```glif_cond```](https://github.com/nest/nest-simulator/blob/master/models/glif_cond.h) (conductant-based model) and will be included in NEST 2.18.1.
+* The most updated implementation of GLIF models have been integrated into [NEST Simulator master repo](https://github.com/nest/nest-simulator/) as [```glif_psc```](https://github.com/nest/nest-simulator/blob/master/models/glif_psc.h) (current-based model) and [```glif_cond```](https://github.com/nest/nest-simulator/blob/master/models/glif_cond.h) (conductant-based model) and will be included in NEST 2.18.1.
 
