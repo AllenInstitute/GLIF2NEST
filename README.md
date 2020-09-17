@@ -9,7 +9,7 @@ $ make
 $ make install
 ```
 #### Issues
-* Pull and compile nest from the latest on their github repository. The v2.10.0 isn't working.
+* Use NEST Simulator 2.14.0. The v2.10.0 isn't working.
 * Make sure ltdl-dev libraries are available (before compiling nest). On CentOS run ```sudo yum install libtool-ltdl-devel```, on ubuntu ```libltdl-dev```.
 * When compiling nest make sure to use absolute paths. When completed run ```nest-config --libs``` to make sure a full path to the nest libraries are used.
 
@@ -81,7 +81,7 @@ $ python run_model_cond.py --cells cell-id[,cell_id,...] --model LIF[-R|-ASC|-R-
 ```
 
 ## Notes
-* Has only been tested with python 2.7
+* Has only been tested with python 2.7 and [NEST 2.14.0](https://github.com/nest/nest-simulator/releases/tag/v2.14.0)
 
 ## Update
 * The most updated implementation of GLIF models have been integrated into [NEST Simulator master repo](https://github.com/nest/nest-simulator/) as [```glif_psc```](https://github.com/nest/nest-simulator/blob/master/models/glif_psc.h) (current-based model) and [```glif_cond```](https://github.com/nest/nest-simulator/blob/master/models/glif_cond.h) (conductant-based model) and will be included in NEST 2.18.1.
