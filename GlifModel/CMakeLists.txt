@@ -72,6 +72,20 @@ endif ()
 # Setting the compiler has to happen before the call to "project(...)" function.
 set( CMAKE_CXX_COMPILER "${NEST_COMPILER}" )
 
+# Needed for making the module compliant with both NEST 2.20 and older version. If using NEST 2.20* or above
+# then pass in macro GET_DELAY_STEPS, so we can use method e.get_delay() vs e.get_delay_steps()
+execute_process(
+    COMMAND ${NEST_CONFIG} --version
+    RESULT_VARIABLE RES_VAR
+    OUTPUT_VARIABLE NEST_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if(${NEST_VERSION} MATCHES ".*2\\.20.*")
+    add_definitions(-DGET_DELAY_STEPS)
+endif()
+
+
 project( ${MODULE_NAME} CXX )
 
 # Get the install prefix.
